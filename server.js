@@ -129,6 +129,9 @@ passport.deserializeUser((user, done) => {
 // Serve static files from the "public" directory
 app.use(express.static(path.join(__dirname, "public")));
 
+// Serve JavaScript from 'src/js' folder
+app.use('/src/js', express.static(path.join(__dirname, 'src/js')));
+
 // Use body-parser middleware to parse incoming requests
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
