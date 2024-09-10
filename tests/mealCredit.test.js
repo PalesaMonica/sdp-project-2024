@@ -1,4 +1,9 @@
-const { renderTransactions, formatDate, createTransactionHTML } = require('../src/js/mealCredit');
+/**
+ * @jest-environment jsdom
+ */
+
+
+const { renderTransactions, formatDate, createTransactionHTML, updateDOM } = require('../src/js/mealCredit');
 
 describe('Meal Credit Functions', () => {
   describe('formatDate', () => {
@@ -45,5 +50,40 @@ describe('Meal Credit Functions', () => {
       const transactionCount = (html.match(/class="transaction"/g) || []).length;
       expect(transactionCount).toBe(4);
     });
+
+    test('renders correct transactions', () => {
+      const html = renderTransactions();
+      expect(html).toContain('4NMP Dining Hall');
+      expect(html).toContain('Joyous Dining Hall');
+      expect(html).toContain('Monate Mpolaye Dining');
+      expect(html).toContain('Sep 7, 2024'); // Ensure recent transaction is included
+    });
   });
+
+  describe('updateDOM', () => {
+    beforeEach(() => {
+      document.body.innerHTML = '<div id="transactions-list"></div>';
+    });
+
+    test('updates DOM with transaction HTML', () => {
+      const html = renderTransactions();
+      updateDOM(html);
+
+      const transactionsList = document.getElementById('transactions-list');
+      expect(transactionsList.innerHTML).toContain('4NMP Dining Hall');
+      expect(transactionsList.innerHTML).toContain('Joyous Dining Hall');
+      expect(transactionsList.innerHTML).toContain('Monate Mpolaye Dining');
+    });
+
+    test('does not update DOM if no element is found', () => {
+      document.body.innerHTML = ''; // No element with id 'transactions-list'
+
+      const html = renderTransactions();
+      updateDOM(html);
+
+      // Ensure that no error was thrown and no modifications were made
+      expect(document.body.innerHTML).toBe(''); // It should remain empty
+    });
+  });
+
 });

@@ -70,3 +70,7 @@ jobs:
           app-name: 'dining-service-4D'
           slot-name: 'Production'
           package: .
+
+      - name: Coveralls GitHub Action
+        uses: coverallsapp/github-action@v2.3.0
+      
