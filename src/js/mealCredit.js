@@ -64,4 +64,4 @@ if (typeof window !== 'undefined' && typeof document !== 'undefined') {
     updateDOM(initialHtml);
 }
 
-module.exports = { renderTransactions, formatDate, createTransactionHTML };
+module.exports = { renderTransactions, formatDate, createTransactionHTML, updateDOM };

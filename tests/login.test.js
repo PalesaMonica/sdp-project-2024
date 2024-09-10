@@ -78,4 +78,5 @@ describe('login.html', () => {
     const errorMessage = document.getElementById('error-message');
     expect(errorMessage.textContent).toBe('Login failed');
   });
+
 });
