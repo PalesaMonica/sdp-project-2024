@@ -1,0 +1,35 @@
+<!-- public/index.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hello World</title>
+</head>
+<body>
+    <h1>Hello, World!</h1>
+    <h2>Names from the Database:</h2>
+    <ul id="names-list"></ul> <!-- Placeholder for names -->
+
+    <script>
+        // Fetch names from the server
+        fetch('/names/name')
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                const namesList = document.getElementById('names-list');
+                data.forEach(name => {
+                    const li = document.createElement('li');
+                    li.textContent = name;
+                    namesList.appendChild(li);
+                });
+            })
+            .catch(error => console.error('Error fetching names:', error));
+    </script>
+    
+</body>
+</html>
