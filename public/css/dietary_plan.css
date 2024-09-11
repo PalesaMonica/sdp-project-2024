@@ -1,0 +1,174 @@
+/* Global styles */
+body {
+    margin: 0;
+    padding: 0;
+    background-color: #1A2238;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    font-family: Arial, sans-serif;
+}
+
+/* Header styling */
+.header {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    display: flex;
+    align-items: center;
+}
+
+.logo {
+    width: 10vw; /* Responsive size based on viewport width */
+    max-width: 50px; /* Max size for larger screens */
+    height: auto;
+}
+
+.name {
+    margin-left: 10px;
+    font-size: 30px; /* Responsive font size */
+    font-weight: bold;
+    color: #FFFFFF;
+}
+
+.campus {
+    color: #FF6A3D;
+}
+
+.crave {
+    color: #FFFFFF;
+}
+
+/* Greeting and instruction styling */
+.greeting, .instruction {
+    color: white;
+    font-size: 20px;
+    font-family: Inter, Arial, sans-serif;
+    font-weight: 800;
+    margin: 10px 0;
+    text-align: center;
+}
+
+.greeting span, .instruction span {
+    color: #FF6A3D;
+}
+
+/* Box container styling */
+.box-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); /* Ensure uniform box size */
+    gap: 20px;
+    width: 80vw; 
+    max-width: 800px; 
+    background: #9DAAF2;
+    padding: 30px;
+    border-radius: 8px;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    justify-items: center;
+    margin-top: 40px; 
+}
+
+/* Box styling */
+.box {
+    background-color: #FF6A3D;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    border-radius: 8px;
+    padding: 20px;
+    box-sizing: border-box;
+    width: 100%;  /* Ensure full width in grid */
+    height: 150px; /* Ensure consistent height */
+    transition: transform 0.3s ease; /* Smooth hover effect */
+}
+
+.box:hover {
+    transform: scale(1.05); /* Slightly enlarge the box on hover */
+}
+
+/* Image inside box */
+.box img {
+    width: 50px; /* Ensure images fit uniformly in the box */
+    height: auto;
+}
+
+/* Label inside box */
+.label {
+    color: #030303;
+    font-size: 1rem;
+    font-weight: 800;
+    margin-top: 10px;
+    text-align: center;
+}
+
+/* Save button styling */
+.save-button {
+    background-color: #FF6A3D;
+    color: white;
+    border: none;
+    padding: 20px 40px;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    margin-top: 30px; /* Space between boxes and button */
+    transition: background-color 0.3s ease;
+}
+
+.save-button:hover {
+    background-color: #e55d3b; /* Slightly darker shade for hover effect */
+}
+
+/* Back button styling */
+.back-button {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background-color: #FF6A3D;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.back-button:hover {
+    background-color: #e55d3b; /* Slightly darker shade for hover effect */
+}
+
+/* Media queries for responsive design */
+@media (max-width: 600px) {
+    .name {
+        font-size: 4vw; /* Adjust for smaller screens */
+    }
+
+    .box-container {
+        width: 100vw; /* Full width for small screens */
+        padding: 20px;
+    }
+
+    .box {
+        height: auto; /* Adjust height based on content */
+        padding: 15px;
+    }
+
+    .box img {
+        width: 40px; /* Adjust image size for smaller screens */
+    }
+
+    .save-button {
+        width: 100%; /* Full width for smaller screens */
+        padding: 12px 0; /* Adjust padding for small screens */
+    }
+
+    .back-button {
+        padding: 8px 16px; /* Smaller padding for small screens */
+        font-size: 14px; /* Adjust font size */
+    }
+}
