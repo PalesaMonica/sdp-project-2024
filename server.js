@@ -304,6 +304,33 @@ app.use('/breakfast',breakfastRoute);
 app.use('/lunch',lunchRoute);
 app.use('/dinner',dinnerRoute);
 
+app.post('/saveDietPreference', (req, res) => {
+  const { dietPlan } = req.body;
+  const username = req.user.username;
+
+  connection.query(
+      "INSERT INTO dietary_preference (username, preference) VALUES (?, ?)",
+      [username, dietPlan],
+      (err, result) => {
+          if (err) {
+              return res.status(500).json({ msg: 'Error saving preference' });
+          }
+          res.status(200).json({ msg: 'Diet preference saved' });
+      }
+  );
+});
+
+app.get('/get-username', (req, res) => {
+  if (req.isAuthenticated()) {
+    const username = req.user.username; // Directly get the username from the session
+    res.json({ username }); // Send the username as a JSON response
+  } else {
+    res.status(401).json({ error: "User not authenticated" });
+  }
+});
+
+
+
 // Start the server
 const port = process.env.PORT || 3000;
 app.listen(port, () => {
