@@ -1,0 +1,55 @@
+{
+  "name": "sdp-project-2024",
+  "version": "1.0.0",
+  "description": "Click on the badge to view coverage on coveralls\r [![Coverage Status](https://coveralls.io/repos/github/PalesaMonica/sdp-project-2024/badge.svg?branch=main)](https://coveralls.io/github/PalesaMonica/sdp-project-2024?branch=main)",
+  "main": "server.js",
+  "scripts": {
+    "test": "jest --coverage",
+    "start": "node server.js",
+    "build": "echo 'No build step required'",
+    "coverage": "nyc jest",
+    "coveralls": "npx coveralls < ./coverage/lcov.info"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "body-parser": "^1.20.2",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "express-session": "^1.18.0",
+    "fs": "^0.0.1-security",
+    "jsonwebtoken": "^9.0.2",
+    "mysql": "^2.18.1",
+    "mysql2": "^3.11.0",
+    "passport": "^0.7.0",
+    "passport-google-oauth20": "^2.0.0",
+    "path": "^0.12.7",
+    "sequelize": "^6.37.3"
+  },
+  "devDependencies": {
+    "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
+    "coveralls": "^3.1.1",
+    "jest": "^29.7.0",
+    "jest-environment-jsdom": "^29.7.0",
+    "jsdom": "^22.1.0",
+    "ncp": "^2.0.0",
+    "nyc": "^17.0.0",
+    "puppeteer": "^5.5.0",
+    "rimraf": "^6.0.1",
+    "supertest": "^7.0.0",
+    "util": "^0.12.5"
+  },
+  "directories": {
+    "test": "tests"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/PalesaMonica/sdp-project-2024.git"
+  },
+  "bugs": {
+    "url": "https://github.com/PalesaMonica/sdp-project-2024/issues"
+  },
+  "homepage": "https://github.com/PalesaMonica/sdp-project-2024#readme"
+}

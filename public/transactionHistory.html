@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="css/transactionHistory.css" />
+    <title>Transaction History</title>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <button class="back-button" onclick="window.location.href='mealCredit.html'">&#8592;</button>
+            <h1>Transaction History</h1>
+            <button class="home-button">&#8962;</button>
+        </div>
+        <div class="tabs">
+            <button class="tab active" data-period="day">Day</button>
+            <button class="tab" data-period="week">Week</button>
+            <button class="tab" data-period="month">Month</button>
+        </div>
+        <div id="transactions-list">
+            <!-- Transactions will be dynamically added here -->
+        </div>
+    </div>
+</body>
+
+<script src="../src/js/transactionHistory.js"></script>
+
+</html>
