@@ -15,7 +15,7 @@ jobs:
       - name: Download artifact from build job (Node.js 18.x)
         uses: actions/download-artifact@v4
         with:
-          name: node-app-18.x
+          name: node-app-18.x  # Ensure this matches the artifact name in the build job
 
       - name: Unzip artifact for deployment
         run: unzip release-18.x.zip

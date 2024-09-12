@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node-version: [16.x, 18.x]  # Test with both Node.js 14.x and 18.x versions
+        node-version: [14.x, 18.x]  # Test with both Node.js 14.x and 18.x versions
 
     steps:
       - uses: actions/checkout@v4
@@ -39,5 +39,5 @@ jobs:
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4
         with:
-          name: node-app-${{ matrix.node-version }}
+          name: node-app-${{ matrix.node-version }}  # Different names for different Node.js versions
           path: release-${{ matrix.node-version }}.zip
