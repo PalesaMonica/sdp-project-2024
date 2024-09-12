@@ -1,6 +1,9 @@
-name: Node.js CI
+name: Run tests and save coverage to Coveralls
 
-on: [push, pull_request]
+on:
+  push:
+    branches:
+      - main
 
 jobs:
   build:

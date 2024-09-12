@@ -19,13 +19,13 @@ const dinnerRoute=require('./src/menu_backend/menuRoutes/dinnerRoute');
 const app = express();
 
 // Log environment variables (for debugging purposes, remove in production)
-console.log(
-  process.env.DB_HOST,
-  process.env.DB_USER,
-  process.env.DB_PASSWORD,
-  process.env.DB_NAME,
-  process.env.SSL_CA
-);
+// console.log(
+//   process.env.DB_HOST,
+//   process.env.DB_USER,
+//   process.env.DB_PASSWORD,
+//   process.env.DB_NAME,
+//   process.env.SSL_CA
+// );
 
 // Create a MySQL connection with SSL
 const connection = mysql.createConnection({
@@ -132,7 +132,7 @@ passport.deserializeUser((user, done) => {
 app.use(express.static(path.join(__dirname, "public")));
 
 // Serve JavaScript from 'src/js' folder
-app.use('/src/js', express.static(path.join(__dirname, 'src/js')));
+app.use('/src', express.static(path.join(__dirname, 'src/')));
 
 // Use body-parser middleware to parse incoming requests
 app.use(bodyParser.urlencoded({ extended: true }));
