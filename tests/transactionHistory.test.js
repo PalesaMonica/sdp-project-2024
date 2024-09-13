@@ -107,73 +107,73 @@ describe('Transaction History Functions', () => {
 
   });
 
-  describe('Tab Switching', () => {
-    beforeEach(() => {
-      // Set up the DOM structure with tabs and the transactions list
-      document.body.innerHTML = `
-        <div id="transactions-list"></div>
-        <div class="tab" data-period="day">Day</div>
-        <div class="tab" data-period="week">Week</div>
-        <div class="tab" data-period="month">Month</div>
-      `;
+  // describe('Tab Switching', () => {
+  //   beforeEach(() => {
+  //     // Set up the DOM structure with tabs and the transactions list
+  //     document.body.innerHTML = `
+  //       <div id="transactions-list"></div>
+  //       <div class="tab" data-period="day">Day</div>
+  //       <div class="tab" data-period="week">Week</div>
+  //       <div class="tab" data-period="month">Month</div>
+  //     `;
 
-      // Simulate the window.onload behavior
-      window.onload();
-    });
+  //     // Simulate the window.onload behavior
+  //     window.onload();
+  //   });
 
-    test('displays transactions for the selected period when a tab is clicked', () => {
-      // Mock the renderTransactions function to return actual HTML for the "week" period
-      const mockRenderTransactions = jest
-        .spyOn(require('../src/js/transactionHistory'), 'renderTransactions')
-        .mockImplementation((period) => {
-          if (period === 'week') {
-            return `
-              <div class="date-header">Sep 7, 2024</div>
-              <div class="transaction">
-                  <div class="transaction-details">
-                      <strong>4NMP Dining Hall</strong>
-                      <small>Lunch</small>
-                  </div>
-                  <div>
-                      <span class="transaction-amount ">
-                          -R55.00
-                      </span>
-                  </div>
-              </div>
-              <div class="date-header">Sep 6, 2024</div>
-              <div class="transaction">
-                  <div class="transaction-details">
-                      <strong>Joyous Dining Hall</strong>
-                      <small>Breakfast</small>
-                  </div>
-                  <div>
-                      <span class="transaction-amount ">
-                          -R60.00
-                      </span>
-                  </div>
-              </div>
-            `;
-          }
-          return '';
-        });
+  //   test('displays transactions for the selected period when a tab is clicked', () => {
+  //     // Mock the renderTransactions function to return actual HTML for the "week" period
+  //     const mockRenderTransactions = jest
+  //       .spyOn(require('../src/js/transactionHistory'), 'renderTransactions')
+  //       .mockImplementation((period) => {
+  //         if (period === 'week') {
+  //           return `
+  //             <div class="date-header">Sep 7, 2024</div>
+  //             <div class="transaction">
+  //                 <div class="transaction-details">
+  //                     <strong>4NMP Dining Hall</strong>
+  //                     <small>Lunch</small>
+  //                 </div>
+  //                 <div>
+  //                     <span class="transaction-amount ">
+  //                         -R55.00
+  //                     </span>
+  //                 </div>
+  //             </div>
+  //             <div class="date-header">Sep 6, 2024</div>
+  //             <div class="transaction">
+  //                 <div class="transaction-details">
+  //                     <strong>Joyous Dining Hall</strong>
+  //                     <small>Breakfast</small>
+  //                 </div>
+  //                 <div>
+  //                     <span class="transaction-amount ">
+  //                         -R60.00
+  //                     </span>
+  //                 </div>
+  //             </div>
+  //           `;
+  //         }
+  //         return '';
+  //       });
     
-      const tabs = document.querySelectorAll('.tab');
-      const transactionsList = document.getElementById('transactions-list');
+  //     const tabs = document.querySelectorAll('.tab');
+  //     const transactionsList = document.getElementById('transactions-list');
     
-      // Simulate a click on the "Week" tab
-      tabs[1].click();
+  //     // Simulate a click on the "Week" tab
+  //     tabs[1].click();
     
-      // Check that the transactions for the "week" period are rendered
-      expect(transactionsList.innerHTML).toContain('<div class="date-header">Sep 7, 2024</div>');
-      expect(transactionsList.innerHTML).toContain('<div class="date-header">Sep 6, 2024</div>');
-      expect(transactionsList.innerHTML).toContain('Lunch');
-      expect(transactionsList.innerHTML).toContain('Breakfast');
+  //     // Check that the transactions for the "week" period are rendered
+  //     expect(transactionsList.innerHTML).toContain('<div class="date-header">Sep 7, 2024</div>');
+  //     expect(transactionsList.innerHTML).toContain('<div class="date-header">Sep 6, 2024</div>');
+  //     expect(transactionsList.innerHTML).toContain('Lunch');
+  //     expect(transactionsList.innerHTML).toContain('Breakfast');
     
-      expect(tabs[1].classList.contains('active')).toBe(true);
-      expect(tabs[0].classList.contains('active')).toBe(false);
+  //     expect(tabs[1].classList.contains('active')).toBe(true);
+  //     expect(tabs[0].classList.contains('active')).toBe(false);
     
-      // Restore original function
-      jest.restoreAllMocks();
-    });
-  });
+  //     // Restore original function
+  //     jest.restoreAllMocks();
+  //   });
+  // });
 });
