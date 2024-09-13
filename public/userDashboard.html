@@ -1,70 +1,91 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" href="css/userDashboard.css" />
     <title>CampusCrave Dashboard</title>
-
-</head>
-<body>
+  </head>
+  <body>
     <div class="container">
-        <header class="header">
-            <div class="logo"> 
-                <img src="images/option-21.svg" alt="CampusCrave" >
-                CampusCrave
+      <header class="header">
+        <div class="logo">
+          <img src="images/option-21.svg" alt="CampusCrave" />
+          CampusCrave
+        </div>
+        <div class="menu-icon" onclick="window.location.href='login.html'">
+          →
+        </div>
+      </header>
+      <main>
+        <div class="welcome">Welcome John</div>
+        <div class="dashboard">
+          <div class="credits">70 Meal Credits</div>
+          <div class="grid">
+            <div class="grid-item" onclick="window.location.href='menu.html'">
+              <svg viewBox="0 0 24 24" fill="currentColor">
+                <path
+                  d="M3 13h2v-2H3v2zm0 4h2v-2H3v2zm0-8h2V7H3v2zm4 4h14v-2H7v2zm0 4h14v-2H7v2zM7 7v2h14V7H7z"
+                />
+              </svg>
+              Menu
             </div>
-            <div class="menu-icon" onclick="window.location.href='login.html'">→</div>
-        </header>
-        <main>
-            <div class="welcome">Welcome John</div>
-            <div class="dashboard">
-                <div class="credits">70 Meal Credits</div>
-                <div class="grid">
-                    <div class="grid-item" onclick="window.location.href='menu.html'">
-                        <svg viewBox="0 0 24 24" fill="currentColor">
-                            <path d="M3 13h2v-2H3v2zm0 4h2v-2H3v2zm0-8h2V7H3v2zm4 4h14v-2H7v2zm0 4h14v-2H7v2zM7 7v2h14V7H7z"/>
-                        </svg>
-                        Menu
-                    </div>
-                    <div class="grid-item" onclick="window.location.href='mealCredit.html'">
-                        <svg viewBox="0 0 24 24" fill="currentColor">
-                            <path d="M11.8 10.9c-2.27-.59-3-1.2-3-2.15 0-1.09 1.01-1.85 2.7-1.85 1.78 0 2.44.85 2.5 2.1h2.21c-.07-1.72-1.12-3.3-3.21-3.81V3h-3v2.16c-1.94.42-3.5 1.68-3.5 3.61 0 2.31 1.91 3.46 4.7 4.13 2.5.6 3 1.48 3 2.41 0 .69-.49 1.79-2.7 1.79-2.06 0-2.87-.92-2.98-2.1h-2.2c.12 2.19 1.76 3.42 3.68 3.83V21h3v-2.15c1.95-.37 3.5-1.5 3.5-3.55 0-2.84-2.43-3.81-4.7-4.4z"/>
-                        </svg>
-                        Meal Credits<br>Management
-                    </div>
-                    <div class="grid-item" onclick="window.location.href='dietary_plan.html'">
-                        <svg viewBox="0 0 24 24" fill="currentColor">
-                            <path d="M8.1 13.34l2.83-2.83L3.91 3.5c-1.56 1.56-1.56 4.09 0 5.66l4.19 4.18zm6.78-1.81c1.53.71 3.68.21 5.27-1.38 1.91-1.91 2.28-4.65.81-6.12-1.46-1.46-4.2-1.1-6.12.81-1.59 1.59-2.09 3.74-1.38 5.27L3.7 19.87l1.41 1.41L12 14.41l6.88 6.88 1.41-1.41L13.41 13l1.47-1.47z"/>
-                        </svg>
-                        Dietary<br>Preference
-                    </div>
-                    <div class="grid-item" onclick="navigate('reservation')">
-                        <svg viewBox="0 0 24 24" fill="currentColor">
-                            <path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM7 10h5v5H7z"/>
-                        </svg>
-                        Reservation
-                    </div>
-                </div>
+            <div
+              class="grid-item"
+              onclick="window.location.href='mealCredit.html'"
+            >
+              <svg viewBox="0 0 24 24" fill="currentColor">
+                <path
+                  d="M11.8 10.9c-2.27-.59-3-1.2-3-2.15 0-1.09 1.01-1.85 2.7-1.85 1.78 0 2.44.85 2.5 2.1h2.21c-.07-1.72-1.12-3.3-3.21-3.81V3h-3v2.16c-1.94.42-3.5 1.68-3.5 3.61 0 2.31 1.91 3.46 4.7 4.13 2.5.6 3 1.48 3 2.41 0 .69-.49 1.79-2.7 1.79-2.06 0-2.87-.92-2.98-2.1h-2.2c.12 2.19 1.76 3.42 3.68 3.83V21h3v-2.15c1.95-.37 3.5-1.5 3.5-3.55 0-2.84-2.43-3.81-4.7-4.4z"
+                />
+              </svg>
+              Meal Credits<br />Management
             </div>
-        </main>
-        <footer class="footer">
-            <div class="footer-item" onclick="navigate('feedback')">
-                Feedback
-                <svg viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M20 2H4c-1.1 0-1.99.9-1.99 2L2 22l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-7 12h-2v-2h2v2zm0-4h-2V6h2v4z"/>
-                </svg>
+            <div
+              class="grid-item"
+              onclick="window.location.href='dietary_plan.html'"
+            >
+              <svg viewBox="0 0 24 24" fill="currentColor">
+                <path
+                  d="M8.1 13.34l2.83-2.83L3.91 3.5c-1.56 1.56-1.56 4.09 0 5.66l4.19 4.18zm6.78-1.81c1.53.71 3.68.21 5.27-1.38 1.91-1.91 2.28-4.65.81-6.12-1.46-1.46-4.2-1.1-6.12.81-1.59 1.59-2.09 3.74-1.38 5.27L3.7 19.87l1.41 1.41L12 14.41l6.88 6.88 1.41-1.41L13.41 13l1.47-1.47z"
+                />
+              </svg>
+              Dietary<br />Preference
             </div>
-            <div class="footer-item" onclick="navigate('info')">
-                Dining Information
-                <svg viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/>
-                </svg>
+            <div
+              class="grid-item"
+              onclick="window.location.href='diningHalls.html'"
+            >
+              <svg viewBox="0 0 24 24" fill="currentColor">
+                <path
+                  d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM7 10h5v5H7z"
+                />
+              </svg>
+              Reservation
             </div>
-        </footer>
+          </div>
+        </div>
+      </main>
+      <footer class="footer">
+        <div class="footer-item" onclick="navigate('feedback')">
+          Feedback
+          <svg viewBox="0 0 24 24" fill="currentColor">
+            <path
+              d="M20 2H4c-1.1 0-1.99.9-1.99 2L2 22l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-7 12h-2v-2h2v2zm0-4h-2V6h2v4z"
+            />
+          </svg>
+        </div>
+        <div class="footer-item" onclick="navigate('info')">
+          Dining Information
+          <svg viewBox="0 0 24 24" fill="currentColor">
+            <path
+              d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"
+            />
+          </svg>
+        </div>
+      </footer>
     </div>
+  </body>
 
-</body>
-
-<script src="../src/js/userDashboard.js"></script>
+  <script src="../src/js/userDashboard.js"></script>
 </html>
