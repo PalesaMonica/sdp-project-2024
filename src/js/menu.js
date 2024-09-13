@@ -1,3 +1,6 @@
+function backToDash(){
+    window.location.href = 'userDashboard.html';
+}
 document.addEventListener('DOMContentLoaded', function () {
     function fetchAndDisplay(dietPlan) {
         ['breakfast', 'lunch', 'dinner'].forEach(category => {

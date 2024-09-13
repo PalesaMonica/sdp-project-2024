@@ -38,11 +38,54 @@
         .campuscrave-logo-text .crave {
             color: #FF6A3D;
         }
-
-        h1.menu-title {
+        .header {
+            display: flex;
+            justify-content: space-between; /* This aligns the buttons and title horizontally */
+            align-items: center; /* Ensures vertical alignment */
+            padding: 20px;
+            background-color: #1A223B;
+            position: relative;
+        }
+        
+        .button-container {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .menu-title {
             color: #FF6A3D;
+            margin: 0;
             text-align: center;
-            margin-top: 10px;
+            flex-grow: 1; /* Allows the title to take up available space */
+        }
+        
+        .logout-container {
+            margin-left: auto; /* Pushes the logout button to the right */
+        }
+        
+        .back-button {
+            background-color: #FF6A3D;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        
+        .back-button:hover {
+            background-color: #e55d3b;
+        }
+        
+        .logout-button {
+            padding: 5px 10px;
+            background-color: #FF6A3D;
+            border: none;
+            border-radius: 3px;
+            color: #FFFFFF;
+            cursor: pointer;
         }
 
         h2 {
@@ -97,7 +140,16 @@
         </div>
     </header>
     
-    <h1 class="menu-title">Menu</h1>
+    <div class="header">
+        <div class="button-container">
+            <button class="back-button" onclick="backToDash()">Back</button>
+        </div>
+        <h1 class="menu-title">Menu</h1>
+        <div class="logout-container">
+            <button class="logout-button" onclick="window.location.href='login.html'">Log out &#8594;</button>
+        </div>
+    </div>
+
 
     <div>
         <form id="dietPlanForm">
