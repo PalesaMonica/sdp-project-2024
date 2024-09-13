@@ -4,6 +4,8 @@ const mysql = require("mysql2");
 const fs = require("fs");
 const bodyParser = require("body-parser");
 const session = require("express-session");
+const Reservation = require("./src/reservation/reservation");
+const pool = require("./src/reservation/db-connection");
 const passport = require("passport");
 const bcrypt = require("bcryptjs"); // For password hashing
 const GoogleStrategy = require("passport-google-oauth20").Strategy;
@@ -17,6 +19,7 @@ const dinnerRoute=require('./src/menu_backend/menuRoutes/dinnerRoute');
 
 // Initialize the Express app
 const app = express();
+app.use(express.json());
 
 // Log environment variables (for debugging purposes, remove in production)
 // console.log(
@@ -328,8 +331,86 @@ app.get('/get-username', (req, res) => {
     res.status(401).json({ error: "User not authenticated" });
   }
 });
+// Route to get all dining halls
+app.get('/dining-halls', async (req, res) => {
+  try {
+      const diningHalls = await Reservation.getDiningHalls(); // Ensure this is the correct method for fetching dining halls
+      res.status(200).json(diningHalls);
+  } catch (error) {
+      console.error('Error in /dining-halls route:', error);
+      res.status(500).json({ message: 'Error fetching dining halls', error: error.message });
+  }
+});
+
+// Route to handle POST requests to /api/reservations
+app.post('/api/reservations', async (req, res) => {
+  const { diningHallId, name, surname, date, time, mealType } = req.body;
+
+  if (!name || !surname || !date || !mealType) {
+      return res.status(400).json({ message: 'Missing required fields: name, surname, date, and mealType are required.' });
+  }
+
+  try {
+      // Creating a reservation with default 'confirmed' status
+      const { reservationId, qrCode } = await Reservation.createReservation({
+          diningHallId,
+          name,
+          surname,
+          date,
+          time,
+          mealType,  // Ensure mealType is passed to createReservation
+          specialRequests: null,
+          status: 'confirmed'
+      });
+      res.status(201).json({ reservationId, qrCode });
+  } catch (error) {
+      console.error('Error creating reservation:', error);
+      res.status(500).json({ message: 'Error creating reservation', error: error.message });
+  }
+});
+
+// Route to get all reservations
+app.get('/api/reservations', async (req, res) => {
+  try {
+      const reservations = await Reservation.getReservations();
+      res.status(200).json(reservations);
+  } catch (error) {
+      res.status(500).json({ message: 'Error fetching reservations', error: error.message });
+  }
+});
+
+// Route to update a reservation
+// Route to update a reservation
+app.put('/api/reservations/:id', async (req, res) => {
+  const { id } = req.params;
+  const { newTime, newMealType } = req.body;
+  const currentDate = new Date().toISOString(); // Current date and time
+
+  if (!newTime && !newMealType) {
+      return res.status(400).json({ message: 'At least one of newTime or newMealType must be provided.' });
+  }
+
+  try {
+      const result = await Reservation.updateReservation(id, newTime, newMealType, currentDate);
+      res.status(200).json(result);
+  } catch (error) {
+      console.error('Error updating reservation:', error.message); // Enhanced logging
+      res.status(400).json({ message: 'Error updating reservation', error: error.message });
+  }
+});
 
 
+// Route to cancel a reservation
+app.delete('/api/reservations/:id', async (req, res) => {
+  const { id } = req.params;
+  const { reason } = req.body;
+  try {
+      await Reservation.cancelReservation(id, reason);
+      res.status(200).json({ message: 'Reservation cancelled successfully' });
+  } catch (error) {
+      res.status(400).json({ message: 'Error cancelling reservation', error: error.message });
+  }
+});
 
 // Start the server
 const port = process.env.PORT || 3000;
