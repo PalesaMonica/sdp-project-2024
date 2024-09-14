@@ -1,11 +1,11 @@
 <?xml version="1.0" ?>
 <!DOCTYPE coverage SYSTEM "http://cobertura.sourceforge.net/xml/coverage-04.dtd">
-<coverage lines-valid="87" lines-covered="76" line-rate="0.8734999999999999" branches-valid="33" branches-covered="27" branch-rate="0.8181" timestamp="1726219999439" complexity="0" version="0.1">
+<coverage lines-valid="94" lines-covered="76" line-rate="0.8085" branches-valid="35" branches-covered="27" branch-rate="0.7714" timestamp="1726350354014" complexity="0" version="0.1">
   <sources>
     <source>D:\SDP\sdp-project-2024</source>
   </sources>
   <packages>
-    <package name="main" line-rate="0.8734999999999999" branch-rate="0.8181">
+    <package name="main" line-rate="0.8085" branch-rate="0.7714">
       <classes>
         <class name="login.js" filename="src\js\login.js" line-rate="0.909" branch-rate="0.5">
           <methods>
@@ -206,17 +206,44 @@
             <line number="112" hits="1" branch="false"/>
           </lines>
         </class>
-        <class name="userDashboard.js" filename="src\js\userDashboard.js" line-rate="1" branch-rate="1">
+        <class name="userDashboard.js" filename="src\js\userDashboard.js" line-rate="0.22219999999999998" branch-rate="0">
           <methods>
-            <method name="navigate" hits="1" signature="()V">
+            <method name="(anonymous_0)" hits="0" signature="()V">
               <lines>
-                <line number="1" hits="1"/>
+                <line number="1" hits="0"/>
+              </lines>
+            </method>
+            <method name="(anonymous_1)" hits="0" signature="()V">
+              <lines>
+                <line number="3" hits="0"/>
+              </lines>
+            </method>
+            <method name="(anonymous_2)" hits="0" signature="()V">
+              <lines>
+                <line number="4" hits="0"/>
+              </lines>
+            </method>
+            <method name="(anonymous_3)" hits="0" signature="()V">
+              <lines>
+                <line number="11" hits="0"/>
+              </lines>
+            </method>
+            <method name="navigate" hits="0" signature="()V">
+              <lines>
+                <line number="14" hits="0"/>
               </lines>
             </method>
           </methods>
           <lines>
-            <line number="2" hits="1" branch="false"/>
-            <line number="5" hits="1" branch="false"/>
+            <line number="1" hits="1" branch="false"/>
+            <line number="2" hits="0" branch="false"/>
+            <line number="3" hits="0" branch="false"/>
+            <line number="5" hits="0" branch="true" condition-coverage="0% (0/2)"/>
+            <line number="6" hits="0" branch="false"/>
+            <line number="8" hits="0" branch="false"/>
+            <line number="11" hits="0" branch="false"/>
+            <line number="15" hits="0" branch="false"/>
+            <line number="18" hits="1" branch="false"/>
           </lines>
         </class>
       </classes>
