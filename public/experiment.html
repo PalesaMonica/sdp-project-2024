@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CampusCrave Menu</title>
+    <style>
+        :root {
+            --primary-color: #ff6347;
+            --background-color: #1a1e2e;
+            --text-color: #ffffff;
+        }
+        
+        body {
+            font-family: Arial, sans-serif;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+        }
+        
+        .logo img {
+            width: 40px;
+            height: 40px;
+            margin-right: 10px;
+        }
+        
+        .logo-text {
+            font-size: 24px;
+            font-weight: bold;
+        }
+        
+        .crave {
+            color: var(--primary-color);
+        }
+        
+        .user-icon {
+            background-color: var(--text-color);
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+        }
+        
+        .search-bar {
+            background-color: var(--primary-color);
+            border-radius: 25px;
+            padding: 10px 20px;
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .search-bar input {
+            background: none;
+            border: none;
+            color: var(--text-color);
+            flex-grow: 1;
+            font-size: 16px;
+        }
+        
+        .search-bar input::placeholder {
+            color: rgba(255, 255, 255, 0.7);
+        }
+        
+        .menu-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .category {
+            margin-bottom: 30px;
+        }
+        
+        .category-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        
+        .view-all {
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+        
+        .item-grid {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 15px;
+        }
+        
+        .item {
+            background-color: var(--text-color);
+            border-radius: 10px;
+            overflow: hidden;
+            width: 140px;
+            height: 140px;
+        }
+        
+        .item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .dietary-management {
+            background-image: url('/api/placeholder/800/200');
+            background-size: cover;
+            background-position: center;
+            border-radius: 10px;
+            height: 150px;
+            display: flex;
+            align-items: flex-end;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        
+        /* Responsive adjustments */
+        @media (max-width: 480px) {
+            .item {
+                width: 100px;
+                height: 100px;
+            }
+        }
+        
+        @media (min-width: 768px) {
+            .item {
+                width: 160px;
+                height: 160px;
+            }
+        }
+        
+        @media (min-width: 1024px) {
+            .item {
+                width: 180px;
+                height: 180px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo">
+                <img src="/api/placeholder/40/40" alt="CampusCrave Logo">
+                <span class="logo-text">Campus<span class="crave">Crave</span></span>
+            </div>
+            <div class="user-icon"></div>
+        </div>
+
+        <div class="search-bar">
+            <input type="text" placeholder="Search">
+            <span>🎤</span>
+        </div>
+
+        <div class="menu-header">
+            <h2>Menu Categories</h2>
+            <a href="#" class="view-all">&lt; Back</a>
+        </div>
+
+        <div class="category">
+            <div class="category-header">
+                <h3>Vegetarian</h3>
+                <a href="#" class="view-all">View all</a>
+            </div>
+            <div class="item-grid" id="vegetarian-grid"></div>
+        </div>
+
+        <div class="category">
+            <div class="category-header">
+                <h3>Non-Vegetarian</h3>
+                <a href="#" class="view-all">View all</a>
+            </div>
+            <div class="item-grid" id="non-vegetarian-grid"></div>
+        </div>
+
+        <div class="category">
+            <div class="category-header">
+                <h3>Desserts and Drinks</h3>
+                <a href="#" class="view-all">View all</a>
+            </div>
+            <div class="item-grid" id="desserts-drinks-grid"></div>
+        </div>
+
+        <div class="dietary-management">
+            <h3>Dietary Management</h3>
+        </div>
+
+        <div class="category">
+            <h3>Special Meals</h3>
+        </div>
+    </div>
+
+    <script>
+        function createItem(index) {
+            const item = document.createElement('div');
+            item.className = 'item';
+            const img = document.createElement('img');
+            img.src = `/api/placeholder/200/200?text=Item ${index}`;
+            img.alt = `Item ${index}`;
+            item.appendChild(img);
+            return item;
+        }
+
+        function populateGrid(gridId, itemCount) {
+            const grid = document.getElementById(gridId);
+            grid.innerHTML = '';
+            for (let i = 1; i <= itemCount; i++) {
+                grid.appendChild(createItem(i));
+            }
+        }
+
+        function updateGrids() {
+            const width = window.innerWidth;
+            let itemCount;
+            
+            if (width < 480) {
+                itemCount = 3;
+            } else if (width < 768) {
+                itemCount = 4;
+            } else if (width < 1024) {
+                itemCount = 5;
+            } else {
+                itemCount = 6;
+            }
+
+            populateGrid('vegetarian-grid', itemCount);
+            populateGrid('non-vegetarian-grid', itemCount);
+            populateGrid('desserts-drinks-grid', itemCount);
+        }
+
+        window.addEventListener('load', updateGrids);
+        window.addEventListener('resize', updateGrids);
+    </script>
+</body>
+</html>

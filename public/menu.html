@@ -3,6 +3,188 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="css/menu.css" />
+    <title>CampusCrave Menu</title>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo">
+                <img src="images/option-21.svg" alt="CampusCrave Logo">
+                <span class="logo-text">Campus<span class="crave">Crave</span></span>
+            </div>
+        </div>
+
+        <div class="search-bar">
+            <input type="text" placeholder="Search">
+            <span></span>
+        </div>
+
+        <div class="menu-header">
+            <h2>Menu Categories</h2>
+        </div>
+
+        <!-- Breakfast Section -->
+        <div class="category">
+            <div class="category-header">
+                <h3>Breakfast</h3>
+                <a href="#" class="view-all">View all</a>
+            </div>
+            <div class="item-grid" id="breakfast-grid"></div>
+        </div>
+
+        <!-- Lunch Section -->
+        <div class="category">
+            <div class="category-header">
+                <h3>Lunch</h3>
+                <a href="#" class="view-all">View all</a>
+            </div>
+            <div class="item-grid" id="lunch-grid"></div>
+        </div>
+
+        <!-- Dinner Section -->
+        <div class="category">
+            <div class="category-header">
+                <h3>Dinner</h3>
+                <a href="#" class="view-all">View all</a>
+            </div>
+            <div class="item-grid" id="dinner-grid"></div>
+        </div>
+    </div>
+
+    <!-- Modal for showing item details -->
+    <div id="item-modal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2 id="item-name"></h2>
+            <img id="item-image" src="" alt="Item Image" />
+            <p><strong>Ingredients:</strong> <span id="item-ingredients"></span></p>
+            <p><strong>Dining Hall:</strong> <span id="item-dining-hall"></span></p>
+            <p><strong>Diet Type:</strong> <span id="item-diet-type"></span></p>
+            <a href="#" id="reservation-link" class="reservation-link">Make a Reservation</a>
+
+        </div>
+    </div>
+
+    <!-- Modal for showing all items -->
+    <div id="all-items-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-all">&times;</span>
+            <h2>All Menu Items</h2>
+            <div id="all-items-grid" class="item-grid"></div>
+        </div>
+    </div>
+
+
+    <script src="../src/js/menu.js"></script>
+</body>
+</html>
+
+
+
+<!-- <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="css/menu.css" />
+    <title>CampusCrave Menu</title>
+
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo">
+                <img src="images/option-21.svg" alt="CampusCrave Logo">
+                <span class="logo-text">Campus<span class="crave">Crave</span></span>
+            </div>
+        </div>
+
+        <div class="search-bar">
+            <input type="text" placeholder="Search">
+            <span></span>
+        </div>
+
+        <div class="menu-header">
+            <h2>Menu Categories</h2>
+        </div>
+
+        <div class="category">
+            <div class="category-header">
+                <h3>Breakfast</h3>
+                <a href="#" class="view-all">View all</a>
+            </div>
+            <div class="item-grid" id="vegetarian-grid"></div>
+        </div>
+
+        <div class="category">
+            <div class="category-header">
+                <h3>Lunch</h3>
+                <a href="#" class="view-all">View all</a>
+            </div>
+            <div class="item-grid" id="non-vegetarian-grid"></div>
+        </div>
+
+        <div class="category">
+            <div class="category-header">
+                <h3>Dinner</h3>
+                <a href="#" class="view-all">View all</a>
+            </div>
+            <div class="item-grid" id="desserts-drinks-grid"></div>
+        </div>
+
+    </div>
+
+    <script>
+        function createItem(index) {
+            const item = document.createElement('div');
+            item.className = 'item';
+            const img = document.createElement('img');
+            img.src = `/api/placeholder/200/200?text=Item ${index}`;
+            img.alt = `Item ${index}`;
+            item.appendChild(img);
+            return item;
+        }
+
+        function populateGrid(gridId, itemCount) {
+            const grid = document.getElementById(gridId);
+            grid.innerHTML = '';
+            for (let i = 1; i <= itemCount; i++) {
+                grid.appendChild(createItem(i));
+            }
+        }
+
+        function updateGrids() {
+            const width = window.innerWidth;
+            let itemCount;
+            
+            if (width < 480) {
+                itemCount = 3;
+            } else if (width < 768) {
+                itemCount = 4;
+            } else if (width < 1024) {
+                itemCount = 5;
+            } else {
+                itemCount = 6;
+            }
+
+            populateGrid('vegetarian-grid', itemCount);
+            populateGrid('non-vegetarian-grid', itemCount);
+            populateGrid('desserts-drinks-grid', itemCount);
+            populateGrid('diet-grid', 1);
+        }
+
+        window.addEventListener('load', updateGrids);
+        window.addEventListener('resize', updateGrids);
+    </script>
+</body>
+</html> -->
+
+<!-- <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Menu</title>
     <style>
         body {
@@ -269,6 +451,9 @@
     
 </body>
 
-<script src="../src/js/menu.js"></script>
+
 
 </html>
+ -->
+ 
+
