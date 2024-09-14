@@ -155,6 +155,30 @@ app.get(
   }
 );
 
+// Route to get all menu items or filter by meal type
+app.get('/api/menu', (req, res) => {
+  const mealType = req.query.mealType || '';  // Check if mealType query param is provided
+  
+  let query = `
+    SELECT m.item_name, m.ingredients, m.meal_type, d.name as dining_hall, m.diet_type, m.image_url 
+    FROM menu m 
+    JOIN dining_halls d ON m.dining_hall_id = d.id
+  `;
+  
+  if (mealType) {
+    query += ` WHERE m.meal_type = ?`;
+  }
+
+  connection.query(query, mealType ? [mealType] : [], (err, results) => {
+    if (err) {
+      console.error('Error fetching menu items:', err);
+      return res.status(500).json({ message: 'Error fetching menu items' });
+    }
+
+    res.json(results);
+  });
+});
+
 
 app.get("/userDashboard", (req, res) => {
   if (req.isAuthenticated()) {

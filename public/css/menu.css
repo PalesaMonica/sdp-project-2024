@@ -1,0 +1,258 @@
+:root {
+    --primary-color: #ff6347;
+    --background-color: #1a1e2e;
+    --text-color: #ffffff;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: var(--background-color);
+    color: var(--text-color);
+    margin: 0;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+}
+
+.logo img {
+    width: 40px;
+    height: 40px;
+    margin-right: 10px;
+}
+
+.logo-text {
+    font-size: 24px;
+    font-weight: bold;
+}
+
+.crave {
+    color: var(--primary-color);
+}
+
+.search-bar {
+    background-color: var(--primary-color);
+    border-radius: 25px;
+    padding: 10px 20px;
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.search-bar input {
+    background: none;
+    border: none;
+    color: var(--text-color);
+    flex-grow: 1;
+    font-size: 16px;
+}
+
+.search-bar input::placeholder {
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.menu-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.category {
+    margin-bottom: 30px;
+}
+
+.category-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.view-all {
+    color: var(--primary-color);
+    text-decoration: none;
+}
+
+.item-grid {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 15px;
+}
+
+.item {
+    flex: 1 1 100px;
+    margin: 10px;
+    position: relative;
+    background-color: var(--text-color);
+    border-radius: 10px;
+    overflow: hidden;
+    width: 140px;
+    height: 140px;
+    text-align: center;
+    color: white;
+}
+
+@media (max-width: 480px) {
+    .item {
+        width: 100px;
+        height: 100px;
+    }
+}
+
+@media (min-width: 768px) {
+    .item {
+        width: 160px;
+        height: 160px;
+    }
+}
+
+@media (min-width: 1024px) {
+    .item {
+        width: 180px;
+        height: 180px;
+    }
+}
+
+.item:hover {
+    transform: scale(1.1);
+    
+}
+
+.item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 10px;
+}
+
+.item-name-overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background-color: rgba(0, 0, 0, 0.5);  /* Semi-transparent background */
+    color: white;
+    font-size: 14px;
+    padding: 5px;
+    text-align: center;
+    font-weight: bold;
+    border-bottom-left-radius: 10px;
+    border-bottom-right-radius: 10px;
+    pointer-events: none;  /* Ensure overlay does not interfere with other elements */
+    max-width: 100%; /* Ensures overlay doesn't overflow */
+    word-wrap: break-word; /* Ensures long names are handled correctly */
+}
+
+.item:hover .item-name-overlay {
+    background-color: rgba(0, 0, 0, 0.7);  /* Darken the background on hover */
+}
+
+.modal {
+    display: none; 
+    position: fixed; 
+    z-index: 1; 
+    padding-top: 100px; 
+    left: 0;
+    top: 0;
+    width: 100%; 
+    height: 100%; 
+    background-color: rgba(0,0,0,0.5); 
+}
+
+.modal-content {
+    background-color: #fefefe;
+    margin: auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%;
+    max-width: 600px;
+    max-height: 80%; /* Limit the height of the modal */
+    overflow: auto; /* Enable scrolling for overflow content */
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Center content horizontally */
+    color: black; /* Set text color to black */
+}
+
+.close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.close:hover, .close:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+#item-name {
+    color: black; /* Ensure modal title text is black */
+    font-size: 24px;
+    margin-bottom: 20px;
+}
+
+#item-image {
+    max-width: 100%;
+    height: auto;
+    object-fit: contain; /* Ensure the image fits inside the modal */
+    margin-bottom: 20px;
+}
+
+#item-ingredients, #item-dining-hall {
+    color: black; /* Ensure ingredients and dining hall text is black */
+    font-size: 16px;
+    margin-bottom: 10px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 480px) {
+    .modal-content {
+        width: 90%;
+        padding: 15px;
+    }
+
+    #item-name {
+        font-size: 20px;
+    }
+
+    #item-image {
+        max-width: 90%;
+    }
+}
+
+@media (min-width: 768px) {
+    .modal-content {
+        width: 80%;
+    }
+}
+
+.reservation-link {
+    color: var(--primary-color); /* Adjust color as per your design */
+    text-decoration: none;
+    font-size: 16px;
+    margin-top: 10px;
+    display: inline-block;
+}
+
+.reservation-link:hover {
+    text-decoration: underline;
+}
