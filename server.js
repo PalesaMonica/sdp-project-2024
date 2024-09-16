@@ -356,22 +356,75 @@ app.get('/get-username', (req, res) => {
   }
 });
 // Route to get all dining halls
+// Route to get all dining halls with one main image and additional images
 app.get('/dining-halls', async (req, res) => {
   try {
-      const diningHalls = await Reservation.getDiningHalls(); // Ensure this is the correct method for fetching dining halls
-      res.status(200).json(diningHalls);
+    // Fetch all dining halls
+    const [diningHalls] = await pool.query('SELECT * FROM dining_halls');
+    
+    // Fetch images for each dining hall
+    const [images] = await pool.query('SELECT dining_hall_id, image_url FROM images');
+    
+    // Create a map of dining hall images
+    const imageMap = {};
+    images.forEach(image => {
+      if (!imageMap[image.dining_hall_id]) {
+        imageMap[image.dining_hall_id] = [];
+      }
+      imageMap[image.dining_hall_id].push(image.image_url);
+    });
+
+    // Attach images to the dining halls
+    const diningHallsWithImages = diningHalls.map(diningHall => {
+      const hallImages = imageMap[diningHall.id] || [];
+      return {
+        ...diningHall,
+        mainImage: hallImages[0] || null,  // First image is the main image
+        additionalImages: hallImages.slice(1)  // Remaining images
+      };
+    });
+
+    res.status(200).json(diningHallsWithImages);
   } catch (error) {
-      console.error('Error in /dining-halls route:', error);
-      res.status(500).json({ message: 'Error fetching dining halls', error: error.message });
+    console.error('Error in /dining-halls route:', error);
+    res.status(500).json({ message: 'Error fetching dining halls', error: error.message });
   }
 });
 
-// Route to handle POST requests to /api/reservations
-app.post('/api/reservations', async (req, res) => {
-  const { diningHallId, name, surname, date, time, mealType } = req.body;
+// Route to get a dining hall by ID with its associated images
+// Route to get a dining hall by ID with images
+app.get('/dining-halls/:id', async (req, res) => {
+  const { id } = req.params;
+  try {
+    // Fetch dining hall info
+    const [diningHall] = await pool.query('SELECT * FROM dining_halls WHERE id = ?', [id]);
 
-  if (!name || !surname || !date || !mealType) {
-      return res.status(400).json({ message: 'Missing required fields: name, surname, date, and mealType are required.' });
+    // Check if the dining hall exists
+    if (diningHall.length === 0) {
+      return res.status(404).json({ message: 'Dining hall not found' });
+    }
+
+    // Fetch associated images from the images table
+    const [images] = await pool.query('SELECT image_url FROM images WHERE dining_hall_id = ?', [id]);
+
+    // Respond with the dining hall and associated images
+    res.status(200).json({
+      diningHall: diningHall[0],
+      images: images.map(image => image.image_url), // Map to just the image URLs
+    });
+  } catch (error) {
+    console.error('Error in /dining-halls/:id route:', error);
+    res.status(500).json({ message: 'Error fetching dining hall', error: error.message });
+  }
+});
+
+
+
+app.post('/api/reservations', async (req, res) => {
+  const { diningHallId, name, surname, date, meals, specialRequest } = req.body;
+
+  if (!name || !surname || !date || !meals) {
+      return res.status(400).json({ message: 'Missing required fields: name, surname, date, and meals are required.' });
   }
 
   try {
@@ -381,10 +434,9 @@ app.post('/api/reservations', async (req, res) => {
           name,
           surname,
           date,
-          time,
-          mealType,  // Ensure mealType is passed to createReservation
-          specialRequests: null,
-          status: 'confirmed'
+          meals,  // Ensure meals is passed as an object with meal types and times
+          specialRequest, // Make sure to match with HTML field name
+          status: 'confirmed' // Default status
       });
       res.status(201).json({ reservationId, qrCode });
   } catch (error) {
@@ -392,7 +444,6 @@ app.post('/api/reservations', async (req, res) => {
       res.status(500).json({ message: 'Error creating reservation', error: error.message });
   }
 });
-
 // Route to get all reservations
 app.get('/api/reservations', async (req, res) => {
   try {

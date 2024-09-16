@@ -1,9 +1,10 @@
-const pool = require('./db-connection'); // Adjust the path as necessary
+const pool = require('./db-connection'); // Make sure your database connection file is correctly imported
 
 class DiningHall {
+    // Fetch dining halls from the database along with their images
     static async getDiningHalls() {
         try {
-            const [results] = await pool.query('SELECT * FROM dining_halls');
+            const [results] = await pool.query('SELECT id, name, image_url FROM dining_halls');
             return results;
         } catch (error) {
             console.error('Error fetching dining halls:', error);
@@ -12,4 +13,4 @@ class DiningHall {
     }
 }
 
-module.exports = DiningHall; // Ensure this line is present
+module.exports = DiningHall;

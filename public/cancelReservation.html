@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cancel Reservation</title>
+  <link rel="stylesheet" href="css/MainDiningHall.css" />
+  <style>
+    body {
+      background: #1A2238;
+      color: #fff;
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      text-align: center;
+    }
+    .container {
+      margin: 20px auto;
+      padding: 20px;
+      background: #2a3748;
+      border-radius: 8px;
+      width: 80%;
+      max-width: 600px;
+    }
+    h1, h2 {
+      color: #f5f5f5;
+    }
+    .summary {
+      text-align: left;
+      margin-top: 20px;
+      background: #3a475e;
+      padding: 10px;
+      border-radius: 8px;
+    }
+    .summary-item {
+      margin: 10px 0;
+      font-size: 1.2em;
+    }
+    .cancellation-reason {
+      margin-top: 20px;
+    }
+    .cancellation-reason textarea {
+      width: 100%;
+      padding: 10px;
+      border-radius: 4px;
+      border: 1px solid #ccc;
+      resize: none;
+      background: #fff;
+    }
+    .button-container {
+      margin-top: 20px;
+    }
+    .button-container button {
+      padding: 10px;
+      background: #FF6347;
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      width: 100%;
+      margin-bottom: 10px;
+    }
+    .button-container button:hover {
+      background: #ff1a1a;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Cancel Reservation</h1>
+    <h2>Review your reservation details below</h2>
+
+    <div class="summary">
+      <div class="summary-item"><strong>Date:</strong> <span id="summary-date"></span></div>
+      <div class="summary-item"><strong>Dining Hall:</strong> <span id="summary-dining-hall"></span></div>
+      <div class="summary-item"><strong>Breakfast:</strong> <span id="summary-breakfast"></span></div>
+      <div class="summary-item"><strong>Lunch:</strong> <span id="summary-lunch"></span></div>
+      <div class="summary-item"><strong>Dinner:</strong> <span id="summary-dinner"></span></div>
+    </div>
+
+    <div class="cancellation-reason">
+      <h2>Please provide a reason for cancellation</h2>
+      <textarea id="cancellation-reason" rows="4" placeholder="Enter your reason for cancellation..."></textarea>
+    </div>
+
+    <div class="button-container">
+      <button onclick="cancelReservation()">Submit Cancellation</button>
+    </div>
+  </div>
+
+  <script>
+    // Simulated reservation data to show in the summary
+    const reservationDetails = {
+      date: "2024-09-20",
+      diningHall: "Dining Hall 1",
+      meals: {
+        breakfast: "08:00-09:00",
+        lunch: "12:00-13:00",
+        dinner: null // No dinner selected
+      }
+    };
+
+    // Populate the summary with reservation details
+    document.getElementById('summary-date').textContent = reservationDetails.date || "No change";
+    document.getElementById('summary-dining-hall').textContent = reservationDetails.diningHall || "No change";
+    document.getElementById('summary-breakfast').textContent = reservationDetails.meals.breakfast || "None";
+    document.getElementById('summary-lunch').textContent = reservationDetails.meals.lunch || "None";
+    document.getElementById('summary-dinner').textContent = reservationDetails.meals.dinner || "None";
+
+    // Function to handle the cancellation submission
+    function cancelReservation() {
+      const reason = document.getElementById('cancellation-reason').value;
+
+      if (!reason.trim()) {
+        alert('Please provide a reason for cancellation.');
+        return;
+      }
+
+      // Collect the reservation data to send to the backend for cancellation
+      const cancellationData = {
+        date: reservationDetails.date,
+        diningHall: reservationDetails.diningHall,
+        meals: reservationDetails.meals,
+        reason: reason
+      };
+
+      console.log('Cancellation data:', cancellationData);
+
+      // Simulate successful cancellation
+      alert('Your reservation has been successfully cancelled!');
+      
+      // Redirect to userDashboard.html after clicking OK
+      window.location.href = 'userDashboard.html'; 
+    }
+  </script>
+</body>
+</html>
