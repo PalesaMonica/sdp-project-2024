@@ -423,27 +423,31 @@ app.get('/dining-halls/:id', async (req, res) => {
 app.post('/api/reservations', async (req, res) => {
   const { diningHallId, name, surname, date, meals, specialRequest } = req.body;
 
+  // Validate required fields
   if (!name || !surname || !date || !meals) {
-      return res.status(400).json({ message: 'Missing required fields: name, surname, date, and meals are required.' });
+    return res.status(400).json({ message: 'Missing required fields: name, surname, date, and meals are required.' });
   }
 
   try {
-      // Creating a reservation with default 'confirmed' status
-      const { reservationId, qrCode } = await Reservation.createReservation({
-          diningHallId,
-          name,
-          surname,
-          date,
-          meals,  // Ensure meals is passed as an object with meal types and times
-          specialRequest, // Make sure to match with HTML field name
-          status: 'confirmed' // Default status
-      });
-      res.status(201).json({ reservationId, qrCode });
+    // Call createReservation function to store reservation in the database
+    const { reservationId, qrCode } = await Reservation.createReservation({
+      diningHallId,
+      name,
+      surname,
+      date,
+      meals,
+      specialRequest: specialRequest || '', // Handle optional specialRequest
+      status: 'confirmed' // Default status
+    });
+
+    // Respond with reservation ID and QR code
+    res.status(201).json({ reservationId, qrCode });
   } catch (error) {
-      console.error('Error creating reservation:', error);
-      res.status(500).json({ message: 'Error creating reservation', error: error.message });
+    console.error('Error creating reservation:', error);
+    res.status(500).json({ message: 'Error creating reservation', error: error.message });
   }
 });
+
 // Route to get all reservations
 app.get('/api/reservations', async (req, res) => {
   try {
