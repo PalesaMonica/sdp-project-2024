@@ -32,5 +32,18 @@ document.addEventListener('DOMContentLoaded', () => {
         }
       })
       .catch(error => console.error('Error fetching username:', error));
+
+
+    // Fetch and display the current dietary plan
+    fetch('/get-dietary_preference')
+    .then(response => response.json())
+    .then(data => {
+        if (data.preference) {
+            document.getElementById('current-diet-plan').textContent = data.preference;
+        } else {
+            document.getElementById('current-diet-plan').textContent = 'No plan selected';
+        }
+    })
+    .catch(error => console.error('Error fetching dietary preference:', error));
   });
   

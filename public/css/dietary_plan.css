@@ -42,7 +42,7 @@ body {
 }
 
 /* Greeting and instruction styling */
-.greeting, .instruction {
+.greeting, .instruction, .current-plan {
     color: white;
     font-size: 20px;
     font-family: Inter, Arial, sans-serif;
@@ -51,7 +51,7 @@ body {
     text-align: center;
 }
 
-.greeting span, .instruction span {
+.greeting span, .instruction span .current-plan span{
     color: #FF6A3D;
 }
 

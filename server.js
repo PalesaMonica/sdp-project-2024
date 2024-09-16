@@ -334,18 +334,22 @@ app.use('/dinner',dinnerRoute);
 app.post('/saveDietPreference', (req, res) => {
   const { dietPlan } = req.body;
   const username = req.user.username;
+  const user_id = req.user.id;
 
-  connection.query(
-      "INSERT INTO dietary_preference (username, preference) VALUES (?, ?)",
-      [username, dietPlan],
-      (err, result) => {
-          if (err) {
-              return res.status(500).json({ msg: 'Error saving preference' });
-          }
-          res.status(200).json({ msg: 'Diet preference saved' });
+  const query = `
+    INSERT INTO dietary_preference (username, preference, user_id) 
+    VALUES (?, ?, ?)
+    ON DUPLICATE KEY UPDATE preference = VALUES(preference)
+  `;
+
+  connection.query(query, [username, dietPlan, user_id], (err, result) => {
+      if (err) {
+          return res.status(500).json({ msg: 'Error saving preference' });
       }
-  );
+      res.status(200).json({ msg: 'Diet preference saved or updated' });
+  });
 });
+
 
 app.get('/get-username', (req, res) => {
   if (req.isAuthenticated()) {
@@ -355,6 +359,33 @@ app.get('/get-username', (req, res) => {
     res.status(401).json({ error: "User not authenticated" });
   }
 });
+
+//Get Dietary preference
+app.get('/get-dietary_preference', (req, res) => {
+  if (req.isAuthenticated()) {
+    const user = req.user.id; // Get the username from the session
+
+    // Query to retrieve dietary preference based on the username
+    connection.query(
+      "SELECT preference FROM dietary_preference WHERE user_id = ?",
+      [user],
+      (err, result) => {
+        if (err) {
+          return res.status(500).json({ msg: 'Error retrieving dietary preference' });
+        }
+        if (result.length > 0) {
+          res.status(200).json({ preference: result[0].preference });
+        } else {
+          res.status(404).json({ msg: 'No dietary preference found' });
+        }
+      }
+    );
+  } else {
+    res.status(401).json({ error: "User not authenticated" });
+  }
+});
+
+
 // Route to get all dining halls
 app.get('/dining-halls', async (req, res) => {
   try {
