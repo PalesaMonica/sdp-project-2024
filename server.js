@@ -11,12 +11,6 @@ const bcrypt = require("bcryptjs"); // For password hashing
 const GoogleStrategy = require("passport-google-oauth20").Strategy;
 require("dotenv").config();
 
-// Import routes
-const userRoutes = require("./auth-routes/userRoute");
-const lunchRoute = require("./src/menu_backend/menuRoutes/lunchRoute");
-const breakfastRoute=require('./src/menu_backend/menuRoutes/breakfastRoute');
-const dinnerRoute=require('./src/menu_backend/menuRoutes/dinnerRoute');
-
 // Initialize the Express app
 const app = express();
 app.use(express.json());
@@ -326,10 +320,6 @@ app.post("/login", (req, res) => {
     });
   }
 });
-
-app.use('/breakfast',breakfastRoute);
-app.use('/lunch',lunchRoute);
-app.use('/dinner',dinnerRoute);
 
 app.post('/saveDietPreference', (req, res) => {
   const { dietPlan } = req.body;
