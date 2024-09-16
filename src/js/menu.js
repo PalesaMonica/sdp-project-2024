@@ -7,23 +7,80 @@ window.addEventListener('load', () => {
   
     // Fetch dinner meals and populate the grid
     fetchMealsByType('dinner', 'dinner-grid');
+
+    fetch("/get-dietary_preference")
+    .then((response) => response.json())
+    .then((data) => {
+      if (data.preference) {
+        document.getElementById("diet-preference").textContent = `Your dietary preference is: ${data.preference}`;
+        // Save the dietary preference in localStorage for use in filtering
+        localStorage.setItem('dietPreference', data.preference);
+      } else {
+        document.getElementById("diet-preference").textContent = 'No dietary preference found, showing full menu.';
+        console.error("Failed to load dietary preference.");
+        localStorage.removeItem('dietPreference'); // Clear preference if not found
+      }
+    })
+    .catch((error) => console.error("Error fetching dietary preference:", error));
+
+       // Add resize event listener
+       window.addEventListener('resize', debounce(() => {
+        updateGrids();
+    }, 250));
   });
   
-  
+  function debounce(func, wait) {
+    let timeout;
+    return function executedFunction(...args) {
+        const later = () => {
+            clearTimeout(timeout);
+            func(...args);
+        };
+        clearTimeout(timeout);
+        timeout = setTimeout(later, wait);
+    };
+}
+
+function updateGrids() {
+    fetchMealsByType('breakfast', 'breakfast-grid');
+    fetchMealsByType('lunch', 'lunch-grid');
+    fetchMealsByType('dinner', 'dinner-grid');
+}
+
+
   // Function to fetch meals by type
   function fetchMealsByType(mealType, gridId) {
     fetch(`/api/menu?mealType=${mealType}`)
       .then((response) => response.json())
       .then((menuItems) => {
+        // Get dietary preference from localStorage
+        const dietaryPreference = localStorage.getItem('dietPreference');
+        // Filter items according to dietary preference
+        const filteredItems = filterByDietaryPreference(menuItems, dietaryPreference);
         // Populate the grid with the fetched menu items
-        populateGrid(gridId, menuItems);
+        populateGrid(gridId, filteredItems);
       })
       .catch((error) => console.error(`Error fetching ${mealType} items:`, error));
   }
   
+
+// Function to filter menu items by dietary preference
+function filterByDietaryPreference(menuItems, dietaryPreference) {
+    if (!dietaryPreference || dietaryPreference === 'none') {
+        return menuItems; // If no preference, show all items
+    }
+
+    // Filter items based on whether their diet_type contains the preference
+    return menuItems.filter((item) => {
+        const dietTypes = item.diet_type.split(','); // Assuming diet_type is stored as a comma-separated string
+        return dietTypes.includes(dietaryPreference); // Check if any of the diet types match the user's preference
+    });
+}
+
+
   // Function to create an item in the grid
 // Function to create an item in the grid
-function createItem(menuItem) {
+function createItem(menuItem, isInViewAllModal = false) {
     const item = document.createElement('div');
     item.className = 'item';
   
@@ -43,22 +100,34 @@ function createItem(menuItem) {
   
     // Add click event listener to show details
     item.addEventListener('click', () => {
+      if (isInViewAllModal) {
+        // Close the "View All" modal
+        document.getElementById('all-items-modal').style.display = 'none';
+      }
       openItemModal(menuItem);
     });
   
     return item;
-  }
-    
-  // Function to populate a grid with menu items
-  function populateGrid(gridId, menuItems) {
-    const grid = document.getElementById(gridId);
-    grid.innerHTML = ''; // Clear previous items
-    menuItems.forEach((menuItem) => {
-      grid.appendChild(createItem(menuItem));
-    });
-  }
+} 
+    function populateGrid(gridId, menuItems) {
+        const grid = document.getElementById(gridId);
+        grid.innerHTML = '';
+        
+        const itemCount = getItemCount();
+        const displayedItems = menuItems.slice(0, itemCount);
+        
+        displayedItems.forEach((menuItem) => {
+            grid.appendChild(createItem(menuItem, false));
+        });
+    }
 
-  
+    function getItemCount() {
+        const width = window.innerWidth;
+        if (width < 480) return 2;
+        if (width < 768) return 3;
+        if (width < 1024) return 4;
+        return 6;
+    } 
   
   // Function to open the modal and show item details
   function openItemModal(menuItem) {
@@ -79,21 +148,6 @@ function createItem(menuItem) {
     modal.style.display = 'block';
   }
   
-  // Function to close modal
-  const closeModal = () => {
-    const modal = document.getElementById('item-modal');
-    modal.style.display = 'none';
-  };
-  
-  document.querySelector('.close').addEventListener('click', closeModal);
-  
-  // Close modal when clicking outside
-  window.onclick = function (event) {
-    const modal = document.getElementById('item-modal');
-    if (event.target === modal) {
-      modal.style.display = 'none';
-    }
-  };
 
   // Add event listeners for "View all" links
 document.querySelectorAll('.view-all').forEach((viewAllLink) => {
@@ -110,11 +164,17 @@ function fetchAllItems(mealType) {
     fetch(`/api/menu?mealType=${mealType}`)
         .then(response => response.json())
         .then(menuItems => {
-            // Populate the modal grid with all items
+            // Get dietary preference from localStorage
+            const dietaryPreference = localStorage.getItem('dietPreference');
+            
+            // Filter items according to dietary preference
+            const filteredItems = filterByDietaryPreference(menuItems, dietaryPreference);
+            
+            // Populate the modal grid with filtered items
             const grid = document.getElementById('all-items-grid');
             grid.innerHTML = ''; // Clear previous items
-            menuItems.forEach((menuItem) => {
-                grid.appendChild(createItem(menuItem));
+            filteredItems.forEach((menuItem) => {
+                grid.appendChild(createItem(menuItem, true));
             });
 
             // Open the modal
@@ -124,16 +184,27 @@ function fetchAllItems(mealType) {
         .catch(error => console.error(`Error fetching all ${mealType} items:`, error));
 }
 
-// Close the modal when the close button is clicked
-document.querySelector('.close-all').addEventListener('click', () => {
-    document.getElementById('all-items-modal').style.display = 'none';
-});
-
-// Close the modal when clicking outside of it
-window.onclick = function(event) {
-    const modal = document.getElementById('all-items-modal');
-    if (event.target === modal) {
-        modal.style.display = 'none';
-    }
-};
+const closeModal = (modalId) => {
+    const modal = document.getElementById(modalId);
+    modal.style.display = 'none';
+  };
   
+  // Add event listeners for close buttons
+  document.querySelector('.close').addEventListener('click', () => closeModal('item-modal'));
+  document.querySelector('.close-all').addEventListener('click', () => closeModal('all-items-modal'));
+  
+  // Combined window.onclick function to handle all modals
+  window.onclick = function(event) {
+    const itemModal = document.getElementById('item-modal');
+    const allItemsModal = document.getElementById('all-items-modal');
+    
+    if (event.target === itemModal) {
+      closeModal('item-modal');
+    } else if (event.target === allItemsModal) {
+      closeModal('all-items-modal');
+    }
+  };
+  
+function backToDash(){
+    window.location.href = 'userDashboard.html';
+}
