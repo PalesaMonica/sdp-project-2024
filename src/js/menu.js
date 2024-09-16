@@ -27,7 +27,40 @@ window.addEventListener('load', () => {
        window.addEventListener('resize', debounce(() => {
         updateGrids();
     }, 250));
+
+    document.getElementById('search-button').addEventListener('click', performSearch);
+    
+    // Add event listener for Enter key in search input
+    document.getElementById('search-input').addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            performSearch();
+        }
+    });
+
   });
+
+  function performSearch() {
+    const searchTerm = document.getElementById('search-input').value.toLowerCase();
+    
+    // Fetch all meal types
+    const mealTypes = ['breakfast', 'lunch', 'dinner'];
+    
+    mealTypes.forEach(mealType => {
+        fetch(`/api/menu?mealType=${mealType}`)
+            .then(response => response.json())
+            .then(menuItems => {
+                const dietaryPreference = localStorage.getItem('dietPreference');
+                const filteredItems = filterByDietaryPreference(menuItems, dietaryPreference);
+                const searchResults = filteredItems.filter(item => 
+                    item.item_name.toLowerCase().includes(searchTerm) ||
+                    item.ingredients.toLowerCase().includes(searchTerm) ||
+                    item.diet_type.toLowerCase().includes(searchTerm)
+                );
+                populateGrid(`${mealType}-grid`, searchResults);
+            })
+            .catch(error => console.error(`Error fetching ${mealType} items:`, error));
+    });
+}
   
   function debounce(func, wait) {
     let timeout;
@@ -110,15 +143,22 @@ function createItem(menuItem, isInViewAllModal = false) {
     return item;
 } 
     function populateGrid(gridId, menuItems) {
-        const grid = document.getElementById(gridId);
-        grid.innerHTML = '';
-        
-        const itemCount = getItemCount();
-        const displayedItems = menuItems.slice(0, itemCount);
-        
-        displayedItems.forEach((menuItem) => {
-            grid.appendChild(createItem(menuItem, false));
-        });
+      const grid = document.getElementById(gridId);
+      grid.innerHTML = '';
+      
+      if (menuItems.length === 0) {
+          const noResults = document.createElement('p');
+          noResults.textContent = 'No results found';
+          noResults.className = 'no-results';
+          grid.appendChild(noResults);
+      } else {
+          const itemCount = getItemCount();
+          const displayedItems = menuItems.slice(0, itemCount);
+          
+          displayedItems.forEach((menuItem) => {
+              grid.appendChild(createItem(menuItem, false));
+          });
+      }
     }
 
     function getItemCount() {
@@ -126,7 +166,7 @@ function createItem(menuItem, isInViewAllModal = false) {
         if (width < 480) return 2;
         if (width < 768) return 3;
         if (width < 1024) return 4;
-        return 6;
+        return 5;
     } 
   
   // Function to open the modal and show item details
@@ -140,7 +180,7 @@ function createItem(menuItem, isInViewAllModal = false) {
 
     // Create a reservation link that redirects to the reservation page
     const reservationLink = document.getElementById('reservation-link');
-    reservationLink.href = `/reservations?item=${menuItem.item_name}&dining_hall=${menuItem.dining_hall}`; 
+    reservationLink.href = `/diningHalls.html?item=${menuItem.item_name}&dining_hall=${menuItem.dining_hall}`; 
     reservationLink.textContent = 'Make a Reservation';
 
 
@@ -207,4 +247,8 @@ const closeModal = (modalId) => {
   
 function backToDash(){
     window.location.href = 'userDashboard.html';
+}
+
+function reserveMeal(){
+  window.location.href = 'diningHalls.html';
 }
