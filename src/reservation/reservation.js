@@ -25,32 +25,41 @@ class Reservation {
     // Create a new reservation
     
     static async createReservation(reservationDetails) {
-        const { diningHallId, name, surname, date, time, mealType, specialRequests, status } = reservationDetails;
-    
+        const { diningHallId, name, surname, date, meals, specialRequest, status } = reservationDetails;
+
         // Validate required fields
-        if (!name || !surname || !date || !mealType) {
-            throw new Error('Missing required fields: name, surname, date, and mealType are required.');
+        if (!name || !surname || !date || !meals) {
+            throw new Error('Missing required fields: name, surname, date, and meals are required.');
         }
-    
+
         const validStatuses = ['confirmed', 'cancelled', 'modified'];
         const reservationStatus = validStatuses.includes(status) ? status : 'confirmed';
-    
-        const validMealTypes = ['breakfast', 'lunch', 'supper'];
-        const reservationMealType = validMealTypes.includes(mealType) ? mealType : 'breakfast';
-    
+
         const reservationUuid = uuidv4(); // Generate a UUID for QR code
         const qrCode = qr.imageSync(reservationUuid, { type: 'png' });
-    
+
         try {
-            const query = `
-                INSERT INTO reservations 
-                (dining_hall_id, name, surname, date, time, meal_type, special_requests, status) 
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-            `;
-            const [result] = await pool.query(query, [diningHallId, name, surname, date, time, reservationMealType, specialRequests, reservationStatus]);
-    
-            const reservationId = result.insertId;
-            return { reservationId, qrCode };
+            // Insert each meal type if it exists
+            const queries = [];
+            const values = [];
+
+            for (const [mealType, time] of Object.entries(meals)) {
+                if (time) {
+                    queries.push(`
+                        INSERT INTO reservations 
+                        (dining_hall_id, name, surname, date, time, meal_type, special_requests, status) 
+                        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+                    `);
+                    values.push([diningHallId, name, surname, date, time, mealType, specialRequest, reservationStatus]);
+                }
+            }
+
+            // Execute all queries
+            for (let i = 0; i < queries.length; i++) {
+                await pool.query(queries[i], values[i]);
+            }
+
+            return { reservationId: reservationUuid, qrCode };
         } catch (error) {
             console.error('Error creating reservation:', error);
             throw new Error('Error creating reservation in the database');
