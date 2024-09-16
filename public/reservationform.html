@@ -79,12 +79,7 @@
   <div class="container">
     <h1>Select Your Meals and Reserve</h1>
     <div class="everything">
-        <button
-          class="back-button"
-          onclick="window.history.back()"
-        >
-          Back
-        </button>
+        <button class="back-button" onclick="window.history.back()">Back</button>
 
     <div class="meal-selection">
       <label>
@@ -96,7 +91,6 @@
         <select id="breakfast-time" name="breakfast-time">
           <option value="08:00-09:00">08:00-09:00</option>
           <option value="09:00-10:00">09:00-10:00</option>
-          <!-- Add more options -->
         </select>
       </div>
       
@@ -109,7 +103,6 @@
         <select id="lunch-time" name="lunch-time">
           <option value="12:00-13:00">12:00-13:00</option>
           <option value="13:00-14:00">13:00-14:00</option>
-          <!-- Add more options -->
         </select>
       </div>
 
@@ -122,7 +115,6 @@
         <select id="dinner-time" name="dinner-time">
           <option value="18:00-19:00">18:00-19:00</option>
           <option value="19:00-20:00">19:00-20:00</option>
-          <!-- Add more options -->
         </select>
       </div>
     </div>
@@ -145,7 +137,6 @@
       <input type="date" id="date" name="date" required />
       <br />
       <div id="cost-summary">
-        <!-- Cost summary will be updated dynamically -->
         Total Cost: R0.00
       </div>
     </div>
@@ -160,37 +151,47 @@
       const checkbox = document.getElementById(`${mealType}-checkbox`);
       const timeSlotDiv = document.getElementById(`${mealType}-time-slot`);
       timeSlotDiv.style.display = checkbox.checked ? 'block' : 'none';
-      updateCost(); // Update cost when selection changes
+      updateCost();
     }
-
+  
     function updateCost() {
       const breakfastChecked = document.getElementById('breakfast-checkbox').checked;
       const lunchChecked = document.getElementById('lunch-checkbox').checked;
       const dinnerChecked = document.getElementById('dinner-checkbox').checked;
       let totalCost = 0;
-
-      if (breakfastChecked) totalCost += 150; // Example cost in ZAR
-      if (lunchChecked) totalCost += 200;    // Example cost in ZAR
-      if (dinnerChecked) totalCost += 250;   // Example cost in ZAR
-
+  
+      if (breakfastChecked) totalCost += 150;
+      if (lunchChecked) totalCost += 200;
+      if (dinnerChecked) totalCost += 250;
+  
       document.getElementById('cost-summary').innerHTML = `Total Cost: R${totalCost.toFixed(2)}`;
     }
-
-    
+  
     function submitReservation() {
-      // Example function to handle form submission
       const name = document.getElementById('name').value;
       const surname = document.getElementById('surname').value;
       const specialRequest = document.getElementById('special-request').value;
       const date = document.getElementById('date').value;
-    
+  
       const breakfastChecked = document.getElementById('breakfast-checkbox').checked;
       const lunchChecked = document.getElementById('lunch-checkbox').checked;
       const dinnerChecked = document.getElementById('dinner-checkbox').checked;
       const breakfastTime = document.getElementById('breakfast-time').value;
       const lunchTime = document.getElementById('lunch-time').value;
       const dinnerTime = document.getElementById('dinner-time').value;
-    
+  
+      // Validate required fields
+      if (!name || !surname || !date) {
+        alert('Please fill in all required fields: Name, Surname, and Date are required.');
+        return;
+      }
+  
+      // Validate that at least one meal is selected
+      if (!breakfastChecked && !lunchChecked && !dinnerChecked) {
+        alert('Please select at least one meal.');
+        return;
+      }
+  
       const reservationDetails = {
         name,
         surname,
@@ -202,21 +203,17 @@
           dinner: dinnerChecked ? dinnerTime : null
         }
       };
-    
+  
       console.log('Reservation Details:', reservationDetails);
-    
-      // Store reservation details in sessionStorage (or localStorage) to access it on the confirmation page
+  
       sessionStorage.setItem('reservationDetails', JSON.stringify(reservationDetails));
-    
-      // Redirect to the confirmation page
       window.location.href = 'confirmReservation.html';
     }
-    
-
-    // Add event listeners to update cost when meal selections change
+  
     document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
       checkbox.addEventListener('change', updateCost);
     });
   </script>
+  
 </body>
 </html>
