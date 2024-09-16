@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Reviews</title>
+    <script src="/src/js/feedback.js"></script>
+</head>
+<body>
+    <h1>User Reviews</h1>
+
+    <h2>Submit Your Review</h2>
+    <form id="feedback-form">
+        <label for="review_text">Review:</label><br>
+        <textarea id="review-text" name="review_text" rows="4" cols="50" required></textarea><br><br>
+
+        <label for="rating">Rating (1-5):</label>
+        <input type="number" id="rating" name="rating" min="1" max="5" required><br><br>
+
+        <input type="submit" value="Submit">
+    </form>
+
+    <div id="confirmation-message"></div>
+
+    <h2>View Reviews</h2>
+
+    <!-- Dropdown to select review rating -->
+    <label for="review_filter">Select Review Rating:</label>
+    <select id="review_filter">
+        <option value="all">All Reviews</option>
+        <option value="5">5-Star Reviews</option>
+        <option value="4">4-Star Reviews</option>
+        <option value="3">3-Star Reviews</option>
+        <option value="2">2-Star Reviews</option>
+        <option value="1">1-Star Reviews</option>
+    </select>
+    
+    <button onclick="fetchReviews()">See Reviews</button>
+
+    <div id="reviews"></div>
+
+</body>
+</html>

@@ -457,6 +457,44 @@ app.delete('/api/reservations/:id', async (req, res) => {
   }
 });
 
+//feedback routing
+
+// Feedback route to get reviews with optional rating filter
+
+// Post a review
+app.post('/feedback', (req, res) => {
+const { review_text, rating } = req.body;
+const sql = 'INSERT INTO REVIEWS (review_text, rating) VALUES (?, ?)';
+
+connection.query(sql, [review_text, rating], (err, result) => {
+  if (err) throw err;
+  res.send('Review submitted successfully!');
+});
+});
+
+app.get('/feedback', (req, res) => {
+  const rating = req.query.rating;
+  let sql = 'SELECT * FROM REVIEWS';
+  const queryParams = [];
+
+  // If a rating is provided, add a WHERE clause to filter by rating
+  if (rating) {
+    sql += ' WHERE rating = ?';
+    queryParams.push(rating);
+  }
+
+  // Execute the SQL query
+  connection.query(sql, queryParams, (err, results) => {
+    if (err) {
+      console.error('Error fetching reviews:', err);
+      return res.status(500).json({ message: 'Error fetching reviews' });
+    }
+
+    // Return the reviews in JSON format
+    res.status(200).json(results);
+  });
+});
+
 // Start the server
 const port = process.env.PORT || 3000;
 app.listen(port, () => {
