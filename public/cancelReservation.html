@@ -4,8 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Cancel Reservation</title>
-  <link rel="stylesheet" href="css/cancelReservation.css" />
-  
+  <link rel="stylesheet" href="css/MainDiningHall.css" />
   <style>
     body {
       background: #1A2238;
@@ -67,13 +66,6 @@
   </style>
 </head>
 <body>
-  <header class="main-header"></header>
-      <div class="logo">
-        <img src="images/option-21.svg" alt="CampusCrave" />
-        <h1>Campus<span class="highlight">Crave</span></h1>
-      </div>
-      <button class="back-button" onclick="window.history.back()">Back</button>
-    </header>
   <div class="container">
     <h1>Cancel Reservation</h1>
     <h2>Review your reservation details below</h2>
@@ -97,26 +89,29 @@
   </div>
 
   <script>
-    // Simulated reservation data to show in the summary
-    const reservationDetails = {
-      date: "2024-09-20",
-      diningHall: "Dining Hall 1",
-      meals: {
-        breakfast: "08:00-09:00",
-        lunch: "12:00-13:00",
-        dinner: null // No dinner selected
+    const reservationId = new URLSearchParams(window.location.search).get('id');
+
+    async function fetchReservationDetails() {
+      try {
+        if (!reservationId) throw new Error('Reservation ID is missing');
+        const response = await fetch(`/api/confirmReservation?id=${reservationId}`);
+        if (!response.ok) throw new Error('Failed to fetch reservation details');
+        const data = await response.json();
+
+        document.getElementById('summary-date').textContent = data.date || "No change";
+        document.getElementById('summary-dining-hall').textContent = data.diningHall || "No change";
+        document.getElementById('summary-breakfast').textContent = data.meals.breakfast || "None";
+        document.getElementById('summary-lunch').textContent = data.meals.lunch || "None";
+        document.getElementById('summary-dinner').textContent = data.meals.dinner || "None";
+      } catch (error) {
+        console.error('Error fetching reservation details:', error);
+        alert('Error fetching reservation details. Please try again later.');
       }
-    };
+    }
 
-    // Populate the summary with reservation details
-    document.getElementById('summary-date').textContent = reservationDetails.date || "No change";
-    document.getElementById('summary-dining-hall').textContent = reservationDetails.diningHall || "No change";
-    document.getElementById('summary-breakfast').textContent = reservationDetails.meals.breakfast || "None";
-    document.getElementById('summary-lunch').textContent = reservationDetails.meals.lunch || "None";
-    document.getElementById('summary-dinner').textContent = reservationDetails.meals.dinner || "None";
+    fetchReservationDetails();
 
-    // Function to handle the cancellation submission
-    function cancelReservation() {
+    async function cancelReservation() {
       const reason = document.getElementById('cancellation-reason').value;
 
       if (!reason.trim()) {
@@ -124,23 +119,29 @@
         return;
       }
 
-      // Collect the reservation data to send to the backend for cancellation
       const cancellationData = {
-        date: reservationDetails.date,
-        diningHall: reservationDetails.diningHall,
-        meals: reservationDetails.meals,
+        id: reservationId,
         reason: reason
       };
 
-      console.log('Cancellation data:', cancellationData);
-
-      // Simulate successful cancellation
-      alert('Your reservation has been successfully cancelled!');
-      
-      // Redirect to userDashboard.html after clicking OK
-      window.location.href = 'userDashboard.html'; 
+      try {
+        const response = await fetch('/api/cancelReservation', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(cancellationData)
+        });
+        
+        if (!response.ok) throw new Error('Failed to cancel reservation');
+        
+        alert('Your reservation has been successfully cancelled!');
+        window.location.href = 'userDashboard.html'; 
+      } catch (error) {
+        console.error('Error cancelling reservation:', error);
+        alert('There was an error cancelling your reservation. Please try again later.');
+      }
     }
   </script>
 </body>
 </html>
-
