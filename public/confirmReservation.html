@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Reservation Confirmation</title>
+    <link rel="stylesheet" href="css/confirmReservation.css" />
+  </head>
+  <body>
+    <header class="main-header"></header>
+      <div class="logo">
+        <img src="images/option-21.svg" alt="CampusCrave" />
+        <h1>Campus<span class="highlight">Crave</span></h1>
+      </div>
+      <button class="back-button" onclick="window.history.back()">Back</button>
+    </header>
+    <div class="container">
+      <h1>Your reservation has been confirmed!</h1>
+      <div class="summary">
+        <p><strong>Dining Hall:</strong> <span id="dining-hall-name"></span></p>
+        <p><strong>Summary:</strong></p>
+        <p>
+          - Breakfast: <span id="breakfast-status"></span> at
+          <span id="breakfast-time"></span>
+        </p>
+        <p>
+          - Lunch: <span id="lunch-status"></span> at
+          <span id="lunch-time"></span>
+        </p>
+        <p>
+          - Dinner: <span id="dinner-status"></span> at
+          <span id="dinner-time"></span>
+        </p>
+        <p>Reservation Date: <span id="reservation-date"></span></p>
+        <p>Confirmation Number: <span id="confirmation-number"></span></p>
+      </div>
+
+      <div class="button-container">
+        <button
+          id="modify-button"
+          onclick="window.location.href='modifyreservation.html'"
+        >
+          Modify Reservation
+        </button>
+        <button
+          id="cancel-button"
+          onclick="window.location.href='cancelreservation.html'"
+        >
+          Cancel Reservation
+        </button>
+        <button
+          id="done-button"
+          onclick="window.location.href='userdashboard.html'"
+        >
+          Done
+        </button>
+      </div>
+    </div>
+
+    <script>
+
+      const reservationData = {
+        diningHallName: "Main Dining Hall", 
+        breakfast: true,
+        lunch: false,
+        dinner: true,
+        breakfastTime: "08:00-09:00",
+        lunchTime: null,
+        dinnerTime: "19:00-20:00",
+        date: "2024-09-30",
+        confirmationNumber: "ABC123456",
+        qrCodeUrl: "path/to/generated-qrcode.png", // Update with actual QR code URL
+      };
+
+      document.getElementById("dining-hall-name").textContent =
+        reservationData.diningHallName;
+      document.getElementById("breakfast-status").textContent =
+        reservationData.breakfast ? "Yes" : "No";
+      document.getElementById("lunch-status").textContent =
+        reservationData.lunch ? "Yes" : "No";
+      document.getElementById("dinner-status").textContent =
+        reservationData.dinner ? "Yes" : "No";
+      document.getElementById("breakfast-time").textContent =
+        reservationData.breakfast ? reservationData.breakfastTime : "N/A";
+      document.getElementById("lunch-time").textContent = reservationData.lunch
+        ? reservationData.lunchTime
+        : "N/A";
+      document.getElementById("dinner-time").textContent =
+        reservationData.dinner ? reservationData.dinnerTime : "N/A";
+      document.getElementById("reservation-date").textContent =
+        reservationData.date;
+      document.getElementById("confirmation-number").textContent =
+        reservationData.confirmationNumber;
+      document.getElementById("qr-code").src = reservationData.qrCodeUrl;
+    </script>
+  </body>
+</html>

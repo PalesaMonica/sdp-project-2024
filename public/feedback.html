@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Feedback</title>
+    <link rel="stylesheet" href="globals.css" />
+    <link rel="stylesheet" href="css/feedback.css" />
+</head>
+<body>
+    <div class="feedback-screen">
+        <div class="div">
+            <!-- Main Heading -->
+            <div class="group-2">
+                <p class="text-wrapper-3">Your feedback matters to us!</p>
+                <img class="image" src="images/logo.png" />
+            </div>
+
+            <!-- Rating Text -->
+            <div class="main-rating-w-text">
+                <div class="overlap-group">
+                    <p class="text-wrapper">How would you like to describe your experience with CampusCrave?</p>
+                </div>
+            </div>
+
+            <!-- Feedback Form -->
+            <div class="feedback-form-wrapper">
+                <form id="feedback-form">
+                    <label for="review_text">What is your overall experience?</label><br>
+                    <textarea id="review-text" name="review_text" rows="4" cols="50" placeholder="Please share your thoughts" required></textarea><br><br>
+
+                    <label for="rating">Rating (1-5):</label>
+                    <input type="number" id="rating" name="rating" min="1" max="5" required><br><br>
+
+                    <div class="submit-button">
+                        <input type="submit" value="Submit" class="submit-btn">
+                    </div>
+                </form>
+                <div id="confirmation-message"></div>
+            </div>
+
+            <!-- Review Filter and Display Section -->
+            <div class="dropdown-section">
+                <label for="review_filter" class="dropdown-label">Select Review Rating:</label>
+                <select id="review_filter">
+                    <option value="all">All Reviews</option>
+                    <option value="5">5-Star Reviews</option>
+                    <option value="4">4-Star Reviews</option>
+                    <option value="3">3-Star Reviews</option>
+                    <option value="2">2-Star Reviews</option>
+                    <option value="1">1-Star Reviews</option>
+                </select>
+                <button onclick="fetchReviews()">See Reviews</button>
+            </div>
+
+            <div id="reviews"></div>
+        </div>
+    </div>
+    <script src="/src/js/feedback.js"></script>
+</body>
+</html>

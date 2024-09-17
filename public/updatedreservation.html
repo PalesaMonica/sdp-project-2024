@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Reservation Summary</title>
+    <link rel="stylesheet" href="css/updatedreservation.css" />
+  </head>
+  <body>
+    <header class="main-header"></header>
+      <div class="logo">
+        <img src="images/option-21.svg" alt="CampusCrave" />
+        <h1>Campus<span class="highlight">Crave</span></h1>
+      </div>
+      <button class="back-button" onclick="window.history.back()">Back</button>
+    </header>
+    <div class="container">
+      <h1>
+        Reservation Updated <span style="color: green">Successfully</span>
+      </h1>
+      <h2>Here are your updated reservation details:</h2>
+
+      <div class="summary">
+        <div class="summary-item">
+          <strong>Date:</strong> <span id="summary-date"></span>
+        </div>
+        <div class="summary-item">
+          <strong>Dining Hall:</strong> <span id="summary-dining-hall"></span>
+        </div>
+        <div class="summary-item">
+          <strong>Breakfast:</strong> <span id="summary-breakfast"></span>
+        </div>
+        <div class="summary-item">
+          <strong>Lunch:</strong> <span id="summary-lunch"></span>
+        </div>
+        <div class="summary-item">
+          <strong>Dinner:</strong> <span id="summary-dinner"></span>
+        </div>
+      </div>
+
+      <div class="button-container">
+        <button onclick="goToDashboard()">Done</button>
+      </div>
+    </div>
+
+    <script>
+      // Simulate reservation details passed from the modification page
+      const reservationDetails = {
+        date: "2024-09-20",
+        diningHall: "Dining Hall 1",
+        meals: {
+          breakfast: "08:00-09:00",
+          lunch: "12:00-13:00",
+          dinner: null, // No dinner selected
+        },
+      };
+
+      // Populate the summary with the reservation details
+      document.getElementById("summary-date").textContent =
+        reservationDetails.date || "No change";
+      document.getElementById("summary-dining-hall").textContent =
+        reservationDetails.diningHall || "No change";
+
+      // Show meal times or 'None' if not selected
+      document.getElementById("summary-breakfast").textContent =
+        reservationDetails.meals.breakfast || "None";
+      document.getElementById("summary-lunch").textContent =
+        reservationDetails.meals.lunch || "None";
+      document.getElementById("summary-dinner").textContent =
+        reservationDetails.meals.dinner || "None";
+
+      function goToDashboard() {
+        // Redirect to user dashboard after clicking Done
+        window.location.href = "userDashboard.html";
+      }
+    </script>
+  </body>
+</html>

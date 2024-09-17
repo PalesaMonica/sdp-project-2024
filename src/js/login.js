@@ -17,8 +17,10 @@ async function handleLogin(event) {
         throw new Error(result.msg);
       }
   
-      // Redirect to User Dashboard page automatically
-      window.location.href = "/userDashboard";
+      if (result.redirectUrl) {
+        window.location.href = result.redirectUrl;
+      }
+      
     } catch (error) {
       document.getElementById("error-message").textContent = error.message;
     }

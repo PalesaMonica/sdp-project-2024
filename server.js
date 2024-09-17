@@ -225,7 +225,7 @@ app.get("/login", (req, res) => {
 
 // Handle the signup form submission
 app.post("/signup", async (req, res) => {
-  const { username, email, password } = req.body;
+  const { username, email, password, role } = req.body;
 
   try {
     connection.query(
@@ -247,10 +247,10 @@ app.post("/signup", async (req, res) => {
         const hashedPassword = await bcrypt.hash(password, salt);
 
         const sql =
-          "INSERT INTO users (username, email, password) VALUES (?, ?, ?)";
+          "INSERT INTO users (username, email, password, role) VALUES (?, ?, ?, ?)";
         connection.query(
           sql,
-          [username, email, hashedPassword],
+          [username, email, hashedPassword, role],
           (err, result) => {
             if (err) {
               console.error("Database insert error:", err);
@@ -259,9 +259,10 @@ app.post("/signup", async (req, res) => {
                 .json({ msg: "Server Error: Unable to insert user" });
             }
 
+            const redirectUrl = '/login.html';
             return res
               .status(200)
-              .json({ msg: "Signup successful, redirecting..." });
+              .json({ msg: "Signup successful, redirecting...", redirectUrl });
           }
         );
       }
@@ -307,9 +308,10 @@ app.post("/login", (req, res) => {
               .status(500)
               .json({ msg: "Server Error: Unable to log in" });
           }
-          return res
-            .status(200)
-            .json({ msg: "Login successful, redirecting..." });
+
+          // Check the role of the user and redirect accordingly
+          const redirectUrl = user.role === 'staff' ? '/meal-management.html' : '/userDashboard.html';
+          return res.status(200).json({ msg: "Login successful, redirecting...", redirectUrl });
         });
       }
     );
@@ -320,6 +322,7 @@ app.post("/login", (req, res) => {
     });
   }
 });
+
 
 app.post('/saveDietPreference', (req, res) => {
   const { dietPlan } = req.body;
@@ -377,40 +380,95 @@ app.get('/get-dietary_preference', (req, res) => {
 
 
 // Route to get all dining halls
+// Route to get all dining halls with one main image and additional images
 app.get('/dining-halls', async (req, res) => {
   try {
-      const diningHalls = await Reservation.getDiningHalls(); // Ensure this is the correct method for fetching dining halls
-      res.status(200).json(diningHalls);
+    // Fetch all dining halls
+    const [diningHalls] = await pool.query('SELECT * FROM dining_halls');
+    
+    // Fetch images for each dining hall
+    const [images] = await pool.query('SELECT dining_hall_id, image_url FROM images');
+    
+    // Create a map of dining hall images
+    const imageMap = {};
+    images.forEach(image => {
+      if (!imageMap[image.dining_hall_id]) {
+        imageMap[image.dining_hall_id] = [];
+      }
+      imageMap[image.dining_hall_id].push(image.image_url);
+    });
+
+    // Attach images to the dining halls
+    const diningHallsWithImages = diningHalls.map(diningHall => {
+      const hallImages = imageMap[diningHall.id] || [];
+      return {
+        ...diningHall,
+        mainImage: hallImages[0] || null,  // First image is the main image
+        additionalImages: hallImages.slice(1)  // Remaining images
+      };
+    });
+
+    res.status(200).json(diningHallsWithImages);
   } catch (error) {
-      console.error('Error in /dining-halls route:', error);
-      res.status(500).json({ message: 'Error fetching dining halls', error: error.message });
+    console.error('Error in /dining-halls route:', error);
+    res.status(500).json({ message: 'Error fetching dining halls', error: error.message });
   }
 });
 
-// Route to handle POST requests to /api/reservations
-app.post('/api/reservations', async (req, res) => {
-  const { diningHallId, name, surname, date, time, mealType } = req.body;
+// Route to get a dining hall by ID with its associated images
+// Route to get a dining hall by ID with images
+app.get('/dining-halls/:id', async (req, res) => {
+  const { id } = req.params;
+  try {
+    // Fetch dining hall info
+    const [diningHall] = await pool.query('SELECT * FROM dining_halls WHERE id = ?', [id]);
 
-  if (!name || !surname || !date || !mealType) {
-      return res.status(400).json({ message: 'Missing required fields: name, surname, date, and mealType are required.' });
+    // Check if the dining hall exists
+    if (diningHall.length === 0) {
+      return res.status(404).json({ message: 'Dining hall not found' });
+    }
+
+    // Fetch associated images from the images table
+    const [images] = await pool.query('SELECT image_url FROM images WHERE dining_hall_id = ?', [id]);
+
+    // Respond with the dining hall and associated images
+    res.status(200).json({
+      diningHall: diningHall[0],
+      images: images.map(image => image.image_url), // Map to just the image URLs
+    });
+  } catch (error) {
+    console.error('Error in /dining-halls/:id route:', error);
+    res.status(500).json({ message: 'Error fetching dining hall', error: error.message });
+  }
+});
+
+
+
+app.post('/api/reservations', async (req, res) => {
+  const { diningHallId, name, surname, date, meals, specialRequest } = req.body;
+
+  // Validate required fields
+  if (!name || !surname || !date || !meals) {
+    return res.status(400).json({ message: 'Missing required fields: name, surname, date, and meals are required.' });
   }
 
   try {
-      // Creating a reservation with default 'confirmed' status
-      const { reservationId, qrCode } = await Reservation.createReservation({
-          diningHallId,
-          name,
-          surname,
-          date,
-          time,
-          mealType,  // Ensure mealType is passed to createReservation
-          specialRequests: null,
-          status: 'confirmed'
-      });
-      res.status(201).json({ reservationId, qrCode });
+    // Call createReservation function to store reservation in the database
+    const { reservationId, qrCode } = await Reservation.createReservation({
+      diningHallId,
+      name,
+      surname,
+      date,
+      meals,
+      specialRequest: specialRequest || '', // Handle optional specialRequest
+      status: 'confirmed' // Default status
+    });
+
+    // Respond with reservation ID and QR code
+    res.status(201).json({ reservationId, qrCode });
   } catch (error) {
-      console.error('Error creating reservation:', error);
-      res.status(500).json({ message: 'Error creating reservation', error: error.message });
+    console.error('Error creating reservation:', error);
+    res.status(500).json({ message: 'Error creating reservation', error: error.message });
   }
 });
 
@@ -456,6 +514,103 @@ app.delete('/api/reservations/:id', async (req, res) => {
       res.status(400).json({ message: 'Error cancelling reservation', error: error.message });
   }
 });
+
+//feedback routing
+
+// Feedback route to get reviews with optional rating filter
+
+// Post a review
+app.post('/feedback', (req, res) => {
+const { review_text, rating } = req.body;
+const sql = 'INSERT INTO REVIEWS (review_text, rating) VALUES (?, ?)';
+
+connection.query(sql, [review_text, rating], (err, result) => {
+  if (err) throw err;
+  res.send('Review submitted successfully!');
+});
+});
+
+app.get('/feedback', (req, res) => {
+  const rating = req.query.rating;
+  let sql = 'SELECT * FROM REVIEWS';
+  const queryParams = [];
+
+  // If a rating is provided, add a WHERE clause to filter by rating
+  if (rating) {
+    sql += ' WHERE rating = ?';
+    queryParams.push(rating);
+  }
+
+  // Execute the SQL query
+  connection.query(sql, queryParams, (err, results) => {
+    if (err) {
+      console.error('Error fetching reviews:', err);
+      return res.status(500).json({ message: 'Error fetching reviews' });
+    }
+
+    // Return the reviews in JSON format
+    res.status(200).json(results);
+  });
+});
+
+
+//Meal Management
+app.get('/api/current-menu', async (req, res) => {
+  try {
+      const [rows] = await pool.query('SELECT * FROM menu');
+      res.json(rows);
+  } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+app.get('/api/available-meals', async (req, res) => {
+  try {
+      const [rows] = await pool.query('SELECT * FROM meals');
+      res.json(rows);
+  } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+app.post('/api/add-to-menu', async (req, res) => {
+  const { mealId } = req.body;
+  try {
+      await pool.query('INSERT INTO menu (meal_id) VALUES (?)', [mealId]);
+      res.json({ success: true });
+  } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+app.delete('/api/remove-from-menu/:id', async (req, res) => {
+  const { id } = req.params;
+  try {
+      await pool.query('DELETE FROM menu WHERE id = ?', [id]);
+      res.json({ success: true });
+  } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+app.post('/api/add-new-meal', async (req, res) => {
+  const { name, ingredients, diet_type, image_url, meal_type } = req.body;
+  try {
+      await pool.query(
+          'INSERT INTO meals (name, ingredients, diet_type, image_url, meal_type) VALUES (?, ?, ?, ?, ?)',
+          [name, ingredients, diet_type, image_url, meal_type]
+      );
+      res.json({ success: true });
+  } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: 'Internal server error' });
+  }
+});
+//
 
 // Start the server
 const port = process.env.PORT || 3000;
