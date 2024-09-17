@@ -25,8 +25,13 @@ async function handleSignup(event) {
             throw new Error(result.msg);
         }
 
-        // Redirect to login page automatically
-        window.location.href = '/login';
+        // Check if the server provided a redirect URL
+        if (result.redirectUrl) {
+            window.location.href = result.redirectUrl;
+        } else {
+            // Fallback to login page if no redirect URL is provided
+            window.location.href = '/login';
+        }
     } catch (error) {
         document.getElementById('error-message').textContent = error.message;
     }

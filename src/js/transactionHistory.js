@@ -1,23 +1,36 @@
-const transactions = [     
-    // Adding more recent dates from 01 September to 07 September
-    { name: '4NMP Dining Hall', date: '2024-09-07', amount: -55.00, type: 'Lunch' },
-    { name: 'Joyous Dining Hall', date: '2024-09-06', amount: -60.00, type: 'Breakfast' },
-    { name: '4NMP Dining Hall', date: '2024-09-05', amount: -60.00, type: 'Supper' },
-    { name: 'Monate Mpolaye Dining', date: '2024-09-04', amount: -55.00, type: 'Lunch' },
-    { name: '4NMP Dining Hall', date: '2024-09-03', amount: 60.00, type: 'Cancellation' },
-    { name: '4NMP Dining Hall', date: '2024-09-02', amount: -60.00, type: 'Supper' },
-    { name: 'Joyous Dining Hall', date: '2024-09-01', amount: -55.00, type: 'Lunch' },    
-    // More transactions from August
-    { name: '4NMP Dining Hall', date: '2024-08-20', amount: -55.00, type: 'Lunch' },
-    { name: 'Joyous Dining Hall', date: '2024-08-20', amount: -60.00, type: 'Breakfast' },
-    { name: '4NMP Dining Hall', date: '2024-08-19', amount: -60.00, type: 'Supper' },
-    { name: 'Monate Mpolaye Dining', date: '2024-08-19', amount: -55.00, type: 'Lunch' },
-    { name: '4NMP Dining Hall', date: '2024-08-19', amount: 60.00, type: 'Cancellation' },
-    { name: '4NMP Dining Hall', date: '2024-08-18', amount: -60.00, type: 'Supper' },
-    { name: 'Joyous Dining Hall', date: '2024-08-18', amount: -55.00, type: 'Lunch' },
-    { name: 'Monate Mpolaye Dining', date: '2024-08-18', amount: -60.00, type: 'Breakfast' },
-    { name: 'Joyous Dining Hall', date: '2024-08-17', amount: -60.00, type: 'Supper' } 
-];
+document.addEventListener('DOMContentLoaded', () => {
+    fetch('http://localhost:3000/api/current-user')
+        .then(response => response.json())
+        .then(data => {
+            const userId = data.userId;
+            if (!userId) {
+                console.error('No userId found');
+                return;
+            }
+
+            const transactionList = document.getElementById('transaction-list');
+
+            fetch(`http://localhost:3000/api/meal-credits/${userId}`)
+                .then(response => response.json())
+                .then(data => {
+                    const transactions = data.transactions;
+                    transactionList.innerHTML = transactions.map(transaction => `
+                        <tr>
+                            <td>${new Date(transaction.date).toLocaleDateString()}</td>
+                            <td>${transaction.amount}</td>
+                            <td>${transaction.description}</td>
+                        </tr>
+                    `).join('');
+                })
+                .catch(error => {
+                    console.error('Error fetching transaction data:', error);
+                });
+        })
+        .catch(error => {
+            console.error('Error fetching user data:', error);
+        });
+});
+
 
 function formatDate(dateString) {
     const options = { year: 'numeric', month: 'short', day: 'numeric' };

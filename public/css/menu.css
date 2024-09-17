@@ -45,27 +45,6 @@ body {
     color: var(--primary-color);
 }
 
-.search-bar {
-    background-color: var(--primary-color);
-    border-radius: 25px;
-    padding: 10px 20px;
-    display: flex;
-    align-items: center;
-    margin-bottom: 20px;
-}
-
-.search-bar input {
-    background: none;
-    border: none;
-    color: var(--text-color);
-    flex-grow: 1;
-    font-size: 16px;
-}
-
-.search-bar input::placeholder {
-    color: rgba(255, 255, 255, 0.7);
-}
-
 .menu-header {
     display: flex;
     justify-content: space-between;
@@ -97,7 +76,7 @@ body {
 }
 
 .item {
-    flex: 1 1 100px;
+    flex: 0 0 auto;
     margin: 10px;
     position: relative;
     background-color: var(--text-color);
@@ -107,23 +86,68 @@ body {
     height: 140px;
     text-align: center;
     color: white;
+    transition: transform 0.3s ease;
 }
 
-@media (max-width: 480px) {
+/* Back button styling */
+.back-button {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background-color: #FF6A3D;
+    color: white;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.back-button:hover {
+    background-color: #e55d3b; /* Slightly darker shade for hover effect */
+}
+
+@media (max-width: 479px) {
     .item {
-        width: 100px;
-        height: 100px;
+        width: 120px;
+        height: 120px;
+    }
+
+    .back-button {
+        padding: 8px 16px; /* Smaller padding for small screens */
+        font-size: 14px; /* Adjust font size */
     }
 }
 
-@media (min-width: 768px) {
+@media (min-width: 480px) and (max-width: 767px) {
+    .item {
+        width: 120px;
+        height: 120px;
+    }
+
+    .back-button {
+        padding: 8px 16px; /* Smaller padding for small screens */
+        font-size: 14px; /* Adjust font size */
+    }
+}
+
+@media (min-width: 768px) and (max-width: 1023px) {
+    .item {
+        width: 140px;
+        height: 140px;
+    }
+}
+
+@media (min-width: 1024px) {
     .item {
         width: 160px;
         height: 160px;
     }
 }
 
-@media (min-width: 1024px) {
+@media (min-width: 1200px) {
     .item {
         width: 180px;
         height: 180px;
@@ -181,9 +205,9 @@ body {
     margin: auto;
     padding: 20px;
     border: 1px solid #888;
-    width: 80%;
+    width: 70%;
     max-width: 600px;
-    max-height: 80%; /* Limit the height of the modal */
+    max-height: 65%; /* Limit the height of the modal */
     overflow: auto; /* Enable scrolling for overflow content */
     display: flex;
     flex-direction: column;
@@ -211,8 +235,8 @@ body {
 }
 
 #item-image {
-    max-width: 100%;
-    height: auto;
+    max-width: 60%;
+    height: 10%;
     object-fit: contain; /* Ensure the image fits inside the modal */
     margin-bottom: 20px;
 }
@@ -255,4 +279,53 @@ body {
 
 .reservation-link:hover {
     text-decoration: underline;
+}
+
+
+.search-bar {
+    background-color: var(--primary-color);
+    border-radius: 25px;
+    padding: 5px 10px; 
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.search-bar input {
+    background: var(--primary-color);;
+    border: var(--primary-color);
+    color: var(--text-color);
+    flex-grow: 1;
+    font-size: 16px;
+    padding: 5px 10px;
+}
+
+.search-bar input::placeholder {
+    color: rgba(255, 255, 255, 0.7);
+}
+
+#search-button {
+    background-color: white;
+    color: var(--primary-color);
+    border: none;
+    border-radius: 20px;
+    padding: 5px 15px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+#search-button:hover {
+    background-color: var(--background-color);
+    color: white;
+}
+
+.no-results {
+    text-align: center;
+    color: var(--text-color);
+    font-style: italic;
+    padding: 20px;
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    margin: 20px 0;
 }
