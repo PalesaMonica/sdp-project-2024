@@ -156,3 +156,6 @@ body {
     justify-content: space-between;
   }
 }
+.highlight {
+  color: #ff6a3d;
+}

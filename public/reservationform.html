@@ -1,222 +1,172 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Reserve Your Meals</title>
-  <link rel="stylesheet" href="css/MainDiningHall.css" />
-  <style>
-    body {
-      background: #1A2238;
-      color: #fff;
-      font-family: Arial, sans-serif;
-      margin: 0;
-      padding: 0;
-    }
-    .container {
-      margin: 10px;
-      padding: 15px;
-      background: #2a3748;
-      border-radius: 8px;
-    }
-    h1, h2 {
-      color: #f5f5f5;
-    }
-    .meal-selection label, .personal-info label, .cost-info label {
-      display: block;
-      margin: 8px 0;
-    }
-    .meal-selection input[type="checkbox"] {
-      margin-right: 10px;
-    }
-    .time-slot {
-      margin-top: 10px;
-    }
-    .time-slot select {
-      padding: 8px;
-      border-radius: 4px;
-      border: 1px solid #ccc;
-      background: #fff;
-      width: 100%;
-    }
-    .personal-info input, .personal-info textarea {
-      width: calc(100% - 16px);
-      padding: 10px;
-      margin-top: 5px;
-      border-radius: 4px;
-      border: 1px solid #ccc;
-    }
-    .personal-info textarea {
-      resize: vertical;
-    }
-    .button-container {
-      margin-top: 20px;
-    }
-    #submit-button {
-      padding: 10px;
-      background: #007BFF;
-      color: #fff;
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
-      width: 100%;
-    }
-    #submit-button:hover {
-      background: #f15d18;
-    }
-    @media (max-width: 600px) {
-      .container {
-        margin: 5px;
-        padding: 10px;
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Reserve Your Meals</title>
+    <link rel="stylesheet" href="css/reservation.css" />
+  </head>
+  <body>
+    <header class="main-header">
+      <div class="logo">
+        <img src="images/option-21.svg" alt="CampusCrave" />
+        <h1>Campus<span class="highlight">Crave</span></h1>
+      </div>
+      <button class="back-button" onclick="window.history.back()">Back</button>
+    </header>
+
+    <div class="container">
+      <h1>Select Your Meals and Reserve</h1>
+      <div class="everything">
+        <div class="meal-selection">
+          <label>
+            <input
+              type="checkbox"
+              id="breakfast-checkbox"
+              onchange="toggleTimeSlot('breakfast')"
+            />
+            Breakfast
+          </label>
+          <div id="breakfast-time-slot" class="time-slot" style="width: 135px">
+            <label for="breakfast-time">Time Slot:</label>
+            <select id="breakfast-time" name="breakfast-time">
+              <option value="08:00-09:00">08:00-09:00</option>
+              <option value="09:00-10:00">09:00-10:00</option>
+            </select>
+          </div>
+
+          <label>
+            <input
+              type="checkbox"
+              id="lunch-checkbox"
+              onchange="toggleTimeSlot('lunch')"
+            />
+            Lunch
+          </label>
+          <div id="lunch-time-slot" class="time-slot" style="width: 135px">
+            <label for="lunch-time">Time Slot:</label>
+            <select id="lunch-time" name="lunch-time">
+              <option value="12:00-13:00">12:00-13:00</option>
+              <option value="13:00-14:00">13:00-14:00</option>
+            </select>
+          </div>
+
+          <label>
+            <input
+              type="checkbox"
+              id="dinner-checkbox"
+              onchange="toggleTimeSlot('dinner')"
+            />
+            Dinner
+          </label>
+
+          <div id="dinner-time-slot" class="time-slot" style="width: 135px">
+            <label for="dinner-time">Time Slot:</label>
+            <select id="dinner-time" name="dinner-time">
+              <option value="18:00-19:00">18:00-19:00</option>
+              <option value="19:00-20:00">19:00-20:00</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="personal-info">
+          <h2>Personal Information</h2>
+          <label for="name">Name:</label>
+          <input type="text" id="name" name="name" required />
+          <br />
+          <label for="surname">Surname:</label>
+          <input type="text" id="surname" name="surname" required />
+          <br />
+          <label for="special-request">Special Request (optional):</label>
+          <textarea id="special-request" name="special-request"></textarea>
+        </div>
+
+        <div class="cost-info">
+          <h2>Reservation Details</h2>
+          <label for="date">Date:</label>
+          <input type="date" id="date" name="date" required />
+          <br />
+          <div id="cost-summary">Total Cost: R0.00</div>
+        </div>
+
+        <div class="button-container">
+          <button id="submit-button" onclick="submitReservation()">
+            Submit Reservation
+          </button>
+        </div>
+      </div>
+    </div>
+    <script>
+      function toggleTimeSlot(mealType) {
+        const checkbox = document.getElementById(`${mealType}-checkbox`);
+        const timeSlotDiv = document.getElementById(`${mealType}-time-slot`);
+        timeSlotDiv.style.display = checkbox.checked ? "block" : "none";
+        updateCost(); // Update cost when selection changes
       }
-      .personal-info input, .personal-info textarea {
-        width: calc(100% - 20px);
+
+      function updateCost() {
+        const breakfastChecked =
+          document.getElementById("breakfast-checkbox").checked;
+        const lunchChecked = document.getElementById("lunch-checkbox").checked;
+        const dinnerChecked =
+          document.getElementById("dinner-checkbox").checked;
+        let totalCost = 0;
+
+        if (breakfastChecked) totalCost += 50;
+        if (lunchChecked) totalCost += 55;
+        if (dinnerChecked) totalCost += 60;
+
+        document.getElementById(
+          "cost-summary"
+        ).innerHTML = `Total Cost: R${totalCost.toFixed(2)}`;
       }
-    }
-  </style>
-</head>
-<body>
-  <div class="container">
-    <h1>Select Your Meals and Reserve</h1>
-    <div class="everything">
-        <button
-          class="back-button"
-          onclick="window.history.back()"
-        >
-          Back
-        </button>
 
-    <div class="meal-selection">
-      <label>
-        <input type="checkbox" id="breakfast-checkbox" onchange="toggleTimeSlot('breakfast')">
-        Breakfast
-      </label>
-      <div id="breakfast-time-slot" class="time-slot" style="display: none;">
-        <label for="breakfast-time">Time Slot:</label>
-        <select id="breakfast-time" name="breakfast-time">
-          <option value="08:00-09:00">08:00-09:00</option>
-          <option value="09:00-10:00">09:00-10:00</option>
-          <!-- Add more options -->
-        </select>
-      </div>
-      
-      <label>
-        <input type="checkbox" id="lunch-checkbox" onchange="toggleTimeSlot('lunch')">
-        Lunch
-      </label>
-      <div id="lunch-time-slot" class="time-slot" style="display: none;">
-        <label for="lunch-time">Time Slot:</label>
-        <select id="lunch-time" name="lunch-time">
-          <option value="12:00-13:00">12:00-13:00</option>
-          <option value="13:00-14:00">13:00-14:00</option>
-          <!-- Add more options -->
-        </select>
-      </div>
+      function submitReservation() {
+        // Example function to handle form submission
+        const name = document.getElementById("name").value;
+        const surname = document.getElementById("surname").value;
+        const specialRequest = document.getElementById("special-request").value;
+        const date = document.getElementById("date").value;
 
-      <label>
-        <input type="checkbox" id="dinner-checkbox" onchange="toggleTimeSlot('dinner')">
-        Dinner
-      </label>
-      <div id="dinner-time-slot" class="time-slot" style="display: none;">
-        <label for="dinner-time">Time Slot:</label>
-        <select id="dinner-time" name="dinner-time">
-          <option value="18:00-19:00">18:00-19:00</option>
-          <option value="19:00-20:00">19:00-20:00</option>
-          <!-- Add more options -->
-        </select>
-      </div>
-    </div>
+        const breakfastChecked =
+          document.getElementById("breakfast-checkbox").checked;
+        const lunchChecked = document.getElementById("lunch-checkbox").checked;
+        const dinnerChecked =
+          document.getElementById("dinner-checkbox").checked;
+        const breakfastTime = document.getElementById("breakfast-time").value;
+        const lunchTime = document.getElementById("lunch-time").value;
+        const dinnerTime = document.getElementById("dinner-time").value;
 
-    <div class="personal-info">
-      <h2>Personal Information</h2>
-      <label for="name">Name:</label>
-      <input type="text" id="name" name="name" required />
-      <br />
-      <label for="surname">Surname:</label>
-      <input type="text" id="surname" name="surname" required />
-      <br />
-      <label for="special-request">Special Request (optional):</label>
-      <textarea id="special-request" name="special-request"></textarea>
-    </div>
+        const reservationDetails = {
+          name,
+          surname,
+          specialRequest,
+          date,
+          meals: {
+            breakfast: breakfastChecked ? breakfastTime : null,
+            lunch: lunchChecked ? lunchTime : null,
+            dinner: dinnerChecked ? dinnerTime : null,
+          },
+        };
 
-    <div class="cost-info">
-      <h2>Reservation Details</h2>
-      <label for="date">Date:</label>
-      <input type="date" id="date" name="date" required />
-      <br />
-      <div id="cost-summary">
-        <!-- Cost summary will be updated dynamically -->
-        Total Cost: R0.00
-      </div>
-    </div>
+        console.log("Reservation Details:", reservationDetails);
 
-    <div class="button-container">
-      <button id="submit-button" onclick="submitReservation()">Submit Reservation</button>
-    </div>
-  </div>
+        // Store reservation details in sessionStorage (or localStorage) to access it on the confirmation page
+        sessionStorage.setItem(
+          "reservationDetails",
+          JSON.stringify(reservationDetails)
+        );
 
-  <script>
-    function toggleTimeSlot(mealType) {
-      const checkbox = document.getElementById(`${mealType}-checkbox`);
-      const timeSlotDiv = document.getElementById(`${mealType}-time-slot`);
-      timeSlotDiv.style.display = checkbox.checked ? 'block' : 'none';
-      updateCost(); // Update cost when selection changes
-    }
+        // Redirect to the confirmation page
+        window.location.href = "confirmReservation.html";
+      }
 
-    function updateCost() {
-      const breakfastChecked = document.getElementById('breakfast-checkbox').checked;
-      const lunchChecked = document.getElementById('lunch-checkbox').checked;
-      const dinnerChecked = document.getElementById('dinner-checkbox').checked;
-      let totalCost = 0;
-
-      if (breakfastChecked) totalCost += 150; // Example cost in ZAR
-      if (lunchChecked) totalCost += 200;    // Example cost in ZAR
-      if (dinnerChecked) totalCost += 250;   // Example cost in ZAR
-
-      document.getElementById('cost-summary').innerHTML = `Total Cost: R${totalCost.toFixed(2)}`;
-    }
-
-    
-    function submitReservation() {
-      // Example function to handle form submission
-      const name = document.getElementById('name').value;
-      const surname = document.getElementById('surname').value;
-      const specialRequest = document.getElementById('special-request').value;
-      const date = document.getElementById('date').value;
-    
-      const breakfastChecked = document.getElementById('breakfast-checkbox').checked;
-      const lunchChecked = document.getElementById('lunch-checkbox').checked;
-      const dinnerChecked = document.getElementById('dinner-checkbox').checked;
-      const breakfastTime = document.getElementById('breakfast-time').value;
-      const lunchTime = document.getElementById('lunch-time').value;
-      const dinnerTime = document.getElementById('dinner-time').value;
-    
-      const reservationDetails = {
-        name,
-        surname,
-        specialRequest,
-        date,
-        meals: {
-          breakfast: breakfastChecked ? breakfastTime : null,
-          lunch: lunchChecked ? lunchTime : null,
-          dinner: dinnerChecked ? dinnerTime : null
-        }
-      };
-    
-      console.log('Reservation Details:', reservationDetails);
-    
-      // Store reservation details in sessionStorage (or localStorage) to access it on the confirmation page
-      sessionStorage.setItem('reservationDetails', JSON.stringify(reservationDetails));
-    
-      // Redirect to the confirmation page
-      window.location.href = 'confirmReservation.html';
-    }
-    
-
-    // Add event listeners to update cost when meal selections change
-    document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
-      checkbox.addEventListener('change', updateCost);
-    });
-  </script>
-</body>
+      // Add event listeners to update cost when meal selections change
+      document
+        .querySelectorAll('input[type="checkbox"]')
+        .forEach((checkbox) => {
+          checkbox.addEventListener("change", updateCost);
+        });
+    </script>
+  </body>
 </html>

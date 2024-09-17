@@ -1,7 +1,7 @@
 const mysql = require('mysql2/promise');
 const fs = require("fs");
 const path = require('path');
-require('dotenv').config({ path: path.resolve(__dirname, '../../.env') }); // Adjust to load the .env from the root
+require('dotenv').config({ path: path.resolve(__dirname, '../../.env') });
 
 // Retrieve the environment variables
 const dbHost = process.env.DB_HOST;
