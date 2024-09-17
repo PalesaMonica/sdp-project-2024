@@ -7,6 +7,7 @@ const session = require("express-session");
 const Reservation = require("./src/reservation/reservation");
 const pool = require("./src/reservation/db-connection");
 const passport = require("passport");
+const cors = require('cors');
 const bcrypt = require("bcryptjs"); // For password hashing
 const GoogleStrategy = require("passport-google-oauth20").Strategy;
 require("dotenv").config();
@@ -20,6 +21,7 @@ const dinnerRoute=require('./src/menu_backend/menuRoutes/dinnerRoute');
 // Initialize the Express app
 const app = express();
 app.use(express.json());
+app.use(cors());
 
 // Log environment variables (for debugging purposes, remove in production)
 // console.log(
@@ -417,6 +419,19 @@ app.get('/dining-halls/:id', async (req, res) => {
     res.status(500).json({ message: 'Error fetching dining hall', error: error.message });
   }
 });
+app.get('/api/dining-halls/:id', async (req, res) => {
+  const diningHallId = req.params.id;
+  try {
+    const [diningHall] = await pool.query('SELECT name FROM dining_halls WHERE id = ?', [diningHallId]);
+    if (diningHall.length === 0) {
+      return res.status(404).json({ message: 'Dining hall not found' });
+    }
+    res.json({ name: diningHall[0].name });
+  } catch (error) {
+    console.error('Error fetching dining hall:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+});
 
 
 
@@ -445,6 +460,35 @@ app.post('/api/reservations', async (req, res) => {
   } catch (error) {
     console.error('Error creating reservation:', error);
     res.status(500).json({ message: 'Error creating reservation', error: error.message });
+  }
+});
+app.get('/api/meal-prices', async (req, res) => {
+  try {
+      const prices = await Reservation.getMealPrices();
+      res.json(prices);
+  } catch (err) {
+      res.status(500).json({
+          error: 'Failed to fetch meal prices',
+          message: err.message,
+          stack: err.stack
+      });
+  }
+});
+app.post('/api/update-price', async (req, res) => {
+  const { id, price } = req.body;
+  if (typeof id !== 'number' || typeof price !== 'number') {
+      return res.status(400).json({ error: 'Invalid input' });
+  }
+
+  try {
+      await Reservation.updateMealPrice(id, price);
+      res.status(200).json({ message: 'Price updated successfully' });
+  } catch (err) {
+      res.status(500).json({
+          error: 'Failed to update meal price',
+          message: err.message,
+          stack: err.stack
+      });
   }
 });
 

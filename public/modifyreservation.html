@@ -62,6 +62,10 @@
       color: red;
       margin-top: 10px;
     }
+    .cost-summary {
+      margin-top: 20px;
+      color: #f5f5f5;
+    }
   </style>
 </head>
 <body>
@@ -71,7 +75,7 @@
 
     <div class="meal-selection">
       <label>
-        <input type="checkbox" id="breakfast-checkbox" onchange="toggleTimeSlot('breakfast')">
+        <input type="checkbox" id="breakfast-checkbox" onchange="updateCost()">
         Breakfast
       </label>
       <div id="breakfast-time-slot" class="time-slot" style="display: none;">
@@ -83,7 +87,7 @@
       </div>
       
       <label>
-        <input type="checkbox" id="lunch-checkbox" onchange="toggleTimeSlot('lunch')">
+        <input type="checkbox" id="lunch-checkbox" onchange="updateCost()">
         Lunch
       </label>
       <div id="lunch-time-slot" class="time-slot" style="display: none;">
@@ -95,7 +99,7 @@
       </div>
 
       <label>
-        <input type="checkbox" id="dinner-checkbox" onchange="toggleTimeSlot('dinner')">
+        <input type="checkbox" id="dinner-checkbox" onchange="updateCost()">
         Dinner
       </label>
       <div id="dinner-time-slot" class="time-slot" style="display: none;">
@@ -116,11 +120,14 @@
       <label for="dining-hall">Change Dining Hall (optional):</label>
       <select id="dining-hall" name="dining-hall">
         <option value="">Select a dining hall</option>
-        <!-- Replace with actual dining hall options from the server -->
-        <option value="hall1">Dining Hall 1</option>
-        <option value="hall2">Dining Hall 2</option>
-        <option value="hall3">Dining Hall 3</option>
+        <option value="hall1">Main Dining Hall</option>
+        <option value="hall2">Convocation Dining Hall</option>
+        <option value="hall3">Jubilee Dining Hall</option>
       </select>
+    </div>
+
+    <div class="cost-summary">
+      <h2>Total Cost: <span id="total-cost">R0.00</span></h2>
     </div>
 
     <div class="button-container">
@@ -129,10 +136,32 @@
   </div>
 
   <script>
+    const mealPrices = {
+      breakfast: 80.00,
+      lunch: 90.00,
+      dinner: 110.00
+    };
+
     function toggleTimeSlot(mealType) {
       const checkbox = document.getElementById(`${mealType}-checkbox`);
       const timeSlotDiv = document.getElementById(`${mealType}-time-slot`);
       timeSlotDiv.style.display = checkbox.checked ? 'block' : 'none';
+    }
+
+    function updateCost() {
+      let totalCost = 0;
+
+      if (document.getElementById('breakfast-checkbox').checked) {
+        totalCost += mealPrices.breakfast;
+      }
+      if (document.getElementById('lunch-checkbox').checked) {
+        totalCost += mealPrices.lunch;
+      }
+      if (document.getElementById('dinner-checkbox').checked) {
+        totalCost += mealPrices.dinner;
+      }
+
+      document.getElementById('total-cost').textContent = `R${totalCost.toFixed(2)}`;
     }
 
     function submitChanges() {
@@ -173,9 +202,12 @@
       window.location.href = 'updatedreservation.html';
     }
 
-    // Add event listeners to toggle time slots
+    // Add event listeners to toggle time slots and update cost
     document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
-      checkbox.addEventListener('change', () => toggleTimeSlot(checkbox.id.split('-')[0]));
+      checkbox.addEventListener('change', () => {
+        toggleTimeSlot(checkbox.id.split('-')[0]);
+        updateCost();
+      });
     });
   </script>
 </body>

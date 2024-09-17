@@ -52,6 +52,10 @@
     .button-container button:hover {
       background: #f15d18;
     }
+    .error-message {
+      color: #ff4c4c;
+      margin: 20px;
+    }
   </style>
 </head>
 <body>
@@ -59,12 +63,15 @@
     <h1>Reservation Updated Successfully</h1>
     <h2>Here are your updated reservation details:</h2>
 
+    <div id="error-message" class="error-message"></div>
+    
     <div class="summary">
       <div class="summary-item"><strong>Date:</strong> <span id="summary-date"></span></div>
       <div class="summary-item"><strong>Dining Hall:</strong> <span id="summary-dining-hall"></span></div>
       <div class="summary-item"><strong>Breakfast:</strong> <span id="summary-breakfast"></span></div>
       <div class="summary-item"><strong>Lunch:</strong> <span id="summary-lunch"></span></div>
       <div class="summary-item"><strong>Dinner:</strong> <span id="summary-dinner"></span></div>
+      <div class="summary-item"><strong>Total Cost:</strong> <span id="summary-total-cost"></span></div>
     </div>
 
     <div class="button-container">
@@ -73,25 +80,56 @@
   </div>
 
   <script>
-    // Simulate reservation details passed from the modification page
-    const reservationDetails = {
-      date: "2024-09-20",
-      diningHall: "Dining Hall 1",
-      meals: {
-        breakfast: "08:00-09:00",
-        lunch: "12:00-13:00",
-        dinner: null // No dinner selected
-      }
-    };
+    // Fetch reservation ID from URL query parameters
+    const urlParams = new URLSearchParams(window.location.search);
+    const reservationId = urlParams.get('reservationId');
 
-    // Populate the summary with the reservation details
-    document.getElementById('summary-date').textContent = reservationDetails.date || "No change";
-    document.getElementById('summary-dining-hall').textContent = reservationDetails.diningHall || "No change";
+    if (reservationId) {
+      // Fetch updated reservation details from the server
+      fetch(`/api/reservations/${reservationId}`)
+        .then(response => {
+          if (!response.ok) {
+            throw new Error('Network response was not ok');
+          }
+          return response.json();
+        })
+        .then(data => {
+          if (data) {
+            // Populate the summary with the reservation details
+            document.getElementById('summary-date').textContent = data.date || "No change";
+            document.getElementById('summary-dining-hall').textContent = data.diningHall || "No change";
+            document.getElementById('summary-breakfast').textContent = data.meals.breakfast ? 'Yes' : 'No';
+            document.getElementById('summary-lunch').textContent = data.meals.lunch ? 'Yes' : 'No';
+            document.getElementById('summary-dinner').textContent = data.meals.dinner ? 'Yes' : 'No';
+            
+            // Calculate and display total cost
+            calculateTotalCost(data);
+          } else {
+            document.getElementById('error-message').textContent = 'No reservation details found';
+          }
+        })
+        .catch(error => {
+          console.error('Error fetching reservation details:', error);
+          document.getElementById('error-message').textContent = 'Error fetching reservation details. Please try again later.';
+        });
+    } else {
+      document.getElementById('error-message').textContent = 'No reservation ID found in URL';
+    }
 
-    // Show meal times or 'None' if not selected
-    document.getElementById('summary-breakfast').textContent = reservationDetails.meals.breakfast || "None";
-    document.getElementById('summary-lunch').textContent = reservationDetails.meals.lunch || "None";
-    document.getElementById('summary-dinner').textContent = reservationDetails.meals.dinner || "None";
+    function calculateTotalCost(data) {
+      const mealPrices = {
+        breakfast: 80.00,
+        lunch: 90.00,
+        dinner: 110.00
+      };
+
+      let totalCost = 0;
+      if (data.meals.breakfast) totalCost += mealPrices.breakfast;
+      if (data.meals.lunch) totalCost += mealPrices.lunch;
+      if (data.meals.dinner) totalCost += mealPrices.dinner;
+
+      document.getElementById('summary-total-cost').textContent = `R${totalCost.toFixed(2)}`;
+    }
 
     function goToDashboard() {
       // Redirect to user dashboard after clicking Done

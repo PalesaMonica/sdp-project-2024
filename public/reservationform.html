@@ -62,7 +62,7 @@
       width: 100%;
     }
     #submit-button:hover {
-      background: #f15d18;
+      background: #0056b3;
     }
     @media (max-width: 600px) {
       .container {
@@ -78,12 +78,11 @@
 <body>
   <div class="container">
     <h1>Select Your Meals and Reserve</h1>
-    <div class="everything">
-        <button class="back-button" onclick="window.history.back()">Back</button>
-
+    <button class="back-button" onclick="window.history.back()">Back</button>
+    
     <div class="meal-selection">
       <label>
-        <input type="checkbox" id="breakfast-checkbox" onchange="toggleTimeSlot('breakfast')">
+        <input type="checkbox" id="breakfast-checkbox" onclick="updateMealPrices()">
         Breakfast
       </label>
       <div id="breakfast-time-slot" class="time-slot" style="display: none;">
@@ -95,7 +94,7 @@
       </div>
       
       <label>
-        <input type="checkbox" id="lunch-checkbox" onchange="toggleTimeSlot('lunch')">
+        <input type="checkbox" id="lunch-checkbox" onclick="updateMealPrices()">
         Lunch
       </label>
       <div id="lunch-time-slot" class="time-slot" style="display: none;">
@@ -107,7 +106,7 @@
       </div>
 
       <label>
-        <input type="checkbox" id="dinner-checkbox" onchange="toggleTimeSlot('dinner')">
+        <input type="checkbox" id="dinner-checkbox" onclick="updateMealPrices()">
         Dinner
       </label>
       <div id="dinner-time-slot" class="time-slot" style="display: none;">
@@ -147,51 +146,85 @@
   </div>
 
   <script>
+    // Predefined meal prices
+    const mealPrices = {
+      breakfast: 80.00,
+      lunch: 90.00,
+      dinner: 110.00
+    };
+
     function toggleTimeSlot(mealType) {
       const checkbox = document.getElementById(`${mealType}-checkbox`);
       const timeSlotDiv = document.getElementById(`${mealType}-time-slot`);
       timeSlotDiv.style.display = checkbox.checked ? 'block' : 'none';
+    }
+
+    function updateMealPrices() {
+      // Update time slots based on checkboxes
+      toggleTimeSlot('breakfast');
+      toggleTimeSlot('lunch');
+      toggleTimeSlot('dinner');
+      // Update cost after meal time slots are shown/hidden
       updateCost();
     }
-  
+
     function updateCost() {
       const breakfastChecked = document.getElementById('breakfast-checkbox').checked;
       const lunchChecked = document.getElementById('lunch-checkbox').checked;
       const dinnerChecked = document.getElementById('dinner-checkbox').checked;
       let totalCost = 0;
-  
-      if (breakfastChecked) totalCost += 150;
-      if (lunchChecked) totalCost += 200;
-      if (dinnerChecked) totalCost += 250;
-  
+
+      if (breakfastChecked) totalCost += mealPrices.breakfast;
+      if (lunchChecked) totalCost += mealPrices.lunch;
+      if (dinnerChecked) totalCost += mealPrices.dinner;
+
       document.getElementById('cost-summary').innerHTML = `Total Cost: R${totalCost.toFixed(2)}`;
     }
-  
+
+    function isReservationAllowed(date) {
+      const reservationDate = new Date(date);
+      const currentDate = new Date();
+      const cutoffTime = new Date(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate(), 21, 0, 0); // 21:00 today
+
+      if (reservationDate < currentDate) {
+        return false;
+      }
+
+      if (reservationDate.toDateString() === currentDate.toDateString()) {
+        return currentDate < cutoffTime;
+      }
+
+      return true;
+    }
+
     function submitReservation() {
       const name = document.getElementById('name').value;
       const surname = document.getElementById('surname').value;
       const specialRequest = document.getElementById('special-request').value;
       const date = document.getElementById('date').value;
-  
+
       const breakfastChecked = document.getElementById('breakfast-checkbox').checked;
       const lunchChecked = document.getElementById('lunch-checkbox').checked;
       const dinnerChecked = document.getElementById('dinner-checkbox').checked;
       const breakfastTime = document.getElementById('breakfast-time').value;
       const lunchTime = document.getElementById('lunch-time').value;
       const dinnerTime = document.getElementById('dinner-time').value;
-  
-      // Validate required fields
+
       if (!name || !surname || !date) {
         alert('Please fill in all required fields: Name, Surname, and Date are required.');
         return;
       }
-  
-      // Validate that at least one meal is selected
+
       if (!breakfastChecked && !lunchChecked && !dinnerChecked) {
         alert('Please select at least one meal.');
         return;
       }
-  
+
+      if (!isReservationAllowed(date)) {
+        alert('Reservations must be made by 21:00 the day before the meal collection.');
+        return;
+      }
+
       const reservationDetails = {
         name,
         surname,
@@ -203,17 +236,29 @@
           dinner: dinnerChecked ? dinnerTime : null
         }
       };
-  
-      console.log('Reservation Details:', reservationDetails);
-  
-      sessionStorage.setItem('reservationDetails', JSON.stringify(reservationDetails));
-      window.location.href = 'confirmReservation.html';
+
+      // Send reservation data to backend API
+      fetch('/api/reservations', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(reservationDetails)
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.reservationId) {
+          sessionStorage.setItem('reservationDetails', JSON.stringify(reservationDetails));
+          window.location.href = 'confirmReservation.html?reservationId=' + data.reservationId;
+        } else {
+          alert('There was an error submitting your reservation. Please try again.');
+        }
+      })
+      .catch(error => {
+        console.error('Error submitting reservation:', error);
+        alert('There was an error submitting your reservation. Please try again.');
+      });
     }
-  
-    document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
-      checkbox.addEventListener('change', updateCost);
-    });
   </script>
-  
 </body>
 </html>
