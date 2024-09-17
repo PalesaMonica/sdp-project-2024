@@ -61,3 +61,7 @@ function fetchReviews() {
         console.error('Error fetching reviews:', error);
     });
 }
+
+function backToDash(){
+    window.location.href = 'userDashboard.html';
+}
