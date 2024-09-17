@@ -1,11 +1,11 @@
 <?xml version="1.0" ?>
 <!DOCTYPE coverage SYSTEM "http://cobertura.sourceforge.net/xml/coverage-04.dtd">
-<coverage lines-valid="85" lines-covered="74" line-rate="0.8704999999999999" branches-valid="33" branches-covered="27" branch-rate="0.8181" timestamp="1726350416171" complexity="0" version="0.1">
+<coverage lines-valid="27" lines-covered="25" line-rate="0.9259000000000001" branches-valid="6" branches-covered="4" branch-rate="0.6666" timestamp="1726565445155" complexity="0" version="0.1">
   <sources>
     <source>D:\SDP\sdp-project-2024</source>
   </sources>
   <packages>
-    <package name="main" line-rate="0.8704999999999999" branch-rate="0.8181">
+    <package name="main" line-rate="0.9259000000000001" branch-rate="0.6666">
       <classes>
         <class name="login.js" filename="src\js\login.js" line-rate="0.909" branch-rate="0.5">
           <methods>
@@ -27,46 +27,6 @@
             <line number="21" hits="0" branch="false"/>
             <line number="23" hits="2" branch="false"/>
             <line number="27" hits="1" branch="false"/>
-          </lines>
-        </class>
-        <class name="mealCredit.js" filename="src\js\mealCredit.js" line-rate="1" branch-rate="0.8332999999999999">
-          <methods>
-            <method name="formatDate" hits="23" signature="()V">
-              <lines>
-                <line number="23" hits="23"/>
-              </lines>
-            </method>
-            <method name="createTransactionHTML" hits="22" signature="()V">
-              <lines>
-                <line number="28" hits="22"/>
-              </lines>
-            </method>
-            <method name="renderTransactions" hits="5" signature="()V">
-              <lines>
-                <line number="45" hits="5"/>
-              </lines>
-            </method>
-            <method name="updateDOM" hits="3" signature="()V">
-              <lines>
-                <line number="52" hits="3"/>
-              </lines>
-            </method>
-          </methods>
-          <lines>
-            <line number="1" hits="1" branch="false"/>
-            <line number="24" hits="23" branch="false"/>
-            <line number="25" hits="23" branch="false"/>
-            <line number="29" hits="22" branch="false"/>
-            <line number="47" hits="5" branch="false"/>
-            <line number="49" hits="5" branch="false"/>
-            <line number="53" hits="3" branch="true" condition-coverage="50% (1/2)"/>
-            <line number="54" hits="3" branch="false"/>
-            <line number="55" hits="3" branch="true" condition-coverage="100% (2/2)"/>
-            <line number="56" hits="1" branch="false"/>
-            <line number="62" hits="1" branch="true" condition-coverage="75% (3/4)"/>
-            <line number="63" hits="1" branch="false"/>
-            <line number="64" hits="1" branch="false"/>
-            <line number="67" hits="1" branch="false"/>
           </lines>
         </class>
         <class name="signup.js" filename="src\js\signup.js" line-rate="0.9375" branch-rate="0.75">
@@ -94,116 +54,6 @@
             <line number="29" hits="0" branch="false"/>
             <line number="31" hits="2" branch="false"/>
             <line number="35" hits="1" branch="false"/>
-          </lines>
-        </class>
-        <class name="transactionHistory.js" filename="src\js\transactionHistory.js" line-rate="0.7954000000000001" branch-rate="0.8665999999999999">
-          <methods>
-            <method name="formatDate" hits="12" signature="()V">
-              <lines>
-                <line number="22" hits="12"/>
-              </lines>
-            </method>
-            <method name="filterTransactions" hits="4" signature="()V">
-              <lines>
-                <line number="27" hits="4"/>
-              </lines>
-            </method>
-            <method name="(anonymous_2)" hits="64" signature="()V">
-              <lines>
-                <line number="47" hits="64"/>
-              </lines>
-            </method>
-            <method name="(anonymous_3)" hits="30" signature="()V">
-              <lines>
-                <line number="51" hits="30"/>
-              </lines>
-            </method>
-            <method name="formatAmount" hits="19" signature="()V">
-              <lines>
-                <line number="54" hits="19"/>
-              </lines>
-            </method>
-            <method name="createTransactionHTML" hits="17" signature="()V">
-              <lines>
-                <line number="59" hits="17"/>
-              </lines>
-            </method>
-            <method name="renderTransactions" hits="1" signature="()V">
-              <lines>
-                <line number="75" hits="1"/>
-              </lines>
-            </method>
-            <method name="(anonymous_7)" hits="16" signature="()V">
-              <lines>
-                <line number="84" hits="16"/>
-              </lines>
-            </method>
-            <method name="(anonymous_8)" hits="0" signature="()V">
-              <lines>
-                <line number="97" hits="0"/>
-              </lines>
-            </method>
-            <method name="(anonymous_9)" hits="0" signature="()V">
-              <lines>
-                <line number="102" hits="0"/>
-              </lines>
-            </method>
-            <method name="(anonymous_10)" hits="0" signature="()V">
-              <lines>
-                <line number="103" hits="0"/>
-              </lines>
-            </method>
-            <method name="(anonymous_11)" hits="0" signature="()V">
-              <lines>
-                <line number="104" hits="0"/>
-              </lines>
-            </method>
-          </methods>
-          <lines>
-            <line number="1" hits="1" branch="false"/>
-            <line number="23" hits="12" branch="false"/>
-            <line number="24" hits="12" branch="false"/>
-            <line number="28" hits="4" branch="false"/>
-            <line number="29" hits="4" branch="false"/>
-            <line number="31" hits="4" branch="true" condition-coverage="100% (3/3)"/>
-            <line number="33" hits="2" branch="false"/>
-            <line number="34" hits="2" branch="false"/>
-            <line number="36" hits="1" branch="false"/>
-            <line number="37" hits="1" branch="false"/>
-            <line number="38" hits="1" branch="false"/>
-            <line number="40" hits="1" branch="false"/>
-            <line number="41" hits="1" branch="false"/>
-            <line number="42" hits="1" branch="false"/>
-            <line number="43" hits="1" branch="false"/>
-            <line number="46" hits="4" branch="false"/>
-            <line number="48" hits="64" branch="false"/>
-            <line number="49" hits="64" branch="true" condition-coverage="100% (2/2)"/>
-            <line number="51" hits="30" branch="false"/>
-            <line number="55" hits="19" branch="false"/>
-            <line number="56" hits="19" branch="true" condition-coverage="100% (2/2)"/>
-            <line number="60" hits="17" branch="false"/>
-            <line number="76" hits="1" branch="false"/>
-            <line number="78" hits="1" branch="true" condition-coverage="50% (1/2)"/>
-            <line number="79" hits="0" branch="false"/>
-            <line number="82" hits="1" branch="false"/>
-            <line number="83" hits="1" branch="false"/>
-            <line number="84" hits="1" branch="false"/>
-            <line number="85" hits="16" branch="true" condition-coverage="100% (2/2)"/>
-            <line number="86" hits="11" branch="false"/>
-            <line number="87" hits="11" branch="false"/>
-            <line number="89" hits="16" branch="false"/>
-            <line number="92" hits="1" branch="false"/>
-            <line number="96" hits="1" branch="true" condition-coverage="50% (1/2)"/>
-            <line number="97" hits="1" branch="false"/>
-            <line number="98" hits="0" branch="false"/>
-            <line number="99" hits="0" branch="false"/>
-            <line number="101" hits="0" branch="false"/>
-            <line number="102" hits="0" branch="false"/>
-            <line number="103" hits="0" branch="false"/>
-            <line number="104" hits="0" branch="false"/>
-            <line number="105" hits="0" branch="false"/>
-            <line number="106" hits="0" branch="false"/>
-            <line number="112" hits="1" branch="false"/>
           </lines>
         </class>
       </classes>
