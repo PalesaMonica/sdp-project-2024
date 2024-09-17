@@ -225,7 +225,7 @@ app.get("/login", (req, res) => {
 
 // Handle the signup form submission
 app.post("/signup", async (req, res) => {
-  const { username, email, password } = req.body;
+  const { username, email, password, role } = req.body;
 
   try {
     connection.query(
@@ -247,10 +247,10 @@ app.post("/signup", async (req, res) => {
         const hashedPassword = await bcrypt.hash(password, salt);
 
         const sql =
-          "INSERT INTO users (username, email, password) VALUES (?, ?, ?)";
+          "INSERT INTO users (username, email, password, role) VALUES (?, ?, ?, ?)";
         connection.query(
           sql,
-          [username, email, hashedPassword],
+          [username, email, hashedPassword, role],
           (err, result) => {
             if (err) {
               console.error("Database insert error:", err);
@@ -259,9 +259,10 @@ app.post("/signup", async (req, res) => {
                 .json({ msg: "Server Error: Unable to insert user" });
             }
 
+            const redirectUrl = '/login.html';
             return res
               .status(200)
-              .json({ msg: "Signup successful, redirecting..." });
+              .json({ msg: "Signup successful, redirecting...", redirectUrl });
           }
         );
       }
@@ -307,9 +308,10 @@ app.post("/login", (req, res) => {
               .status(500)
               .json({ msg: "Server Error: Unable to log in" });
           }
-          return res
-            .status(200)
-            .json({ msg: "Login successful, redirecting..." });
+
+          // Check the role of the user and redirect accordingly
+          const redirectUrl = user.role === 'staff' ? '/meal-management.html' : '/userDashboard.html';
+          return res.status(200).json({ msg: "Login successful, redirecting...", redirectUrl });
         });
       }
     );
@@ -320,6 +322,7 @@ app.post("/login", (req, res) => {
     });
   }
 });
+
 
 app.post('/saveDietPreference', (req, res) => {
   const { dietPlan } = req.body;
@@ -549,6 +552,65 @@ app.get('/feedback', (req, res) => {
     res.status(200).json(results);
   });
 });
+
+
+//Meal Management
+app.get('/api/current-menu', async (req, res) => {
+  try {
+      const [rows] = await pool.query('SELECT * FROM menu');
+      res.json(rows);
+  } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+app.get('/api/available-meals', async (req, res) => {
+  try {
+      const [rows] = await pool.query('SELECT * FROM meals');
+      res.json(rows);
+  } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+app.post('/api/add-to-menu', async (req, res) => {
+  const { mealId } = req.body;
+  try {
+      await pool.query('INSERT INTO menu (meal_id) VALUES (?)', [mealId]);
+      res.json({ success: true });
+  } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+app.delete('/api/remove-from-menu/:id', async (req, res) => {
+  const { id } = req.params;
+  try {
+      await pool.query('DELETE FROM menu WHERE id = ?', [id]);
+      res.json({ success: true });
+  } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+app.post('/api/add-new-meal', async (req, res) => {
+  const { name, ingredients, diet_type, image_url, meal_type } = req.body;
+  try {
+      await pool.query(
+          'INSERT INTO meals (name, ingredients, diet_type, image_url, meal_type) VALUES (?, ?, ?, ?, ?)',
+          [name, ingredients, diet_type, image_url, meal_type]
+      );
+      res.json({ success: true });
+  } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: 'Internal server error' });
+  }
+});
+//
 
 // Start the server
 const port = process.env.PORT || 3000;
