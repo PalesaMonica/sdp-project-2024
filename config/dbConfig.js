@@ -1,17 +1,31 @@
 const mysql = require('mysql2');
 const fs = require('fs');
+require('dotenv').config();
+
+// Check if SSL_CA is defined
+if (!process.env.SSL_CA) {
+    console.error('SSL_CA environment variable is not defined');
+    process.exit(1);
+}
+
+// Check if the file exists at the given path
+if (!fs.existsSync(process.env.SSL_CA)) {
+    console.error(`SSL certificate file does not exist at path: ${process.env.SSL_CA}`);
+    process.exit(1);
+}
+
 
 // Create a connection to the database
 const db = mysql.createConnection({
-    host: 'dining-service-db.mysql.database.azure.com',     //  MySQL host (use Azure host)
-    user: 'dining',          // MySQL username
-    port : '3306',
-    password: 'Service123',  // MySQL password
-    database: 'dining_services', // database name
+    host: process.env.DB_HOST,       // Use environment variable
+    user: process.env.DB_USER,       // Use environment variable
+    port: process.env.DB_PORT || 3306,
+    password: process.env.DB_PASSWORD, // Use environment variable
+    database: process.env.DB_NAME,   // Use environment variable
     ssl: {
-        ca: fs.readFileSync('C:/Users/nonhl/DigiCertGlobalRootCA.crt.pem') // Path to SSL certificate
+        ca: fs.readFileSync(process.env.SSL_CA) // Path to SSL certificate
     },
-    multipleStatements:true,
+    multipleStatements: true,
 });
 
 // Connect to the database
