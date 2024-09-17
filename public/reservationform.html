@@ -27,7 +27,7 @@
             />
             Breakfast
           </label>
-          <div id="breakfast-time-slot" class="time-slot" style="width: 135px">
+          <div id="breakfast-time-slot" class="time-slot" style="display: none">
             <label for="breakfast-time">Time Slot:</label>
             <select id="breakfast-time" name="breakfast-time">
               <option value="08:00-09:00">08:00-09:00</option>
@@ -43,7 +43,7 @@
             />
             Lunch
           </label>
-          <div id="lunch-time-slot" class="time-slot" style="width: 135px">
+          <div id="lunch-time-slot" class="time-slot" style="display: none">
             <label for="lunch-time">Time Slot:</label>
             <select id="lunch-time" name="lunch-time">
               <option value="12:00-13:00">12:00-13:00</option>
@@ -59,8 +59,7 @@
             />
             Dinner
           </label>
-
-          <div id="dinner-time-slot" class="time-slot" style="width: 135px">
+          <div id="dinner-time-slot" class="time-slot" style="display: none">
             <label for="dinner-time">Time Slot:</label>
             <select id="dinner-time" name="dinner-time">
               <option value="18:00-19:00">18:00-19:00</option>
@@ -96,12 +95,13 @@
         </div>
       </div>
     </div>
+
     <script>
       function toggleTimeSlot(mealType) {
         const checkbox = document.getElementById(`${mealType}-checkbox`);
         const timeSlotDiv = document.getElementById(`${mealType}-time-slot`);
         timeSlotDiv.style.display = checkbox.checked ? "block" : "none";
-        updateCost(); // Update cost when selection changes
+        updateCost();
       }
 
       function updateCost() {
@@ -112,9 +112,9 @@
           document.getElementById("dinner-checkbox").checked;
         let totalCost = 0;
 
-        if (breakfastChecked) totalCost += 50;
-        if (lunchChecked) totalCost += 55;
-        if (dinnerChecked) totalCost += 60;
+        if (breakfastChecked) totalCost += 150;
+        if (lunchChecked) totalCost += 200;
+        if (dinnerChecked) totalCost += 250;
 
         document.getElementById(
           "cost-summary"
@@ -122,7 +122,6 @@
       }
 
       function submitReservation() {
-        // Example function to handle form submission
         const name = document.getElementById("name").value;
         const surname = document.getElementById("surname").value;
         const specialRequest = document.getElementById("special-request").value;
@@ -136,6 +135,20 @@
         const breakfastTime = document.getElementById("breakfast-time").value;
         const lunchTime = document.getElementById("lunch-time").value;
         const dinnerTime = document.getElementById("dinner-time").value;
+
+        // Validate required fields
+        if (!name || !surname || !date) {
+          alert(
+            "Please fill in all required fields: Name, Surname, and Date are required."
+          );
+          return;
+        }
+
+        // Validate that at least one meal is selected
+        if (!breakfastChecked && !lunchChecked && !dinnerChecked) {
+          alert("Please select at least one meal.");
+          return;
+        }
 
         const reservationDetails = {
           name,
@@ -151,17 +164,13 @@
 
         console.log("Reservation Details:", reservationDetails);
 
-        // Store reservation details in sessionStorage (or localStorage) to access it on the confirmation page
         sessionStorage.setItem(
           "reservationDetails",
           JSON.stringify(reservationDetails)
         );
-
-        // Redirect to the confirmation page
         window.location.href = "confirmReservation.html";
       }
 
-      // Add event listeners to update cost when meal selections change
       document
         .querySelectorAll('input[type="checkbox"]')
         .forEach((checkbox) => {
