@@ -3,8 +3,7 @@
 ## Code Coverge
 Click on the badge to view coverage on coveralls
 
-[![Coverage Status](https://coveralls.io/repos/github/PalesaMonica/sdp-project-2024/badge.png?branch=main)](https://coveralls.io/github/PalesaMonica/sdp-project-2024?branch=main)
-
+[![Coverage Status](https://coveralls.io/repos/github/PalesaMonica/sdp-project-2024/badge.svg?branch=main)](https://coveralls.io/github/PalesaMonica/sdp-project-2024?branch=main)
 
 
 ## Overview
