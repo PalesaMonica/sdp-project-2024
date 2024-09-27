@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Reservations - CampusCrave</title>
+    <link rel="stylesheet" href="css/reservations.css">
+</head>
+<body>
+    <header class="header">
+        <div class="logo" onclick="window.location.href='userDashboard.html'">
+            <img src="images/option-21.svg" alt="CampusCrave Logo">
+            <span class="logo-text">Campus<span class="crave">Crave</span></span>
+        </div>
+    </header>
+
+    <main class="reservations-container">
+        <h1>Your Reservations</h1>
+        <div id="reservations-list"></div>
+    </main>
+
+    <div id="reservation-modal" class="modal">
+        <div class="modal-content">
+            <h2>Reservation Details</h2>
+            <div id="reservation-details"></div>
+            <button id="close-modal">Close</button>
+        </div>
+    </div>
+
+
+    <script src="../src/js/reservations.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/qrious@4.0.2/dist/qrious.min.js"></script>
+</body>
+</html>

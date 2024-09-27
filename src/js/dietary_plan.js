@@ -1,24 +1,55 @@
 function handleBoxClick(option) {
-           
-    switch(option) {
-        case 'vegetarian':
-            window.location.href = `confirmation.html?diet=${option}`;
-        case 'glutenFree':
-            window.location.href = `confirmation.html?diet=${option}`; 
-            break;
-        case 'halal':
-            window.location.href = `confirmation.html?diet=${option}`; 
-            break;
-        case 'none':
-            window.location.href = `confirmation.html?diet=${option}`; 
-            break;
-        default:
-            console.log('Unknown option selected');
-    }
+    // Show the confirmation modal
+    showConfirmationModal(option);
 }
 
-function backToDash(){
-    window.location.href = 'userDashboard.html';
+function showConfirmationModal(dietPlan) {
+    // Set the diet plan in the modal
+    document.getElementById('dietPlan').textContent = dietPlan;
+    
+    // Display the modal
+    const modal = document.getElementById('confirmation-modal');
+    modal.style.display = 'block';
+
+    // Set up the confirm button click handler
+    document.getElementById('confirm-button').onclick = function() {
+        confirmSelection(dietPlan);
+    };
+
+    // Set up the cancel button click handler
+    document.getElementById('cancel-button').onclick = function() {
+        modal.style.display = 'none'; // Close the modal if user cancels
+    };
+}
+
+function confirmSelection(dietPlan) {
+    fetch('/saveDietPreference', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ dietPlan })
+    })
+    .then(response => response.json())
+    .then(data => {
+        // Show the toaster instead of an alert
+        showToaster(`Your ${dietPlan} diet plan has been confirmed!`);
+        
+        // Redirect to the menu page after a short delay
+        setTimeout(() => {
+            window.location.href = 'menu.html';
+        }, 3000); // Wait 3 seconds for the toaster to disappear
+    })
+    .catch(error => console.error('Error:', error));
+}
+
+function showToaster(message) {
+    const toaster = document.getElementById('toaster');
+    toaster.textContent = message;
+    toaster.classList.add('show');
+
+    // Hide the toaster after 3 seconds
+    setTimeout(() => {
+        toaster.classList.remove('show');
+    }, 3000);
 }
 
 document.addEventListener('DOMContentLoaded', () => {

@@ -3,462 +3,75 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="css/menu.css" />
     <title>CampusCrave Menu</title>
+    <link rel="stylesheet" href="css/menu.css">
 </head>
 <body>
-
-    <button class="back-button" onclick="backToDash()">Back</button>
-
-    
     <div class="container">
         <div class="header">
             <div class="logo">
-                <img src="images/option-21.svg" alt="CampusCrave Logo">
-                <span class="logo-text">Campus<span class="crave">Crave</span></span>
+                <img src="images/option-21.svg" alt="CampusCrave Logo" onclick="backToDash()">
+                <span class="logo-text" onclick="backToDash()" >Campus<span class="crave" onclick="backToDash()">Crave</span></span>
             </div>
+            <div class="cart-icon">
+                <span id="cart-count">0</span>
+                <img src="images/cart-icon.svg" alt="Cart" onclick="window.location.href='cart.html'">
+            </div>
+
         </div>
 
+        
         <div class="search-bar">
-            <input type="text" id="search-input" placeholder="Search menu items...">
+            <input type="text" id="search-input" placeholder="Search for meals...">
             <button id="search-button">Search</button>
         </div>
 
-        <div class="menu-header">
-            <h2>Menu Categories</h2>
+        <div class="menu-controls">
+            <select id="dining-hall-selector">
+                <option value=1>Main DH</option>
+                <option value=2>Convocation DH</option>
+                <option value=3>Jubilee DH</option>
+            </select>
+            <select id="day-selector">
+                <option value="today">Today</option>
+                <option value="week">Week</option>
+            </select>
         </div>
 
-        <h3 id="diet-preference">Fetching your dietary preference...</h3>
-        <!-- Breakfast Section -->
-        <div class="category">
-            <div class="category-header">
-                <h3>Breakfast</h3>
-                <a href="#" class="view-all">View all</a>
-            </div>
-            <div class="item-grid" id="breakfast-grid"></div>
+        <div id="diet-preference">
+           Dietary Preference:
         </div>
 
-        <!-- Lunch Section -->
-        <div class="category">
-            <div class="category-header">
-                <h3>Lunch</h3>
-                <a href="#" class="view-all">View all</a>
-            </div>
-            <div class="item-grid" id="lunch-grid"></div>
-        </div>
 
-        <!-- Dinner Section -->
-        <div class="category">
-            <div class="category-header">
-                <h3>Dinner</h3>
-                <a href="#" class="view-all">View all</a>
-            </div>
-            <div class="item-grid" id="dinner-grid"></div>
-        </div>
+
+        <div id="menu-container"></div>
     </div>
 
-    <!-- Modal for showing item details -->
     <div id="item-modal" class="modal">
         <div class="modal-content">
             <span class="close">&times;</span>
             <h2 id="item-name"></h2>
-            <img id="item-image" src="" alt="Item Image" />
+            <img id="item-image" src="" alt="Item Image">
             <p><strong>Ingredients:</strong> <span id="item-ingredients"></span></p>
             <p><strong>Dining Hall:</strong> <span id="item-dining-hall"></span></p>
             <p><strong>Diet Type:</strong> <span id="item-diet-type"></span></p>
+            <p><strong>Meal Type:</strong> <span id="item-meal-type"></span></p>
+            <p><strong>Meal Date:</strong> <span id="item-meal-date"></span></p>
             <a href="#" id="reservation-link" class="reservation-link">Make a Reservation</a>
-
         </div>
     </div>
 
-    <!-- Modal for showing all items -->
-    <div id="all-items-modal" class="modal">
+    <div id="duplicate-modal" class="modal">
         <div class="modal-content">
-            <span class="close-all">&times;</span>
-            <h2>All Menu Items</h2>
-            <div id="all-items-grid" class="item-grid"></div>
+            <h2>Item Already in Cart</h2>
+            <p>This item is already in your cart. Do you want to replace it?</p>
+            <button id="replace-btn">Replace</button>
+            <button id="cancel-replace-btn">Cancel</button>
         </div>
     </div>
 
+    <div id="toaster"></div>
 
     <script src="../src/js/menu.js"></script>
 </body>
 </html>
-
-
-
-<!-- <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="css/menu.css" />
-    <title>CampusCrave Menu</title>
-
-</head>
-<body>
-    <div class="container">
-        <div class="header">
-            <div class="logo">
-                <img src="images/option-21.svg" alt="CampusCrave Logo">
-                <span class="logo-text">Campus<span class="crave">Crave</span></span>
-            </div>
-        </div>
-
-        <div class="search-bar">
-            <input type="text" placeholder="Search">
-            <span></span>
-        </div>
-
-        <div class="menu-header">
-            <h2>Menu Categories</h2>
-        </div>
-
-        <div class="category">
-            <div class="category-header">
-                <h3>Breakfast</h3>
-                <a href="#" class="view-all">View all</a>
-            </div>
-            <div class="item-grid" id="vegetarian-grid"></div>
-        </div>
-
-        <div class="category">
-            <div class="category-header">
-                <h3>Lunch</h3>
-                <a href="#" class="view-all">View all</a>
-            </div>
-            <div class="item-grid" id="non-vegetarian-grid"></div>
-        </div>
-
-        <div class="category">
-            <div class="category-header">
-                <h3>Dinner</h3>
-                <a href="#" class="view-all">View all</a>
-            </div>
-            <div class="item-grid" id="desserts-drinks-grid"></div>
-        </div>
-
-    </div>
-
-    <script>
-        function createItem(index) {
-            const item = document.createElement('div');
-            item.className = 'item';
-            const img = document.createElement('img');
-            img.src = `/api/placeholder/200/200?text=Item ${index}`;
-            img.alt = `Item ${index}`;
-            item.appendChild(img);
-            return item;
-        }
-
-        function populateGrid(gridId, itemCount) {
-            const grid = document.getElementById(gridId);
-            grid.innerHTML = '';
-            for (let i = 1; i <= itemCount; i++) {
-                grid.appendChild(createItem(i));
-            }
-        }
-
-        function updateGrids() {
-            const width = window.innerWidth;
-            let itemCount;
-            
-            if (width < 480) {
-                itemCount = 3;
-            } else if (width < 768) {
-                itemCount = 4;
-            } else if (width < 1024) {
-                itemCount = 5;
-            } else {
-                itemCount = 6;
-            }
-
-            populateGrid('vegetarian-grid', itemCount);
-            populateGrid('non-vegetarian-grid', itemCount);
-            populateGrid('desserts-drinks-grid', itemCount);
-            populateGrid('diet-grid', 1);
-        }
-
-        window.addEventListener('load', updateGrids);
-        window.addEventListener('resize', updateGrids);
-    </script>
-</body>
-</html> -->
-
-<!-- <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Menu</title>
-    <style>
-        body {
-            background-color: #1A223B;
-            color: #F4DB7D;
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-        }
-
-        header {
-            display: flex;
-            align-items: center;
-            padding: 20px;
-            background-color: #1A223B;
-        }
-
-        header img {
-            width: 50px;
-            height: 50px;
-            margin-right: 15px;
-        }
-
-        .campuscrave-logo-text {
-            font-size: 24px;
-            font-weight: bold;
-        }
-
-        .campuscrave-logo-text .campus {
-            color: white;
-        }
-
-        .campuscrave-logo-text .crave {
-            color: #FF6A3D;
-        }
-        .header {
-            display: flex;
-            justify-content: space-between; /* This aligns the buttons and title horizontally */
-            align-items: center; /* Ensures vertical alignment */
-            padding: 20px;
-            background-color: #1A223B;
-            position: relative;
-        }
-        
-        .button-container {
-            display: flex;
-            gap: 10px;
-        }
-        
-        .menu-title {
-            color: #FF6A3D;
-            margin: 0;
-            text-align: center;
-            flex-grow: 1; /* Allows the title to take up available space */
-        }
-        
-        .logout-container {
-            margin-left: auto; /* Pushes the logout button to the right */
-        }
-        
-        .back-button {
-            background-color: #FF6A3D;
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 8px;
-            font-size: 16px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-        }
-        
-        .back-button:hover {
-            background-color: #e55d3b;
-        }
-        
-        .logout-button {
-            padding: 5px 10px;
-            background-color: #FF6A3D;
-            border: none;
-            border-radius: 3px;
-            color: #FFFFFF;
-            cursor: pointer;
-        }
-
-        h2 {
-            color: #9DAAF2;
-            text-align: center;
-        }
-
-        form {
-            margin: 20px auto;
-            text-align: center;
-        }
-
-        input[type="text"] {
-            padding: 5px;
-            border: 1px solid #9DAAF2;
-            border-radius: 3px;
-        }
-
-        button {
-            padding: 5px 10px;
-            background-color: #FF6A3D;
-            border: none;
-            border-radius: 3px;
-            color: #FFFFFF;
-            cursor: pointer;
-        }
-
-        table {
-            margin: 20px auto;
-            width: 80%;
-            border-collapse: collapse;
-        }
-
-        table th, table td {
-            padding: 10px;
-            border: 1px solid #9DAAF2;
-            color: #1A223B;
-            background-color: #FFFFFF;
-        }
-
-        table th {
-            background-color: #9DAAF2;
-            color: #1A223B;
-        }
-    </style>
-</head>
-<body>
-    <header>
-        <img src="./images/option-21.svg" alt="CampusCrave logo">
-        <div class="campuscrave-logo-text">
-            <span class="campus">Campus</span><span class="crave">Crave</span>
-        </div>
-    </header>
-    
-    <div class="header">
-        <div class="button-container">
-            <button class="back-button" onclick="backToDash()">Back</button>
-        </div>
-        <h1 class="menu-title">Menu</h1>
-        <div class="logout-container">
-            <button class="logout-button" onclick="window.location.href='login.html'">Log out &#8594;</button>
-        </div>
-    </div>
-
-
-    <div>
-        <form id="dietPlanForm">
-            <label for="dietPlanInput">Enter Diet Plan:</label>
-            <input type="text" id="dietPlanInput" placeholder="e.g., halal, vegetarian" />
-            <button type="submit">Submit</button>
-        </form>
-    </div>
-
-    <div id="breakfast">
-        <h2>Breakfast</h2>
-        <div>
-            <h3>Snack Pack</h3>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Item Name</th>
-                        <th>Item Ingredients</th>
-                    </tr>
-                </thead>
-                <tbody id="breakfast-snackpackTableBody"></tbody>
-            </table>
-        </div>
-        <div>
-            <h3>Main Meal</h3>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Item Name</th>
-                        <th>Item Ingredients</th>
-                    </tr>
-                </thead>
-                <tbody id="breakfast-mainmealTableBody"></tbody>
-            </table>
-        </div>
-    </div>
-
-    <div id="lunch">
-        <h2>Lunch</h2>
-        <div>
-            <h3>Snack Pack</h3>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Item Name</th>
-                        <th>Item Ingredients</th>
-                    </tr>
-                </thead>
-                <tbody id="lunch-snackpackTableBody"></tbody>
-            </table>
-        </div>
-        <div>
-            <h3>Main Meal</h3>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Item Name</th>
-                        <th>Item Ingredients</th>
-                    </tr>
-                </thead>
-                <tbody id="lunch-mainmealTableBody"></tbody>
-            </table>
-        </div>
-        <div>
-            <h3>Fast Food</h3>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Item Name</th>
-                        <th>Item Ingredients</th>
-                    </tr>
-                </thead>
-                <tbody id="lunch-fastfoodTableBody"></tbody>
-            </table>
-        </div>
-    </div>
-
-    <div id="dinner">
-        <h2>Dinner</h2>
-        <div>
-            <h3>Snack Pack</h3>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Item Name</th>
-                        <th>Item Ingredients</th>
-                    </tr>
-                </thead>
-                <tbody id="dinner-snackpackTableBody"></tbody>
-            </table>
-        </div>
-        <div>
-            <h3>Main Meal</h3>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Item Name</th>
-                        <th>Item Ingredients</th>
-                    </tr>
-                </thead>
-                <tbody id="dinner-mainmealTableBody"></tbody>
-            </table>
-        </div>
-        <div>
-            <h3>Fast Food</h3>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Item Name</th>
-                        <th>Item Ingredients</th>
-                    </tr>
-                </thead>
-                <tbody id="dinner-fastfoodTableBody"></tbody>
-            </table>
-        </div>
-    </div>
-    
-</body>
-
-
-
-</html>
- -->
- 
-

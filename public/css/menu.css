@@ -6,16 +6,16 @@
 
 body {
     font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
     background-color: var(--background-color);
     color: var(--text-color);
-    margin: 0;
-    padding: 20px;
-    box-sizing: border-box;
 }
 
 .container {
     max-width: 1200px;
     margin: 0 auto;
+    padding: 20px;
 }
 
 .header {
@@ -23,6 +23,11 @@ body {
     justify-content: space-between;
     align-items: center;
     margin-bottom: 20px;
+    position: sticky; /* This makes the header stick at the top */
+    top: 0; /* This keeps the header at the top of the page */
+    z-index: 100; /* Ensures the header stays above other content */
+    background-color: var(--background-color); /* Keep the background intact */
+    padding: 10px;
 }
 
 .logo {
@@ -45,242 +50,54 @@ body {
     color: var(--primary-color);
 }
 
-.menu-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 20px;
+.cart-icon img {
+    width: 35px;
+    height: 35px;
 }
 
-.category {
-    margin-bottom: 30px;
-}
-
-.category-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 10px;
-}
-
-.view-all {
-    color: var(--primary-color);
-    text-decoration: none;
-}
-
-.item-grid {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 15px;
-}
-
-.item {
-    flex: 0 0 auto;
-    margin: 10px;
-    position: relative;
-    background-color: var(--text-color);
-    border-radius: 10px;
-    overflow: hidden;
-    width: 140px;
-    height: 140px;
-    text-align: center;
-    color: white;
-    transition: transform 0.3s ease;
-}
-
-/* Back button styling */
-.back-button {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    background-color: #FF6A3D;
-    color: white;
+.add-to-cart {
+    background-color: var(--primary-color);
+    color: var(--text-color);
     border: none;
-    padding: 8px 15px;
-    border-radius: 8px;
-    font-size: 16px;
-    font-weight: bold;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-}
-
-.back-button:hover {
-    background-color: #e55d3b; /* Slightly darker shade for hover effect */
-}
-
-@media (max-width: 479px) {
-    .item {
-        width: 120px;
-        height: 120px;
-    }
-
-    .back-button {
-        padding: 8px 16px; /* Smaller padding for small screens */
-        font-size: 14px; /* Adjust font size */
-    }
-}
-
-@media (min-width: 480px) and (max-width: 767px) {
-    .item {
-        width: 120px;
-        height: 120px;
-    }
-
-    .back-button {
-        padding: 8px 16px; /* Smaller padding for small screens */
-        font-size: 14px; /* Adjust font size */
-    }
-}
-
-@media (min-width: 768px) and (max-width: 1023px) {
-    .item {
-        width: 140px;
-        height: 140px;
-    }
-}
-
-@media (min-width: 1024px) {
-    .item {
-        width: 160px;
-        height: 160px;
-    }
-}
-
-@media (min-width: 1200px) {
-    .item {
-        width: 180px;
-        height: 180px;
-    }
-}
-
-.item:hover {
-    transform: scale(1.1);
-    
-}
-
-.item img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    border-radius: 10px;
-}
-
-.item-name-overlay {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    background-color: rgba(0, 0, 0, 0.5);  /* Semi-transparent background */
-    color: white;
-    font-size: 14px;
-    padding: 5px;
-    text-align: center;
-    font-weight: bold;
-    border-bottom-left-radius: 10px;
-    border-bottom-right-radius: 10px;
-    pointer-events: none;  /* Ensure overlay does not interfere with other elements */
-    max-width: 100%; /* Ensures overlay doesn't overflow */
-    word-wrap: break-word; /* Ensures long names are handled correctly */
-}
-
-.item:hover .item-name-overlay {
-    background-color: rgba(0, 0, 0, 0.7);  /* Darken the background on hover */
-}
-
-.modal {
-    display: none; 
-    position: fixed; 
-    z-index: 1; 
-    padding-top: 100px; 
-    left: 0;
-    top: 0;
-    width: 100%; 
-    height: 100%; 
-    background-color: rgba(0,0,0,0.5); 
-}
-
-.modal-content {
-    background-color: #fefefe;
-    margin: auto;
-    padding: 20px;
-    border: 1px solid #888;
-    width: 70%;
-    max-width: 600px;
-    max-height: 65%; /* Limit the height of the modal */
-    overflow: auto; /* Enable scrolling for overflow content */
+    border-radius: 50%;
+    width: 35px;
+    height: 35px;
     display: flex;
-    flex-direction: column;
-    align-items: center; /* Center content horizontally */
-    color: black; /* Set text color to black */
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.3s ease;
 }
 
-.close {
-    color: #aaa;
-    float: right;
-    font-size: 28px;
+.add-to-cart:hover {
+    background-color: white;
+    color: var(--primary-color);
+    transform: scale(1.1);
+}
+
+.cart-icon {
+    position: fixed;
+    top: 10px;
+    right: 20px;
+    font-size: 18px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    position: relative; 
+}
+
+#cart-count {
+    background-color: var(--primary-color);
+    color: white;
+    font-size: 12px;
+    padding: 3px 6px;
+    border-radius: 50%;
+    position: absolute;
+    top: -10px;  /* Positioning the count on the top right */
+    right: -10px; /* Positioning the count on the top right */
     font-weight: bold;
 }
-
-.close:hover, .close:focus {
-    color: black;
-    text-decoration: none;
-    cursor: pointer;
-}
-
-#item-name {
-    color: black; /* Ensure modal title text is black */
-    font-size: 24px;
-    margin-bottom: 20px;
-}
-
-#item-image {
-    max-width: 60%;
-    height: 10%;
-    object-fit: contain; /* Ensure the image fits inside the modal */
-    margin-bottom: 20px;
-}
-
-#item-ingredients, #item-dining-hall {
-    color: black; /* Ensure ingredients and dining hall text is black */
-    font-size: 16px;
-    margin-bottom: 10px;
-}
-
-/* Responsive adjustments */
-@media (max-width: 480px) {
-    .modal-content {
-        width: 90%;
-        padding: 15px;
-    }
-
-    #item-name {
-        font-size: 20px;
-    }
-
-    #item-image {
-        max-width: 90%;
-    }
-}
-
-@media (min-width: 768px) {
-    .modal-content {
-        width: 80%;
-    }
-}
-
-.reservation-link {
-    color: var(--primary-color); /* Adjust color as per your design */
-    text-decoration: none;
-    font-size: 16px;
-    margin-top: 10px;
-    display: inline-block;
-}
-
-.reservation-link:hover {
-    text-decoration: underline;
-}
-
 
 .search-bar {
     background-color: var(--primary-color);
@@ -328,4 +145,297 @@ body {
     background-color: rgba(255, 255, 255, 0.1);
     border-radius: 10px;
     margin: 20px 0;
+}
+
+.menu-controls {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
+
+select {
+    background-color: var(--primary-color);
+    color: var(--text-color);
+    border: none;
+    padding: 5px 10px;
+    border-radius: 5px;
+    font-size: 16px;
+}
+
+select:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.5);
+}
+
+#diet-preference {
+    margin-bottom: 20px;
+}
+
+#menu-container {
+    display: block;
+}
+
+.day-container {
+    margin-bottom: 30px;
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.day-container h2 {
+    margin-top: 0;
+    margin-bottom: 15px;
+    color: var(--text-color);
+    border-bottom: 2px solid var(--primary-color);
+    padding-bottom: 10px;
+    font-size: 1.5em;
+    text-align: center;
+}
+
+.today-header {
+    color: var(--primary-color);
+    font-size: 1.8em;
+}
+
+.day-container .menu-items {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 20px;
+    min-height: 100px;
+}
+
+.day-container .menu-item {
+    flex: 0 1 calc(20% - 20px);
+    min-width: 180px;
+    max-width: calc(20% - 20px);
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    background-color: rgba(255, 255, 255, 0.102);
+    border-radius: 5px;
+    padding: 15px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.menu-item img {
+    width: 100%;
+    height: 130px;
+    object-fit: cover;
+    border-radius: 5px;
+    margin-bottom: 10px;
+}
+
+.menu-item h3 {
+    margin: 10px 0 5px;
+    font-size: 0.95em;
+    color: var(--primary-color);
+}
+
+.menu-item h4 {
+    margin: 5px 0;
+    font-size: 0.85em;
+}
+
+.menu-item p {
+    margin: 0;
+    font-size: 0.85em;
+}
+
+.menu-item:hover {
+    transform: scale(1.1);
+    
+}
+
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0,0,0,0.4);
+}
+
+.modal-content {
+    background-color: var(--background-color);
+    margin: 15% auto;
+    padding: 20px;
+    border: 1px solid var(--primary-color);
+    width: 80%;
+    max-width: 600px;
+    border-radius: 5px;
+    color: var(--text-color);
+}
+
+.close {
+    color: var(--text-color);
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.close:hover,
+.close:focus {
+    color: var(--primary-color);
+    text-decoration: none;
+    cursor: pointer;
+}
+
+#item-image {
+    width: 100%;
+    max-height: 300px;
+    object-fit: cover;
+    border-radius: 5px;
+    margin-bottom: 10px;
+}
+
+.reservation-link {
+    display: inline-block;
+    margin-top: 10px;
+    padding: 10px 20px;
+    background-color: var(--primary-color);
+    color: var(--text-color);
+    text-decoration: none;
+    border-radius: 5px;
+    justify-content: center;
+}
+
+.empty-menu-message {
+    font-style: italic;
+    color: var(--text-color);
+    text-align: center;
+    width: 100%;
+    padding: 20px 0;
+}
+
+/* Toaster notification styling */
+#toaster {
+    position: fixed;
+    top: 20px;  
+    right: 10px;
+    background-color: var(--primary-color);
+    color: white;
+    padding: 15px;
+    border-radius: 5px;
+    display: none;
+    z-index: 1000;
+    font-size: 16px;
+}
+
+#toaster.show {
+    display: block;
+}
+
+/* Duplicate item modal styling */
+#duplicate-modal {
+    display: none;
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+}
+
+#duplicate-modal .modal-content {
+    background-color: var(--background-color);
+    margin: 15% auto;
+    padding: 20px;
+    border: 1px solid var(--primary-color);
+    width: 80%;
+    max-width: 400px;
+    text-align: center;
+    border-radius: 10px;
+    color: var(--text-color);
+}
+
+#replace-btn, #cancel-replace-btn {
+    background-color: var(--primary-color);
+    color: white;
+    padding: 10px 20px;
+    margin: 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+#cancel-replace-btn {
+    background-color: #ff4d4d;
+}
+
+#replace-btn:hover {
+    background-color: #e55542;
+}
+
+#cancel-replace-btn:hover {
+    background-color: #e60000;
+}
+
+
+@media (max-width: 1400px) {
+    .day-container .menu-item {
+        flex: 0 1 calc(20% - 20px);
+        max-width: calc(20% - 20px);
+    }
+}
+
+@media (max-width: 1100px) {
+    .day-container .menu-item {
+        flex: 0 1 calc(25% - 20px);
+        max-width: calc(25% - 20px);
+    }
+    .menu-item h3 {
+        font-size: 0.9em;
+    }
+    .menu-item h4,
+    .menu-item p {
+        font-size: 0.8em;
+    }
+}
+
+@media (max-width: 800px) {
+    .day-container .menu-item {
+        flex: 0 1 calc(33.33% - 20px);
+        max-width: calc(33.33% - 20px);
+    }
+    .menu-item img {
+        height: 150px;
+    }
+}
+
+@media (max-width: 500px) {
+    .day-container .menu-item {
+        flex: 0 1 calc(50% - 20px);
+        max-width: calc(50% - 20px);
+    }
+    .menu-item h3 {
+        font-size: 1em;
+    }
+    .menu-item h4,
+    .menu-item p {
+        font-size: 0.9em;
+    }
+    .menu-item img {
+        height: 180px;
+    }
+}
+
+/* For very small screens */
+@media (max-width: 350px) {
+    .day-container .menu-item {
+        min-width: 150px;
+    }
+    .menu-item img {
+        height: 120px;
+    }
 }

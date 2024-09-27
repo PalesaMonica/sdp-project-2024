@@ -76,6 +76,10 @@
   </style>
 </head>
 <body>
+  <div class="welcome-message">
+    <h2 id="hello">Hello, User!</h2>
+  </div>
+  
   <div class="container">
     <h1>Select Your Meals and Reserve</h1>
     <button class="back-button" onclick="window.history.back()">Back</button>
@@ -118,18 +122,6 @@
       </div>
     </div>
 
-    <div class="personal-info">
-      <h2>Personal Information</h2>
-      <label for="name">Name:</label>
-      <input type="text" id="name" name="name" required />
-      <br />
-      <label for="surname">Surname:</label>
-      <input type="text" id="surname" name="surname" required />
-      <br />
-      <label for="special-request">Special Request (optional):</label>
-      <textarea id="special-request" name="special-request"></textarea>
-    </div>
-
     <div class="cost-info">
       <h2>Reservation Details</h2>
       <label for="date">Date:</label>
@@ -145,7 +137,40 @@
     </div>
   </div>
 
+  
   <script>
+    document.addEventListener('DOMContentLoaded', function () {
+    const params = new URLSearchParams(window.location.search);
+    const mealType = params.get('mealType');
+    const diningHall = params.get('diningHall');
+    const time = params.get('time');
+    const date = params.get('date');
+
+    // Pre-select the meal type checkboxes and time slots
+    if (mealType === 'breakfast') {
+        document.getElementById('breakfast-checkbox').checked = true;
+        document.getElementById('breakfast-time-slot').style.display = 'block';
+        document.getElementById('breakfast-time').value = time;
+    } else if (mealType === 'lunch') {
+        document.getElementById('lunch-checkbox').checked = true;
+        document.getElementById('lunch-time-slot').style.display = 'block';
+        document.getElementById('lunch-time').value = time;
+    } else if (mealType === 'dinner') {
+        document.getElementById('dinner-checkbox').checked = true;
+        document.getElementById('dinner-time-slot').style.display = 'block';
+        document.getElementById('dinner-time').value = time;
+    }
+
+    // Set the date and dining hall
+    document.getElementById('date').value = date;
+
+    // Update the cost after setting checkboxes and time slots
+    updateCost();
+});
+
+
+
+
     // Predefined meal prices
     const mealPrices = {
       breakfast: 60.00,
@@ -160,11 +185,9 @@
     }
 
     function updateMealPrices() {
-      // Update time slots based on checkboxes
       toggleTimeSlot('breakfast');
       toggleTimeSlot('lunch');
       toggleTimeSlot('dinner');
-      // Update cost after meal time slots are shown/hidden
       updateCost();
     }
 
@@ -197,10 +220,18 @@
       return true;
     }
 
+    fetch('/get-username')
+    .then(response => response.json())
+    .then(data => {
+      if (data.username) {
+        document.getElementById('hello').textContent = `Hello, ${data.username}!`;
+      } else {
+        console.error("Failed to load username.");
+      }
+    })
+    .catch(error => console.error('Error fetching username:', error));
+
     function submitReservation() {
-      const name = document.getElementById('name').value;
-      const surname = document.getElementById('surname').value;
-      const specialRequest = document.getElementById('special-request').value;
       const date = document.getElementById('date').value;
 
       const breakfastChecked = document.getElementById('breakfast-checkbox').checked;
@@ -210,8 +241,8 @@
       const lunchTime = document.getElementById('lunch-time').value;
       const dinnerTime = document.getElementById('dinner-time').value;
 
-      if (!name || !surname || !date) {
-        alert('Please fill in all required fields: Name, Surname, and Date are required.');
+      if (!date) {
+        alert('Please fill in the required field: Date.');
         return;
       }
 
@@ -225,40 +256,70 @@
         return;
       }
 
-      const reservationDetails = {
-        name,
-        surname,
-        specialRequest,
-        date,
-        meals: {
-          breakfast: breakfastChecked ? breakfastTime : null,
-          lunch: lunchChecked ? lunchTime : null,
-          dinner: dinnerChecked ? dinnerTime : null
-        }
-      };
-
-      // Send reservation data to backend API
-      fetch('/api/reservations', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(reservationDetails)
-      })
+    fetch('/get-username')
       .then(response => response.json())
       .then(data => {
-        if (data.reservationId) {
-          sessionStorage.setItem('reservationDetails', JSON.stringify(reservationDetails));
-          window.location.href = 'confirmReservation.html?reservationId=' + data.reservationId;
+        if (data.username) {
+          const reservationDetails = {
+            diningHallId: 1,
+            username: data.username, // Use fetched username
+            date,
+            meals: {
+              breakfast: breakfastChecked ? splitTimeRange(breakfastTime) : null,
+              lunch: lunchChecked ? splitTimeRange(lunchTime) : null,
+              dinner: dinnerChecked ? splitTimeRange(dinnerTime) : null
+            }
+          };
+
+
+          fetch('/api/reservations', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(reservationDetails)
+          })
+          .then(response => response.json())
+          .then(data => {
+            if (data.message) {
+              sessionStorage.setItem('reservationDetails', JSON.stringify(reservationDetails));
+              window.location.href = 'confirmReservation.html';
+            } else {
+              alert('There was an error submitting your reservation. Please try again.');
+            }
+          })
+          .catch(error => {
+            console.error('Error submitting reservation:', error);
+            alert('There was an error submitting your reservation. Please try again.');
+          });
         } else {
-          alert('There was an error submitting your reservation. Please try again.');
+          alert('Error: Could not fetch username.');
         }
       })
-      .catch(error => {
-        console.error('Error submitting reservation:', error);
-        alert('There was an error submitting your reservation. Please try again.');
-      });
+      .catch(error => console.error('Error fetching username:', error));
+  }
+
+  function splitTimeRange(timeRange) {
+    const [startTime, endTime] = timeRange.split('-');
+    return { startTime, endTime };
+  }
+
+  function isReservationAllowed(date) {
+    const reservationDate = new Date(date);
+    const currentDate = new Date();
+    const cutoffTime = new Date(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate(), 21, 0, 0); // 21:00 today
+
+    if (reservationDate < currentDate) {
+      return false;
     }
+
+    if (reservationDate.toDateString() === currentDate.toDateString()) {
+      return currentDate < cutoffTime;
+    }
+
+    return true;
+  }
+    
   </script>
 </body>
 </html>

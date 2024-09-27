@@ -1,254 +1,357 @@
-window.addEventListener('load', () => {
-    // Fetch breakfast meals and populate the grid
-    fetchMealsByType('breakfast', 'breakfast-grid');
-  
-    // Fetch lunch meals and populate the grid
-    fetchMealsByType('lunch', 'lunch-grid');
-  
-    // Fetch dinner meals and populate the grid
-    fetchMealsByType('dinner', 'dinner-grid');
+const diningHallSelector = document.getElementById('dining-hall-selector');
+const daySelector = document.getElementById('day-selector');
+const menuContainer = document.getElementById('menu-container');
+const modal = document.getElementById('item-modal');
+const closeButton = document.getElementsByClassName('close')[0];
 
-    fetch("/get-dietary_preference")
-    .then((response) => response.json())
-    .then((data) => {
-      if (data.preference) {
-        document.getElementById("diet-preference").textContent = `Your dietary preference is: ${data.preference}`;
-        // Save the dietary preference in localStorage for use in filtering
-        localStorage.setItem('dietPreference', data.preference);
-      } else {
-        document.getElementById("diet-preference").textContent = 'No dietary preference found, showing full menu.';
-        console.error("Failed to load dietary preference.");
-        localStorage.removeItem('dietPreference'); // Clear preference if not found
-      }
-    })
-    .catch((error) => console.error("Error fetching dietary preference:", error));
+function displayMenu() {
+    const diningHall = diningHallSelector.value;
+    const selectedView = daySelector.value;
 
-       // Add resize event listener
-       window.addEventListener('resize', debounce(() => {
-        updateGrids();
-    }, 250));
+    fetch(`http://localhost:3000/menu?dining_hall=${diningHall}&day_of_week=week`)
+        .then(response => response.json())
+        .then(menuItems => {
+            menuContainer.innerHTML = '';
+            // Modify the menuItems to handle multiple meal types
+            const expandedMenuItems = expandMenuItemsByMealType(menuItems);
+            const sortedMenuItems = sortMenuItemsByNextSevenDays(expandedMenuItems);
 
-    document.getElementById('search-button').addEventListener('click', performSearch);
-    
-    // Add event listener for Enter key in search input
-    document.getElementById('search-input').addEventListener('keypress', function(e) {
-        if (e.key === 'Enter') {
-            performSearch();
-        }
+            if (selectedView === 'week') {
+                displayWeeklyView(sortedMenuItems);
+            } else {
+                displayDailyView(sortedMenuItems);
+            }
+        })
+        .catch(error => console.error('Error fetching menu:', error));
+}
+
+function expandMenuItemsByMealType(menuItems) {
+    let expandedItems = [];
+    menuItems.forEach(item => {
+        const mealTypes = item.meal_type.split(','); // Split by comma
+        mealTypes.forEach(type => {
+            // Clone the item and set the specific meal type
+            const clonedItem = { ...item, meal_type: type.trim() };
+            expandedItems.push(clonedItem);
+        });
     });
+    return expandedItems;
+}
 
-  });
+function sortMenuItemsByNextSevenDays(menuItems) {
+    const daysOfWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+    const today = new Date();
+    const todayIndex = today.getDay(); // Get the index of today's day (0 for Sunday, 6 for Saturday)
 
-  function performSearch() {
-    const searchTerm = document.getElementById('search-input').value.toLowerCase();
-    
-    // Fetch all meal types
-    const mealTypes = ['breakfast', 'lunch', 'dinner'];
-    
-    mealTypes.forEach(mealType => {
-        fetch(`/api/menu?mealType=${mealType}`)
-            .then(response => response.json())
-            .then(menuItems => {
-                const dietaryPreference = localStorage.getItem('dietPreference');
-                const filteredItems = filterByDietaryPreference(menuItems, dietaryPreference);
-                const searchResults = filteredItems.filter(item => 
-                    item.item_name.toLowerCase().includes(searchTerm) ||
-                    item.ingredients.toLowerCase().includes(searchTerm) ||
-                    item.diet_type.toLowerCase().includes(searchTerm)
-                );
-                populateGrid(`${mealType}-grid`, searchResults);
-            })
-            .catch(error => console.error(`Error fetching ${mealType} items:`, error));
+    // Get the next 7 days, including today
+    const nextSevenDays = [];
+    for (let i = 0; i < 7; i++) {
+        const futureDate = new Date(today);
+        futureDate.setDate(today.getDate() + i); // Add i days to today
+        const dayOfWeek = daysOfWeek[futureDate.getDay()];
+        nextSevenDays.push({ day: dayOfWeek, date: futureDate });
+    }
+
+    // Sort menu items to match the next 7 days
+    return nextSevenDays.map(({ day, date }) => ({
+        day: day,
+        date: date.toISOString().split('T')[0], // Format date as YYYY-MM-DD
+        items: menuItems.filter(item => item.day_of_week.toLowerCase() === day.toLowerCase())
+    }));
+}
+
+
+function displayWeeklyView(menuItems) {
+    menuItems.forEach(({ day, date, items }) => {
+        // Pass both the day and date object to the displayDayContainer function
+        displayDayContainer({ day: day, date: date }, items, false);
     });
 }
-  
-  function debounce(func, wait) {
-    let timeout;
-    return function executedFunction(...args) {
-        const later = () => {
-            clearTimeout(timeout);
-            func(...args);
-        };
-        clearTimeout(timeout);
-        timeout = setTimeout(later, wait);
+
+
+function displayDailyView(menuItems) {
+    const today = new Date().toLocaleString('en-us', { weekday: 'long' });
+    
+    const todayMenu = menuItems.find(menu => menu.day.toLowerCase() === today.toLowerCase());
+    
+    if (todayMenu) {
+        displayDayContainer({day: today, date: new Date().toISOString().split('T')[0]}, todayMenu.items, true);
+    } else {
+        console.error('No menu found for today');
+        displayDayContainer({day: today, date: new Date().toISOString().split('T')[0]}, [], true);
+    }
+
+}
+
+function displayDayContainer(day, items, isDaily) {
+    const dayContainer = document.createElement('div');
+    dayContainer.className = 'day-container';
+    
+    const dayHeader = document.createElement('h2');
+    if (isDaily) {
+        dayHeader.textContent = `Today is ${day.day} (${day.date})`;
+        dayHeader.classList.add('today-header');
+    } else {
+        dayHeader.textContent = `${day.day} (${day.date})`;
+    }
+    dayContainer.appendChild(dayHeader);
+
+    const menuItemsContainer = document.createElement('div');
+    menuItemsContainer.className = 'menu-items';
+
+    if (items.length === 0) {
+        const emptyMessage = document.createElement('p');
+        emptyMessage.textContent = 'Menu to be updated soon';
+        emptyMessage.className = 'empty-menu-message';
+        menuItemsContainer.appendChild(emptyMessage);
+    } else {
+        items.forEach(item => {
+            // Pass both the item and the corresponding date to createMenuItem
+            const menuItem = createMenuItem(item, day.date);
+            menuItemsContainer.appendChild(menuItem);
+        });
+    }
+
+    dayContainer.appendChild(menuItemsContainer);
+    menuContainer.appendChild(dayContainer);
+}
+
+function createMenuItem(item, date) {
+    const menuItem = document.createElement('div');
+    menuItem.className = 'menu-item';
+    const today = new Date().toISOString().split('T')[0]; 
+    menuItem.innerHTML = `
+        <img src="${item.image_url}" alt="${item.item_name}">
+        <h3>${item.item_name}</h3>
+        <h4>${capitalizeFirstLetter(item.meal_type)}</h4> <!-- Shows the specific meal time -->
+        <p>Diet plan: ${item.diet_type}</p>
+        <button class="add-to-cart" ${date === today ? 'style="display:none;"' : ''}>+</button> <!-- Hide + button for today's date -->
+    `;
+
+    // Add event listener to the plus button if it's not hidden
+    if (date !== today) {
+        menuItem.querySelector('.add-to-cart').addEventListener('click', (e) => {
+            e.stopPropagation();
+            addToCart(item, date);
+        });
+    }
+
+    // Pass both the item and the corresponding date to showItemDetails
+    menuItem.addEventListener('click', () => showItemDetails(item, date));
+    return menuItem;
+}
+
+// Toaster display function
+function showToaster(message) {
+    const toaster = document.getElementById('toaster');
+    toaster.textContent = message;
+    toaster.classList.add('show');
+    
+    // Hide the toaster after 3 seconds
+    setTimeout(() => {
+        toaster.classList.remove('show');
+    }, 3000);
+}
+
+// Show duplicate pop-up when a conflict is detected
+function showDuplicatePopup(item, date, duplicateItemId) {
+    const modal = document.getElementById('duplicate-modal');
+    const replaceButton = document.getElementById('replace-btn');
+    const cancelButton = document.getElementById('cancel-replace-btn');
+
+    modal.style.display = 'block';
+
+    replaceButton.onclick = function() {
+        modal.style.display = 'none';
+        replaceCartItem(duplicateItemId, item, date);  // Replace the existing item
+    };
+
+    cancelButton.onclick = function() {
+        modal.style.display = 'none';  // Just close the popup if the user cancels
+    };
+
+    window.onclick = function(event) {
+        if (event.target == modal) {
+            modal.style.display = 'none';
+        }
     };
 }
 
-function updateGrids() {
-    fetchMealsByType('breakfast', 'breakfast-grid');
-    fetchMealsByType('lunch', 'lunch-grid');
-    fetchMealsByType('dinner', 'dinner-grid');
+// Function to replace the existing item in the cart
+function replaceCartItem(duplicateItemId, item, date) {
+    fetch(`/api/cart-items/${duplicateItemId}`, {
+        method: 'PUT',  
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            item: {
+                id: item.id,
+                dining_hall_id: item.dining_hall_id,
+                meal_type: item.meal_type
+            },
+            date: date
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        showToaster('Item replaced in cart!');
+        updateCartIcon(data.cartCount);  // Update the cart icon
+    })
+    .catch(error => console.error('Error replacing item in cart:', error));
 }
 
 
-  // Function to fetch meals by type
-  function fetchMealsByType(mealType, gridId) {
-    fetch(`/api/menu?mealType=${mealType}`)
-      .then((response) => response.json())
-      .then((menuItems) => {
-        // Get dietary preference from localStorage
-        const dietaryPreference = localStorage.getItem('dietPreference');
-        // Filter items according to dietary preference
-        const filteredItems = filterByDietaryPreference(menuItems, dietaryPreference);
-        // Populate the grid with the fetched menu items
-        populateGrid(gridId, filteredItems);
-      })
-      .catch((error) => console.error(`Error fetching ${mealType} items:`, error));
-  }
-  
-
-// Function to filter menu items by dietary preference
-function filterByDietaryPreference(menuItems, dietaryPreference) {
-    if (!dietaryPreference || dietaryPreference === 'none') {
-        return menuItems; // If no preference, show all items
-    }
-
-    // Filter items based on whether their diet_type contains the preference
-    return menuItems.filter((item) => {
-        const dietTypes = item.diet_type.split(','); // Assuming diet_type is stored as a comma-separated string
-        return dietTypes.includes(dietaryPreference); // Check if any of the diet types match the user's preference
-    });
+function addToCart(item, date) {
+    fetch('/api/add-to-cart', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            item: {
+                id: item.id,
+                dining_hall_id: item.dining_hall_id,
+                meal_type: item.meal_type
+            },
+            date: date
+        })
+    })
+    .then(response => {
+        if (response.status === 409) {
+            // Duplicate found, show the popup
+            return response.json().then(data => {
+                showDuplicatePopup(item, date, data.duplicateItemId);
+            });
+        } else if (response.ok) {
+            return response.json().then(data => {
+                showToaster('Item added to cart!');
+                updateCartIcon(data.cartCount);
+            });
+        } else {
+            // Handle other errors
+            throw new Error('Failed to add item to cart');
+        }
+    })
+    .catch(error => console.error('Error adding item to cart:', error));
 }
 
+// Fetch the current cart item count and update the cart icon
+function fetchCartItemCount() {
+    fetch('/api/cart-count')  // Assuming you have an API to get the cart item count
+    .then(response => response.json())
+    .then(data => {
+        updateCartIcon(data.cartCount);  // Update the cart icon with the number of items
+    })
+    .catch(error => console.error('Error fetching cart count:', error));
+}
 
-  // Function to create an item in the grid
-// Function to create an item in the grid
-function createItem(menuItem, isInViewAllModal = false) {
-    const item = document.createElement('div');
-    item.className = 'item';
-  
-    // Create the image element
-    const img = document.createElement('img');
-    img.src = menuItem.image_url;
-    img.alt = menuItem.item_name;
-  
-    // Create the overlay for the item name
-    const nameOverlay = document.createElement('div');
-    nameOverlay.className = 'item-name-overlay';
-    nameOverlay.textContent = menuItem.item_name;
-  
-    // Append the image and name overlay to the item
-    item.appendChild(img);
-    item.appendChild(nameOverlay);
-  
-    // Add click event listener to show details
-    item.addEventListener('click', () => {
-      if (isInViewAllModal) {
-        // Close the "View All" modal
-        document.getElementById('all-items-modal').style.display = 'none';
-      }
-      openItemModal(menuItem);
-    });
-  
-    return item;
-} 
-    function populateGrid(gridId, menuItems) {
-      const grid = document.getElementById(gridId);
-      grid.innerHTML = '';
-      
-      if (menuItems.length === 0) {
-          const noResults = document.createElement('p');
-          noResults.textContent = 'No results found';
-          noResults.className = 'no-results';
-          grid.appendChild(noResults);
-      } else {
-          const itemCount = getItemCount();
-          const displayedItems = menuItems.slice(0, itemCount);
-          
-          displayedItems.forEach((menuItem) => {
-              grid.appendChild(createItem(menuItem, false));
-          });
-      }
-    }
+// Function to update the cart icon with the cart item count
+function updateCartIcon(cartItemCount) {
+    const cartIcon = document.getElementById('cart-count');
+    cartIcon.textContent = cartItemCount;
+}
 
-    function getItemCount() {
-        const width = window.innerWidth;
-        if (width < 480) return 2;
-        if (width < 768) return 3;
-        if (width < 1024) return 4;
-        return 5;
-    } 
-  
-  // Function to open the modal and show item details
-  function openItemModal(menuItem) {
-    document.getElementById('item-name').textContent = menuItem.item_name;
-    document.getElementById('item-image').src = menuItem.image_url;
-    document.getElementById('item-ingredients').textContent = menuItem.ingredients;
-    document.getElementById('item-dining-hall').textContent = menuItem.dining_hall;
-    document.getElementById('item-diet-type').textContent = menuItem.diet_type;
-  
-
-    // Create a reservation link that redirects to the reservation page
-    const reservationLink = document.getElementById('reservation-link');
-    reservationLink.href = `/diningHalls.html?item=${menuItem.item_name}&dining_hall=${menuItem.dining_hall}`; 
-    reservationLink.textContent = 'Make a Reservation';
-
-
-    const modal = document.getElementById('item-modal');
-    modal.style.display = 'block';
-  }
-  
-
-  // Add event listeners for "View all" links
-document.querySelectorAll('.view-all').forEach((viewAllLink) => {
-    viewAllLink.addEventListener('click', (event) => {
-        event.preventDefault();
-        
-        const category = event.target.previousElementSibling.textContent.toLowerCase(); // Get the meal type (e.g., "breakfast")
-        fetchAllItems(category); // Fetch all items based on the meal type
-    });
+// Initialize display and cart count on page load
+document.addEventListener('DOMContentLoaded', () => {
+    displayMenu();
+    fetchCartItemCount();  // Fetch and display the current cart count on page load
 });
 
-// Function to fetch all items for a meal type
-function fetchAllItems(mealType) {
-    fetch(`/api/menu?mealType=${mealType}`)
-        .then(response => response.json())
-        .then(menuItems => {
-            // Get dietary preference from localStorage
-            const dietaryPreference = localStorage.getItem('dietPreference');
-            
-            // Filter items according to dietary preference
-            const filteredItems = filterByDietaryPreference(menuItems, dietaryPreference);
-            
-            // Populate the modal grid with filtered items
-            const grid = document.getElementById('all-items-grid');
-            grid.innerHTML = ''; // Clear previous items
-            filteredItems.forEach((menuItem) => {
-                grid.appendChild(createItem(menuItem, true));
-            });
-
-            // Open the modal
-            const modal = document.getElementById('all-items-modal');
-            modal.style.display = 'block';
-        })
-        .catch(error => console.error(`Error fetching all ${mealType} items:`, error));
+function capitalizeFirstLetter(string) {
+    return string.charAt(0).toUpperCase() + string.slice(1).toLowerCase();
 }
 
-const closeModal = (modalId) => {
-    const modal = document.getElementById(modalId);
-    modal.style.display = 'none';
-  };
-  
-  // Add event listeners for close buttons
-  document.querySelector('.close').addEventListener('click', () => closeModal('item-modal'));
-  document.querySelector('.close-all').addEventListener('click', () => closeModal('all-items-modal'));
-  
-  // Combined window.onclick function to handle all modals
-  window.onclick = function(event) {
-    const itemModal = document.getElementById('item-modal');
-    const allItemsModal = document.getElementById('all-items-modal');
+const diningHallNames = {
+    1: "Main",
+    2: "Convocation",
+    3: "Jubilee"
+};
+
+// Function to show menu item details in modal
+function showItemDetails(item, date) {
+    document.getElementById('item-name').textContent = item.item_name;
+    document.getElementById('item-image').src = item.image_url;
+    document.getElementById('item-ingredients').textContent = item.ingredients;
+    document.getElementById('item-diet-type').textContent = item.diet_type;
+    document.getElementById('item-meal-type').textContent = item.meal_type;
+    document.getElementById('item-dining-hall').textContent = diningHallNames[item.dining_hall_id];
     
-    if (event.target === itemModal) {
-      closeModal('item-modal');
-    } else if (event.target === allItemsModal) {
-      closeModal('all-items-modal');
-    }
-  };
-  
-function backToDash(){
-    window.location.href = 'userDashboard.html';
+    // Show the correct date in the modal
+    document.getElementById('item-meal-date').textContent = date;
+
+    // Update reservation link with meal details and date
+    const reservationLink = document.getElementById('reservation-link');
+    reservationLink.href = `/reservationform.html?diningHallId=${item.dining_hall_id}&mealType=${item.meal_type}&date=${date}`;
+
+    modal.style.display = 'block';
 }
 
-function reserveMeal(){
-  window.location.href = 'diningHalls.html';
+function setupSearch() {
+    const searchButton = document.getElementById('search-button');
+    const searchInput = document.getElementById('search-input');
+    
+    if (searchButton && searchInput) {
+      searchButton.addEventListener('click', performSearch);
+      searchInput.addEventListener('keypress', function(e) {
+          if (e.key === 'Enter') {
+              performSearch();
+          }
+      });
+      console.log('Search functionality set up');
+    } else {
+      console.error('Could not find search button or input');
+    }
+  }
+  
+  function performSearch() {
+    const searchTerm = document.getElementById('search-input').value.toLowerCase();
+    const diningHall = diningHallSelector.value;
+    const selectedView = daySelector.value;
+  
+    fetch(`http://localhost:3000/menu?dining_hall=${diningHall}&day_of_week=week`)
+      .then(response => response.json())
+      .then(menuItems => {
+        const filteredItems = menuItems.filter(item =>
+          item.item_name.toLowerCase().includes(searchTerm) ||
+          item.ingredients.toLowerCase().includes(searchTerm) ||
+          item.diet_type.toLowerCase().includes(searchTerm)
+        );
+  
+        menuContainer.innerHTML = '';
+        const sortedMenuItems = sortMenuItemsByNextSevenDays(filteredItems);
+  
+        if (selectedView === 'week') {
+          displayWeeklyView(sortedMenuItems);
+        } else {
+          displayDailyView(sortedMenuItems);
+        }
+      })
+      .catch(error => console.error('Error fetching menu:', error));
+  }
+  
+
+
+// Close modal functionality
+closeButton.onclick = function() {
+    modal.style.display = 'none';
 }
+
+window.onclick = function(event) {
+    if (event.target == modal) {
+        modal.style.display = 'none';
+    }
+}
+
+// Initialize display on page load
+diningHallSelector.addEventListener('change', displayMenu);
+daySelector.addEventListener('change', displayMenu);
+
+// Initial display
+displayMenu();
+
+setupSearch();
+
+function backToDash() {
+    window.location.href = 'userDashboard.html';
+  }
