@@ -745,18 +745,28 @@ app.delete('/api/reservations/:id', async (req, res) => {
 
 // Post a review
 app.post('/feedback', (req, res) => {
-const { review_text, rating } = req.body;
-const sql = 'INSERT INTO REVIEWS (review_text, rating) VALUES (?, ?)';
+  const { review_text, rating, dining_hall, review_type } = req.body;
 
-connection.query(sql, [review_text, rating], (err, result) => {
-  if (err) throw err;
-  res.send('Review submitted successfully!');
+  // SQL query to insert feedback into the feedback table
+  const sql = `
+      INSERT INTO feedback (dining_hall, review_text, review_type, rating, created_at)
+      VALUES (?, ?, ?, ?, NOW())
+  `;
+
+  // Execute the query with the provided data
+  connection.query(sql, [dining_hall, review_text, review_type, rating], (err, result) => {
+      if (err) {
+          console.error('Error inserting feedback:', err);
+          return res.status(500).json({ message: 'Error submitting feedback' });
+      }
+      res.send('Feedback submitted successfully!');
+  });
 });
-});
+
 
 app.get('/feedback', (req, res) => {
   const rating = req.query.rating;
-  let sql = 'SELECT * FROM REVIEWS';
+  let sql = 'SELECT * FROM feedback';
   const queryParams = [];
 
   // If a rating is provided, add a WHERE clause to filter by rating

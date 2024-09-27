@@ -1,33 +1,53 @@
 document.addEventListener('DOMContentLoaded', () => {
     const form = document.getElementById('feedback-form');
+    let ratingValue = 0;
+
+    // Star rating system event listener
+    document.querySelectorAll('.star').forEach(star => {
+        star.addEventListener('click', function() {
+            ratingValue = this.getAttribute('data-value');
+            document.getElementById('rating').value = ratingValue;
+
+            // Highlight selected stars
+            document.querySelectorAll('.star').forEach(s => s.classList.remove('selected'));
+            this.classList.add('selected');
+            for (let i = 1; i < ratingValue; i++) {
+                document.querySelector(`.star[data-value="${i}"]`).classList.add('selected');
+            }
+        });
+    });
 
     form.addEventListener('submit', (event) => {
         event.preventDefault(); // Prevent the default form submission
 
         const reviewText = document.getElementById('review-text').value;
-        const rating = document.getElementById('rating').value;
+        const rating = ratingValue;
+        const diningHall = document.getElementById('dining_hall').value;
+        const reviewType = document.getElementById('review_type').value;
 
         fetch('/feedback', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ review_text: reviewText, rating: rating })
+            body: JSON.stringify({ 
+                review_text: reviewText, 
+                rating: rating, 
+                dining_hall: diningHall, 
+                review_type: reviewType 
+            })
         })
         .then(response => {
             if (response.ok) {
-                // Show success message
                 document.getElementById('confirmation-message').textContent = 'Your review has been submitted successfully!';
                 document.getElementById('confirmation-message').style.color = 'green';
-                
-                // Clear the form
+
                 form.reset();
             } else {
                 return response.text().then(text => { throw new Error(text); });
             }
         })
         .catch(error => {
-            console.error('Error submitting feedback:', error);
             document.getElementById('confirmation-message').textContent = 'There was an error submitting your review. Please try again.';
             document.getElementById('confirmation-message').style.color = 'red';
         });
@@ -60,8 +80,4 @@ function fetchReviews() {
     .catch(error => {
         console.error('Error fetching reviews:', error);
     });
-}
-
-function backToDash(){
-    window.location.href = 'userDashboard.html';
 }
