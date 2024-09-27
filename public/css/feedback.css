@@ -1,5 +1,10 @@
+body{
+    margin: 0;
+    padding: 0;
+}
+
 .feedback-screen {
-    background-color: #9daaf2;
+    background-color: #1e2939;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -10,7 +15,7 @@
 }
 
 .feedback-screen .div {
-    background-color: #9daaf2;
+    background-color: #1e2939;
     width: 100%;
     max-width: 600px;
     padding: 20px;
@@ -25,7 +30,7 @@
 .feedback-screen .text-wrapper-3 {
     font-family: "Inter-SemiBold Italic", Helvetica;
     font-size: 24px;
-    color: #1a2238;
+    color: #ff6a3d;
 }
 
 .feedback-screen .image {
@@ -44,7 +49,7 @@
     font-family: "Inter-Regular", Helvetica;
     font-weight: 400;
     font-size: 20px;
-    color: #1a2238;
+    color: #ff6a3d;
     margin-top: 0;
 }
 
@@ -118,7 +123,11 @@
 .feedback-screen .dropdown-label {
     font-family: "Inter-Regular", Helvetica;
     font-size: 16px;
-    color: #1a2238;
+    color: white;
+}
+
+.labels{
+    color: white;
 }
 
 .feedback-screen select {
@@ -146,7 +155,12 @@
     cursor: pointer;
 }
 
+/* Reviews display section */
 #reviews {
+    background-color: #f4db7d;
+    color: black;
+    padding: 15px;
+    border-radius: 10px;
     margin-top: 20px;
 }
 
@@ -154,6 +168,7 @@
     margin-top: 20px;
     text-align: center;
     font-family: "Inter-SemiBold", Helvetica;
+    color: #f4db7d;
 }
 
 .submit-button {
@@ -182,4 +197,24 @@
     font-style: italic;
     color: #1a2238;
     font-size: 24px;
+}
+
+/* Rating system */
+.star-rating {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 10px;
+}
+
+.star {
+    font-size: 30px;
+    color: #ccc;
+    cursor: pointer;
+    padding: 5px;
+    transition: color 0.3s;
+}
+
+.star:hover,
+.star.selected {
+    color: #ff6a3d;
 }
