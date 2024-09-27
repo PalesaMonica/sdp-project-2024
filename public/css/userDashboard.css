@@ -1,15 +1,16 @@
+:root {
+  --primary-color: #ff6347;
+  --background-color: #1a1e2e;
+  --text-color: #ffffff;
+}
+
 * {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
   font-family: Arial, sans-serif;
 }
-html,
+
+
 body {
-  height: 100%;
-}
-body {
-  background-color: #1e2939;
+  background-color: var(--background-color);
   color: white;
   display: flex;
   flex-direction: column;
@@ -35,23 +36,39 @@ body {
 .back-button:hover {
   background-color: #e55d3b; /* Slightly darker shade for hover effect */
 }
+
 .header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 20px;
+  position: sticky; /* This makes the header stick at the top */
+  top: 0; /* This keeps the header at the top of the page */
+  z-index: 100; /* Ensures the header stays above other content */
+  background-color: var(--background-color); /* Keep the background intact */
+  padding: 10px;
 }
+
 .logo {
   display: flex;
   align-items: center;
-  font-size: 1.5rem;
-  font-weight: bold;
 }
+
 .logo img {
-  width: 30px;
-  height: 30px;
+  width: 40px;
+  height: 40px;
   margin-right: 10px;
 }
+
+.logo-text {
+  font-size: 24px;
+  font-weight: bold;
+}
+
+.crave {
+  color: var(--primary-color);
+}
+
 .menu-icon {
   font-size: 1.5rem;
   color: #ff6b35;

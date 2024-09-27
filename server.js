@@ -417,7 +417,6 @@ app.get('/dining-halls', async (req, res) => {
   }
 });
 
-// Route to get a dining hall by ID with its associated images
 // Route to get a dining hall by ID with images
 app.get('/dining-halls/:id', async (req, res) => {
   const { id } = req.params;
@@ -443,6 +442,7 @@ app.get('/dining-halls/:id', async (req, res) => {
     res.status(500).json({ message: 'Error fetching dining hall', error: error.message });
   }
 });
+
 app.get('/api/dining-halls/:id', async (req, res) => {
   const diningHallId = req.params.id;
   try {
@@ -458,34 +458,44 @@ app.get('/api/dining-halls/:id', async (req, res) => {
 });
 
 
-
 app.post('/api/reservations', async (req, res) => {
-  const { diningHallId, name, surname, date, meals, specialRequest } = req.body;
+  const { diningHallId, username, date, meals, specialRequest } = req.body;
 
   // Validate required fields
-  if (!name || !surname || !date || !meals) {
-    return res.status(400).json({ message: 'Missing required fields: name, surname, date, and meals are required.' });
+  if (!username || !date || !meals) {
+    return res.status(400).json({ message: 'Missing required fields: username, date, and meals are required.' });
   }
 
   try {
-    // Call createReservation function to store reservation in the database
-    const { reservationId, qrCode } = await Reservation.createReservation({
-      diningHallId,
-      name,
-      surname,
-      date,
-      meals,
-      specialRequest: specialRequest || '', // Handle optional specialRequest
-      status: 'confirmed' // Default status
-    });
+    const queries = [];
+    const values = [];
 
-    // Respond with reservation ID and QR code
-    res.status(201).json({ reservationId, qrCode });
+    // Insert each selected meal type and its associated times into the reservations table
+    for (const [mealType, time] of Object.entries(meals)) {
+      if (time) {
+        queries.push(`
+          INSERT INTO reservations 
+          (dining_hall_id, username, date, meal_type, start_time, end_time, special_requests) 
+          VALUES (?, ?, ?, ?, ?, ?, ?)
+        `);
+        values.push([diningHallId, username, date, mealType, time.startTime, time.endTime, specialRequest]);
+      }
+    }
+
+    // Execute all queries sequentially
+    for (let i = 0; i < queries.length; i++) {
+      await pool.query(queries[i], values[i]);
+    }
+
+    res.status(201).json({ message: 'Reservation created successfully' });
   } catch (error) {
     console.error('Error creating reservation:', error);
     res.status(500).json({ message: 'Error creating reservation', error: error.message });
   }
 });
+
+
+
 app.get('/api/meal-prices', async (req, res) => {
   try {
       const prices = await Reservation.getMealPrices();
@@ -516,36 +526,206 @@ app.post('/api/update-price', async (req, res) => {
   }
 });
 
-// Route to get all reservations
-app.get('/api/reservations', async (req, res) => {
-  try {
-      const reservations = await Reservation.getReservations();
-      res.status(200).json(reservations);
-  } catch (error) {
-      res.status(500).json({ message: 'Error fetching reservations', error: error.message });
-  }
+// Route to get all reservations for user
+app.get('/api/reservations', (req, res) => {
+  const userId = req.user.id;
+  const { fromDate, toDate } = req.query;
+
+  const query = `
+      SELECT r.id, r.date, r.start_time, r.end_time, r.time, r.special_requests, 
+             r.status, r.meal_type, dh.name as dining_hall_name
+      FROM reservations r
+      JOIN dining_halls dh ON r.dining_hall_id = dh.id
+      WHERE r.user_id = ? AND r.date BETWEEN ? AND ?
+  `;
+
+  connection.query(query, [userId, fromDate, toDate], (err, results) => {
+      if (err) {
+          console.error('Error fetching reservations:', err);
+          res.status(500).json({ error: 'Failed to fetch reservations' });
+      } else {
+          res.json(results);
+      }
+  });
 });
 
-// Route to update a reservation
-// Route to update a reservation
-app.put('/api/reservations/:id', async (req, res) => {
-  const { id } = req.params;
-  const { newTime, newMealType } = req.body;
-  const currentDate = new Date().toISOString(); // Current date and time
+// Route to get a specific reservation by ID
+app.get('/api/reservations/:reservationId', (req, res) => {
+  const reservationId = req.params.reservationId;
 
-  if (!newTime && !newMealType) {
-      return res.status(400).json({ message: 'At least one of newTime or newMealType must be provided.' });
-  }
+  // Query to fetch the reservation details by ID
+  const query = `
+    SELECT r.id, r.date, r.start_time, r.end_time, r.meal_type, r.special_requests, dh.name as dining_hall_name
+    FROM reservations r
+    JOIN dining_halls dh ON r.dining_hall_id = dh.id
+    WHERE r.id = ?
+  `;
 
-  try {
-      const result = await Reservation.updateReservation(id, newTime, newMealType, currentDate);
-      res.status(200).json(result);
-  } catch (error) {
-      console.error('Error updating reservation:', error.message); // Enhanced logging
-      res.status(400).json({ message: 'Error updating reservation', error: error.message });
-  }
+  connection.query(query, [reservationId], (err, results) => {
+    if (err) {
+      console.error('Error fetching reservation details:', err);
+      return res.status(500).json({ error: 'Error fetching reservation details' });
+    }
+
+    if (results.length === 0) {
+      return res.status(404).json({ error: 'Reservation not found' });
+    }
+
+    // Send the reservation details as a JSON response
+    res.json(results[0]);
+  });
 });
 
+// Route to post a new reservation
+app.post('/api/confirm-reservation', (req, res) => {
+  const userId = req.user.id;  
+  const username = req.user.username;
+  const queryCart = `
+      SELECT ci.id, ci.date, ci.meal_type, ci.dining_hall_id
+      FROM cart_items ci
+      WHERE ci.user_id = ?
+  `;
+
+  // Fetch all cart items for the user
+  connection.query(queryCart, [userId], (err, cartItems) => {
+      if (err) {
+          console.error('Error fetching cart items:', err);
+          return res.status(500).json({ error: 'Failed to fetch cart items' });
+      }
+
+      if (cartItems.length === 0) {
+          return res.status(400).json({ error: 'Cart is empty' });
+      }
+
+      // Begin transaction to ensure atomicity
+      connection.beginTransaction(err => {
+          if (err) {
+              console.error('Error starting transaction:', err);
+              return res.status(500).json({ error: 'Failed to start transaction' });
+          }
+
+          const checkDuplicateQuery = `
+              SELECT * FROM reservations
+              WHERE user_id = ? AND meal_type = ? AND date = ?
+          `;
+
+          const insertReservation = `
+              INSERT INTO reservations 
+              (dining_hall_id, user_id, username, date, meal_type, start_time, end_time, status) 
+              VALUES (?, ?, ?, ?, ?, ?, ?, 'confirmed')
+          `;
+
+          // Iterate through cart items and check for duplicates before inserting
+          cartItems.forEach((item, index) => {
+              let startTime, endTime;
+              switch (item.meal_type) {
+                  case 'breakfast':
+                      startTime = '07:00:00';
+                      endTime = '09:00:00';
+                      break;
+                  case 'lunch':
+                      startTime = '11:00:00';
+                      endTime = '14:00:00';
+                      break;
+                  case 'dinner':
+                      startTime = '16:00:00';
+                      endTime = '19:00:00';
+                      break;
+                  default:
+                      console.error('Unknown meal type');
+                      return res.status(400).json({ error: 'Unknown meal type' });
+              }
+
+              // Convert the date to UTC+02:00 timezone before inserting
+              const utcDate = new Date(item.date);  
+              const localDate = new Date(utcDate.getTime() + (2 * 60 * 60 * 1000)); 
+
+              // Check for duplicates
+              connection.query(checkDuplicateQuery, [userId, item.meal_type, localDate.toISOString().split('T')[0]], (err, results) => {
+                  if (err) {
+                      return connection.rollback(() => {
+                          console.error('Error checking for duplicates:', err);
+                          return res.status(500).json({ error: 'Failed to check duplicates' });
+                      });
+                  }
+
+                  if (results.length > 0) {
+                      // Duplicate found, return conflict with the existing reservation's ID
+                      return res.status(409).json({ error: 'Duplicate reservation found', duplicateId: results[0].id });
+                  } else {
+                      // No duplicate, insert the new reservation
+                      connection.query(insertReservation, [
+                          item.dining_hall_id,
+                          userId,
+                          username,
+                          localDate.toISOString().split('T')[0],
+                          item.meal_type,
+                          startTime,
+                          endTime
+                      ], (err, result) => {
+                          if (err) {
+                              return connection.rollback(() => {
+                                  console.error('Error inserting reservation:', err);
+                                  return res.status(500).json({ error: 'Failed to insert reservation' });
+                              });
+                          }
+
+                          // If this is the last item, commit the transaction
+                          if (index === cartItems.length - 1) {
+                              connection.commit(err => {
+                                  if (err) {
+                                      return connection.rollback(() => {
+                                          console.error('Transaction commit failed:', err);
+                                          return res.status(500).json({ error: 'Failed to commit transaction' });
+                                      });
+                                  }
+
+                                  // Clear the cart after successful reservation
+                                  const clearCartQuery = `DELETE FROM cart_items WHERE user_id = ?`;
+                                  connection.query(clearCartQuery, [userId], (err) => {
+                                      if (err) {
+                                          console.error('Error clearing cart:', err);
+                                          return res.status(500).json({ error: 'Failed to clear cart' });
+                                      }
+
+                                      // Send a success response with a redirect URL
+                                      res.status(201).json({ message: 'Reservation confirmed and cart cleared', redirectUrl: `/reservations.html?id=${result.insertId}` });
+                                  });
+                              });
+                          }
+                      });
+                  }
+              });
+          });
+      });
+  });
+});
+
+app.put('/api/replace-reservation/:id', (req, res) => {
+  const reservationId = req.params.id;
+  const { dining_hall_id, username, date, start_time, end_time, meal_type, user_id } = req.body;
+
+  const updateReservationQuery = `
+      UPDATE reservations
+      SET dining_hall_id = ?, username = ?, date = ?, start_time = ?, end_time = ?, meal_type = ?, user_id = ?
+      WHERE id = ?
+  `;
+
+  connection.query(updateReservationQuery, [dining_hall_id, username, date, start_time, end_time, meal_type, user_id, reservationId], (err, result) => {
+      if (err) {
+          console.error('Error replacing reservation:', err);
+          // Send the error response and return early to avoid multiple responses
+          if (!res.headersSent) {
+              return res.status(500).json({ error: 'Failed to replace reservation' });
+          }
+      }
+
+      // Send a success response if no error occurred and the headers have not been sent yet
+      if (!res.headersSent) {
+          res.json({ message: 'Reservation replaced successfully', newReservationId: reservationId });
+      }
+  });
+});
 
 // Route to cancel a reservation
 app.delete('/api/reservations/:id', async (req, res) => {
@@ -654,13 +834,244 @@ app.post('/api/add-new-meal', async (req, res) => {
       res.status(500).json({ error: 'Internal server error' });
   }
 });
-//
+
+// Define a route to fetch menu items based on dining hall and day
+app.get('/menu', (req, res) => {
+  const { dining_hall, day_of_week } = req.query;
+
+  let query;
+  let queryParams = [dining_hall];
+
+  // If the request is for "Today", use the current day of the week
+  if (day_of_week !== 'week') {
+      query = `SELECT * FROM weekly_menu WHERE dining_hall_id = ? AND day_of_week = ?`;
+      queryParams.push(day_of_week);
+  } else {
+      // If the request is for "Week", fetch all menu items for that dining hall
+      query = `SELECT * FROM weekly_menu WHERE dining_hall_id = ?`;
+  }
+
+  connection.query(query, queryParams, (err, results) => {
+      if (err) {
+          console.error('Error fetching menu data:', err);
+          res.status(500).send('Error fetching menu data');
+      } else {
+          res.json(results);  // Send results as JSON
+      }
+  });
+});
+
+// Add item to cart
+app.post('/api/add-to-cart', (req, res) => {
+  const { item, date } = req.body;
+  const userId = req.user.id;  // Assuming you have user authentication
+
+  // Query to check if the item already exists in the cart
+  const checkDuplicateQuery = `
+    SELECT * FROM cart_items 
+    WHERE user_id = ? AND date = ? AND meal_type = ?
+  `;
+
+  connection.query(checkDuplicateQuery, [userId, date, item.meal_type], (err, results) => {
+    if (err) {
+      console.error('Error checking for duplicate cart items:', err);
+      return res.status(500).json({ error: 'Failed to check cart items' });
+    }
+
+    if (results.length > 0) {
+      // Duplicate found, return 409 Conflict
+      return res.status(409).json({ error: 'Meal type already exists in the cart', duplicateItemId: results[0].id });
+    } else {
+      // No duplicate, proceed with inserting the item into the cart
+      const insertQuery = `
+        INSERT INTO cart_items (user_id, item_id, dining_hall_id, date, meal_type)
+        VALUES (?, ?, ?, ?, ?)
+      `;
+
+      connection.query(insertQuery, [userId, item.id, item.dining_hall_id, date, item.meal_type], (err, result) => {
+        if (err) {
+          console.error('Error adding item to cart:', err);
+          return res.status(500).json({ error: 'Failed to add item to cart' });
+        } else {
+          // Get the updated cart count
+          connection.query('SELECT COUNT(*) as count FROM cart_items WHERE user_id = ?', [userId], (err, results) => {
+            if (err) {
+              console.error('Error getting cart count:', err);
+              return res.status(500).json({ error: 'Failed to get cart count' });
+            } else {
+              return res.json({ message: 'Item added to cart', cartCount: results[0].count });
+            }
+          });
+        }
+      });
+    }
+  });
+});
+
+app.put('/api/cart-items/:id', (req, res) => {
+  const { item, date } = req.body;
+  const userId = req.user.id;  // Assuming you have user authentication
+  const itemId = req.params.id;  // The ID of the existing cart item to replace
+
+  const updateQuery = `
+    UPDATE cart_items 
+    SET item_id = ?, dining_hall_id = ?, date = ?, meal_type = ? 
+    WHERE id = ? AND user_id = ?
+  `;
+
+  connection.query(updateQuery, [item.id, item.dining_hall_id, date, item.meal_type, itemId, userId], (err, result) => {
+    if (err) {
+      console.error('Error replacing item in cart:', err);
+      return res.status(500).json({ error: 'Failed to replace item in cart' });
+    } else {
+      // Get the updated cart count
+      connection.query('SELECT COUNT(*) as count FROM cart_items WHERE user_id = ?', [userId], (err, results) => {
+        if (err) {
+          console.error('Error getting cart count:', err);
+          return res.status(500).json({ error: 'Failed to get cart count' });
+        } else {
+          return res.json({ message: 'Item replaced in cart', cartCount: results[0].count });
+        }
+      });
+    }
+  });
+});
+
+// Get cart items
+app.get('/api/cart-items', (req, res) => {
+  const userId = req.user.id;  // Assuming user authentication
+
+  const query = `
+      SELECT ci.id, ci.date, ci.meal_type, m.item_name, m.image_url, dh.name as dining_hall_name
+      FROM cart_items ci
+      JOIN weekly_menu m ON ci.item_id = m.id
+      JOIN dining_halls dh ON ci.dining_hall_id = dh.id
+      WHERE ci.user_id = ?
+  `;
+
+  connection.query(query, [userId], (err, results) => {
+      if (err) {
+          console.error('Error fetching cart items:', err);
+          res.status(500).json({ error: 'Failed to fetch cart items' });
+      } else {
+          res.json(results);  // Return the fetched cart items including the image_url
+      }
+  });
+});
+
+// Route to get cart item count
+app.get('/api/cart-count', (req, res) => {
+  const userId = req.user.id;
+
+  const query = `
+      SELECT COUNT(*) as cartCount
+      FROM cart_items
+      WHERE user_id = ?
+  `;
+
+  connection.query(query, [userId], (err, results) => {
+      if (err) {
+          console.error('Error fetching cart count:', err);
+          res.status(500).json({ error: 'Failed to fetch cart count' });
+      } else {
+          res.json({ cartCount: results[0].cartCount });
+      }
+  });
+});
+
+// Remove item from cart
+app.delete('/api/remove-from-cart/:id', (req, res) => {
+  const itemId = req.params.id;
+  const userId = req.user.id; // Assuming you have user authentication in place
+
+  const deleteQuery = 'DELETE FROM cart_items WHERE id = ? AND user_id = ?';
+  const resetAutoIncrementQuery = 'ALTER TABLE cart_items AUTO_INCREMENT = ?';
+
+  connection.beginTransaction((err) => {
+    if (err) {
+      return res.status(500).json({ error: 'Failed to remove item from cart' });
+    }
+
+    connection.query(deleteQuery, [itemId, userId], (err, result) => {
+      if (err) {
+        return connection.rollback(() => {
+          console.error('Error removing item from cart:', err);
+          res.status(500).json({ error: 'Failed to remove item from cart' });
+        });
+      }
+
+      // Get the current max ID after deletion
+      connection.query('SELECT MAX(id) AS max_id FROM cart_items', (err, results) => {
+        if (err) {
+          return connection.rollback(() => {
+            console.error('Error fetching max id:', err);
+            res.status(500).json({ error: 'Failed to reset auto-increment' });
+          });
+        }
+
+        const maxId = results[0].max_id || 0;
+        const newAutoIncrementValue = maxId + 1;
+
+        // Reset the auto-increment value
+        connection.query(resetAutoIncrementQuery, [newAutoIncrementValue], (err, result) => {
+          if (err) {
+            return connection.rollback(() => {
+              console.error('Error resetting auto-increment:', err);
+              res.status(500).json({ error: 'Failed to reset auto-increment' });
+            });
+          }
+
+          connection.commit((err) => {
+            if (err) {
+              return connection.rollback(() => {
+                console.error('Transaction commit failed:', err);
+                res.status(500).json({ error: 'Failed to remove item from cart' });
+              });
+            }
+
+            res.json({ message: 'Item removed from cart and auto-increment reset' });
+          });
+        });
+      });
+    });
+  });
+});
+
+// Helper function to group cart items by date
+function groupCartItemsByDate(cartItems) {
+  return cartItems.reduce((acc, item) => {
+      if (!acc[item.date]) {
+          acc[item.date] = [];
+      }
+      acc[item.date].push(item);
+      return acc;
+  }, {});
+}
+
+// Helper functions to get meal start and end times
+function getMealStartTime(mealType) {
+  switch (mealType.toLowerCase()) {
+      case 'breakfast': return '07:00:00';
+      case 'lunch': return '11:00:00';
+      case 'dinner': return '16:00:00';
+      default: return '00:00:00';
+  }
+}
+
+function getMealEndTime(mealType) {
+  switch (mealType.toLowerCase()) {
+      case 'breakfast': return '09:00:00';
+      case 'lunch': return '14:00:00';
+      case 'dinner': return '19:00:00';
+      default: return '23:59:59';
+  }
+}
+
 
 // Start the server
 const port = process.env.PORT || 3000;
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
 });
-
 // Export the app for testing
 module.exports = app;

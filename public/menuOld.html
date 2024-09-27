@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CampusCrave Menu</title>
+    <link rel="stylesheet" href="css/menuOld.css">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo">
+                <img src="images/option-21.svg" alt="CampusCrave Logo">
+                <span class="logo-text">Campus<span class="crave">Crave</span></span>
+            </div>
+            <button onclick="backToDash()" class="back-button">Back</button>
+        </div>
+
+        <div class="search-bar">
+            <input type="text" id="search-input" placeholder="Search for meals...">
+            <button id="search-button">Search</button>
+        </div>
+
+        <div class="menu-controls">
+            <div class="dining-hall-selector">
+                <label for="dining-hall-select">Select Dining Hall:</label>
+                <select id="dining-hall-select">
+                    <option value="all">All Dining Halls</option>
+                    <option value="1">Main DH</option>
+                    <option value="2">Convocation DH</option>
+                    <option value="3">Jubilee DH</option>
+                </select>
+            </div>
+            <div class="menu-view-selector">
+                <label for="menu-view-select">Menu View:</label>
+                <select id="menu-view-select">
+                    <option value="daily">Daily Menu</option>
+                    <option value="weekly">Weekly Menu</option>
+                </select>
+            </div>
+        </div>
+
+        <div id="diet-preference">Fetching your dietary preference...</div>
+
+        <div id="menu-container">
+            <!-- Menu categories will be dynamically populated here -->
+        </div>
+    </div>
+
+    <div id="item-modal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2 id="item-name"></h2>
+            <img id="item-image" src="" alt="Item Image">
+            <p><strong>Ingredients:</strong> <span id="item-ingredients"></span></p>
+            <p><strong>Dining Hall:</strong> <span id="item-dining-hall"></span></p>
+            <p><strong>Diet Type:</strong> <span id="item-diet-type"></span></p>
+            <a href="#" id="reservation-link" class="reservation-link">Make a Reservation</a>
+        </div>
+    </div>
+
+    <div id="all-items-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-all">&times;</span>
+            <h2>All Menu Items</h2>
+            <div id="all-items-grid" class="item-grid"></div>
+        </div>
+    </div>
+
+    <script src="../src/js/menuOld.js"></script>
+</body>
+</html>

@@ -1,8 +1,13 @@
-/* Global styles */
+:root {
+    --primary-color: #ff6347;
+    --background-color: #1a1e2e;
+    --text-color: #ffffff;
+}
+
 body {
     margin: 0;
     padding: 0;
-    background-color: #1A2238;
+    background-color: var(--background-color);
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -14,31 +19,31 @@ body {
 /* Header styling */
 .header {
     position: absolute;
-    top: 10px;
-    left: 10px;
+    top: 20px;
+    left: 20px;
     display: flex;
     align-items: center;
 }
 
 .logo {
-    width: 10vw; /* Responsive size based on viewport width */
-    max-width: 50px; /* Max size for larger screens */
-    height: auto;
+    display: flex;
+    align-items: center;
 }
 
-.name {
-    margin-left: 10px;
-    font-size: 30px; /* Responsive font size */
+.logo img {
+    width: 40px;
+    height: 40px;
+    margin-right: 10px;
+}
+
+.logo-text {
+    color: white;
+    font-size: 24px;
     font-weight: bold;
-    color: #FFFFFF;
-}
-
-.campus {
-    color: #FF6A3D;
 }
 
 .crave {
-    color: #FFFFFF;
+    color: var(--primary-color);
 }
 
 /* Greeting and instruction styling */
@@ -52,7 +57,7 @@ body {
 }
 
 .greeting span, .instruction span .current-plan span{
-    color: #FF6A3D;
+    color: var(--primary-color);
 }
 
 /* Box container styling */
@@ -62,7 +67,7 @@ body {
     gap: 20px;
     width: 80vw; 
     max-width: 800px; 
-    background: #9DAAF2;
+    background: rgba(255, 255, 255, 0.1);
     padding: 30px;
     border-radius: 8px;
     border: 1px solid rgba(0, 0, 0, 0.1);
@@ -140,6 +145,66 @@ body {
 
 .back-button:hover {
     background-color: #e55d3b; /* Slightly darker shade for hover effect */
+}
+
+/* Modal styles */
+.modal {
+    display: none; /* Hidden by default */
+    position: fixed;
+    z-index: 1000; /* Ensure it sits on top */
+    left: 0;
+    top: 0;
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    background-color: rgba(0, 0, 0, 0.5); /* Black background with opacity */
+}
+
+.modal-content {
+    background-color: var(--background-color);
+    margin: 15% auto;
+    padding: 20px;
+    border: 1px solid var(--primary-color);
+    width: 80%;
+    max-width: 400px;
+    text-align: center;
+    border-radius: 10px;
+    color: var(--text-color);
+}
+
+#confirm-button, #cancel-button {
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    margin: 10px;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: background-color 0.3s ease;
+}
+
+#cancel-button {
+    background-color: #ccc;
+}
+
+#confirm-button:hover {
+    background-color: #e65c2e;
+}
+
+#toaster {
+    position: fixed;
+    top: 20px;  
+    right: 10px;
+    background-color: var(--primary-color);
+    color: white;
+    padding: 15px;
+    border-radius: 5px;
+    display: none;
+    z-index: 1000;
+    font-size: 16px;
+}
+
+#toaster.show {
+    display: block;
 }
 
 /* Media queries for responsive design */
