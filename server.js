@@ -655,6 +655,22 @@ app.post('/api/add-new-meal', async (req, res) => {
   }
 });
 //
+// Route to fetch user info
+app.get('/dashboard', async (req, res) => {
+  try {
+    const user = await User.findOne(); // Fetch the first user
+    if (user) {
+      res.json({ name: user.username }); // Send user data as JSON
+    } else {
+      res.json({ name: 'Guest' });
+    }
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
+
 
 // Start the server
 const port = process.env.PORT || 3000;

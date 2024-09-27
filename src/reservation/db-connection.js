@@ -31,15 +31,15 @@ const pool = mysql.createPool({
     }
 });
 
-// Function to execute a query using the connection pool
-function query(sql, values) {
-    return new Promise((resolve, reject) => {
-        connection.query(sql, values, (err, results) => {
-            if (err) {
-                return reject(err);
-            }
-            resolve(results);
-        });
-    });
+// Function to execute a query using the connection pool (with promises)
+async function query(sql, values) {
+    try {
+        const [results] = await pool.query(sql, values);
+        return results;
+    } catch (err) {
+        console.error('Database query error:', err);
+        throw err; // Throw the error so it can be caught by the calling function
+    }
 }
-module.exports = pool;
+
+module.exports = { pool, query };
