@@ -1,7 +1,6 @@
 const express = require("express");
 const path = require("path");
 const mysql = require("mysql2");
-const jwt = require('jsonwebtoken');
 const fs = require("fs");
 const bodyParser = require("body-parser");
 const session = require("express-session");
@@ -1275,47 +1274,6 @@ function getMealEndTime(mealType) {
       default: return '23:59:59';
   }
 }
-app.get('/get-userrole', (req, res) => {
-  if (req.isAuthenticated()) {
-    const role = req.user.role; // Get the role from the user session
-    res.json({ role }); // Send the role as a JSON response
-  } else {
-    res.status(401).json({ error: "User not authenticated" });
-  }
-});
-
-
-app.get('/get-useremail', (req, res) => {
-  if (req.isAuthenticated()) {
-    const email = req.user.email; // Get the email from the user session
-    res.json({ email }); // Send the email as a JSON response
-  } else {
-    res.status(401).json({ error: "User not authenticated" });
-  }
-});
-app.post('/update-password', (req, res) => {
-  if (req.isAuthenticated()) {
-      const userId = req.user.id; // Assuming user ID is in the session
-      const { newPassword } = req.body;
-
-      // Hash the new password
-      bcrypt.hash(newPassword, 10, (err, hash) => {
-          if (err) {
-              return res.status(500).json({ error: "Server error while hashing password" });
-          }
-
-          // Update the password in the database
-          db.query('UPDATE users SET password = ? WHERE id = ?', [hash, userId], (err, results) => {
-              if (err) {
-                  return res.status(500).json({ error: "Server error while updating password" });
-              }
-              res.json({ success: true });
-          });
-      });
-  } else {
-      res.status(401).json({ error: "User not authenticated" });
-  }
-});
 
 
 // Start the server
