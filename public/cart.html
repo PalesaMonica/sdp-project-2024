@@ -27,16 +27,20 @@
         </div>
     </div>
 
-    <!-- Modal structure for duplicate reservation handling -->
-    <div id="duplicate-reservation-modal" class="modal">
+    <!-- Conflict modal -->
+    <div id="conflict-modal" class="modal">
         <div class="modal-content">
-            <h2>Duplicate Reservation</h2>
-            <p>A reservation with the same meal type and date already exists. Would you like to replace the existing reservation?</p>
-            <button id="replace-reservation-btn">Replace Reservation</button>
-            <button id="cancel-reservation-btn">Cancel</button>
+            <h3>Duplicate Reservation Found</h3>
+            <p>A reservation already exists for this meal type and date.</p>
+            <p>Would you like to replace the existing reservation or remove the item from your cart?</p>
+            <button id="replace-btn">Replace Reservation</button>
+            <button id="delete-btn">Remove from Cart</button>
         </div>
     </div>
 
+    <div id="toaster"></div>
+
     <script src="../src/js/cart.js"></script>
+    
 </body>
 </html>
