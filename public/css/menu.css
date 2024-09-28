@@ -1,5 +1,5 @@
 :root {
-    --primary-color: #ff6347;
+    --primary-color: #ff6a3d;
     --background-color: #1a1e2e;
     --text-color: #ffffff;
 }
@@ -321,10 +321,10 @@ select:focus {
 #toaster {
     position: fixed;
     top: 20px;  
-    right: 10px;
+    right: 20%;
     background-color: var(--primary-color);
     color: white;
-    padding: 15px;
+    padding: 10px 20px;
     border-radius: 5px;
     display: none;
     z-index: 1000;

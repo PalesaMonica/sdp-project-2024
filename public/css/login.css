@@ -1,17 +1,22 @@
-/* Reset margin and padding */
+:root {
+    --primary-color: #ff6a3d;
+    --background-color: #1a1e2e;
+    --text-color: #ffffff;
+}
+
 html, body {
     margin: 0;
     padding: 0;
     width: 100%;
     height: 100%;
-    background-color: #1e2939; /* Ensure the same background as the login container */
+    background-color: #1a1e2e; /* Ensure the same background as the login container */
     box-sizing: border-box;
 }
 
 
 /* Overall login container */
 .login {
-    background-color: #1e2939;
+    background-color: #1a1e2e;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -25,7 +30,7 @@ html, body {
 
 /* Inner div container */
 .login .div {
-    background-color: #1e2939; 
+    background-color: #1a1e2e; 
     overflow: hidden;
     width: 90%; /* Responsive width */
     max-width: 360px;
@@ -123,7 +128,7 @@ html, body {
     max-width: 298px;
     height: 45px;
     margin: 10px auto;
-    background-color: #f4db7d;
+    background-color: var(--primary-color);
     border-radius: 12px;
     font-family: "Inter-Regular", Helvetica;
     font-size: 22px;
@@ -140,7 +145,7 @@ html, body {
 
 /* Key */
 .login .btn-sign-in:hover{
-    background-color: #e2c36b;
+    background-color: #ff4f1a;
 }
 
 /* Google Sign-In */
@@ -172,14 +177,14 @@ html, body {
 }
 
 .login .signup-link {
-    color: #f4db7d;
+    color: var(--primary-color);
     text-decoration: none;
     font-weight: bold;
     transition: color 0.3s ease; /* Key */
 }
 
 .login .signup-link:hover{
-    color: #e2c36b; /* Key */
+    color: #ff4f1a; /* Key */
 }
 
 /* Media query for small screens */

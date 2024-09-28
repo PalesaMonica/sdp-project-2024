@@ -1,5 +1,5 @@
 :root {
-  --primary-color: #ff6347;
+  --primary-color: #ff6a3d;
   --background-color: #1a1e2e;
   --text-color: #ffffff;
 }
@@ -83,7 +83,7 @@ body {
   margin-bottom: 20px;
 }
 .dashboard {
-  background-color: #ff6b35;
+  background-color:rgba(255, 255, 255, 0.1);
   border-radius: 20px;
   padding: 20px;
   display: flex;
@@ -106,8 +106,7 @@ body {
   flex-grow: 1;
 }
 .grid-item {
-  background-color: white;
-  color: #1e2939;
+  background-color: #FF6A3D;
   border-radius: 15px;
   padding: 20px;
   text-align: center;
@@ -117,6 +116,7 @@ body {
   justify-content: center;
   gap: 10px;
   cursor: pointer;
+  color: black;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 .grid-item:hover {
@@ -138,8 +138,8 @@ body {
   gap: 80px;
 }
 .footer-item {
-  background-color: #f0f0f0;
-  color: #1e2939;
+  background-color: #FF6A3D;
+  color: #1a1e2e;
   border-radius: 15px;
   padding: 15px;
   display: flex;

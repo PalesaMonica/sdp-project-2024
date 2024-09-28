@@ -4,18 +4,76 @@ const menuContainer = document.getElementById('menu-container');
 const modal = document.getElementById('item-modal');
 const closeButton = document.getElementsByClassName('close')[0];
 
+
+window.addEventListener('load', () => {
+    // Fetch the dietary preference and display it
+    fetch("/get-dietary_preference")
+    .then((response) => response.json())
+    .then((data) => {
+      if (data.preference) {
+        document.getElementById("diet-preference").textContent = `Your dietary preference is: ${data.preference}`;
+        // Save the dietary preference in localStorage for use in filtering
+        localStorage.setItem('dietPreference', data.preference);
+      } else {
+        document.getElementById("diet-preference").textContent = 'No dietary preference found, showing full menu.';
+        console.error("Failed to load dietary preference.");
+        localStorage.removeItem('dietPreference'); // Clear preference if not found
+      }
+    })
+    .catch((error) => console.error("Error fetching dietary preference:", error));
+
+       // Add resize event listener
+       window.addEventListener('resize', debounce(() => {
+        updateGrids();
+    }, 250));
+
+  });
+
+  function debounce(func, wait) {
+    let timeout;
+    return function executedFunction(...args) {
+        const later = () => {
+            clearTimeout(timeout);
+            func(...args);
+        };
+        clearTimeout(timeout);
+        timeout = setTimeout(later, wait);
+    };
+}
+
 function displayMenu() {
     const diningHall = diningHallSelector.value;
     const selectedView = daySelector.value;
 
-    fetch(`http://localhost:3000/menu?dining_hall=${diningHall}&day_of_week=week`)
+    // Retrieve the locally saved dietary preference from localStorage
+    const userDietaryPreference = localStorage.getItem('dietPreference') || '';
+
+    // Split the dietary preferences by comma and convert to lowercase
+    const dietaryPreferences = userDietaryPreference.toLowerCase().split(',').map(pref => pref.trim());
+
+    // Fetch the menu items based on dining hall and day of the week
+    fetch(`/api/menu?dining_hall=${diningHall}&day_of_week=week`)
         .then(response => response.json())
         .then(menuItems => {
+            // Filter menu items based on dietary preferences
+            const filteredMenuItems = menuItems.filter(item => {
+                // Show all items if the preference is "none"
+                if (dietaryPreferences.includes('none')) return true;
+
+                // Check if any of the item.diet_type matches the dietaryPreferences
+                const itemDietType = item.diet_type.toLowerCase();
+                return dietaryPreferences.some(pref => itemDietType.includes(pref));
+            });
+
             menuContainer.innerHTML = '';
-            // Modify the menuItems to handle multiple meal types
-            const expandedMenuItems = expandMenuItemsByMealType(menuItems);
+
+            // Expand the filtered items to handle multiple meal types
+            const expandedMenuItems = expandMenuItemsByMealType(filteredMenuItems);
+
+            // Sort the items for the next seven days
             const sortedMenuItems = sortMenuItemsByNextSevenDays(expandedMenuItems);
 
+            // Display the menu based on the selected view
             if (selectedView === 'week') {
                 displayWeeklyView(sortedMenuItems);
             } else {
@@ -280,10 +338,6 @@ function showItemDetails(item, date) {
     // Show the correct date in the modal
     document.getElementById('item-meal-date').textContent = date;
 
-    // Update reservation link with meal details and date
-    const reservationLink = document.getElementById('reservation-link');
-    reservationLink.href = `/reservationform.html?diningHallId=${item.dining_hall_id}&mealType=${item.meal_type}&date=${date}`;
-
     modal.style.display = 'block';
 }
 
@@ -309,7 +363,7 @@ function setupSearch() {
     const diningHall = diningHallSelector.value;
     const selectedView = daySelector.value;
   
-    fetch(`http://localhost:3000/menu?dining_hall=${diningHall}&day_of_week=week`)
+    fetch(`/api/menu?dining_hall=${diningHall}&day_of_week=week`)
       .then(response => response.json())
       .then(menuItems => {
         const filteredItems = menuItems.filter(item =>
@@ -354,4 +408,9 @@ setupSearch();
 
 function backToDash() {
     window.location.href = 'userDashboard.html';
+  }
+
+//reload the page
+function reloadPage() {
+    location.reload();
   }

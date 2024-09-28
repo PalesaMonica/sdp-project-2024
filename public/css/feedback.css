@@ -4,7 +4,7 @@ body{
 }
 
 .feedback-screen {
-    background-color: #1e2939;
+    background-color: #1a1e2e;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -15,7 +15,7 @@ body{
 }
 
 .feedback-screen .div {
-    background-color: #1e2939;
+    background-color: #1a1e2e;
     width: 100%;
     max-width: 600px;
     padding: 20px;

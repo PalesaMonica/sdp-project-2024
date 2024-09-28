@@ -1,5 +1,5 @@
 :root {
-    --primary-color: #ff6347;
+    --primary-color: #ff6a3d;
     --background-color: #1a1e2e;
     --text-color: #ffffff;
 }
@@ -45,6 +45,26 @@ body {
 .crave {
     color: var(--primary-color);
 }
+
+.menu-button {
+    position: fixed;
+    top: 25px;
+    right: 40px;
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.menu-button:hover {
+    background-color: #e55d3b; /* Darker color on hover */
+}
+
 
 /* Greeting and instruction styling */
 .greeting, .instruction, .current-plan {

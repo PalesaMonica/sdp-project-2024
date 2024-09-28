@@ -14,6 +14,7 @@ function showConfirmationModal(dietPlan) {
     // Set up the confirm button click handler
     document.getElementById('confirm-button').onclick = function() {
         confirmSelection(dietPlan);
+        modal.style.display = 'none';
     };
 
     // Set up the cancel button click handler
@@ -30,13 +31,18 @@ function confirmSelection(dietPlan) {
     })
     .then(response => response.json())
     .then(data => {
-        // Show the toaster instead of an alert
+        // Show the toaster with the confirmation message
         showToaster(`Your ${dietPlan} diet plan has been confirmed!`);
-        
-        // Redirect to the menu page after a short delay
+
+        // Reload the page after showing the toaster for 3 seconds
         setTimeout(() => {
-            window.location.href = 'menu.html';
-        }, 3000); // Wait 3 seconds for the toaster to disappear
+            window.location.reload();  // Reload the page
+
+            // After reload, redirect to the menu page after 1 second
+            setTimeout(() => {
+                window.location.href = 'menu.html';
+            }, 1000); // Wait 1 second after reload before redirecting
+        }, 1500); // Show the toaster for 3 seconds
     })
     .catch(error => console.error('Error:', error));
 }
@@ -46,7 +52,7 @@ function showToaster(message) {
     toaster.textContent = message;
     toaster.classList.add('show');
 
-    // Hide the toaster after 3 seconds
+    // Automatically hide the toaster after 3 seconds
     setTimeout(() => {
         toaster.classList.remove('show');
     }, 3000);
@@ -64,7 +70,6 @@ document.addEventListener('DOMContentLoaded', () => {
       })
       .catch(error => console.error('Error fetching username:', error));
 
-
     // Fetch and display the current dietary plan
     fetch('/get-dietary_preference')
     .then(response => response.json())
@@ -76,5 +81,4 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     })
     .catch(error => console.error('Error fetching dietary preference:', error));
-  });
-  
+});

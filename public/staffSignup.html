@@ -3,7 +3,6 @@
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <link rel="stylesheet" href="globals.css" />
         <link rel="stylesheet" href="css/signup.css" />
         <title>Sign Up</title>
     </head>
@@ -40,6 +39,14 @@
                         <div class="input-wrapper">
                             <input type="password" name="confirmPassword" id="confirmPassword" placeholder="Confirm password" class="input-field" required>
                             <img class="icon" src="images/lock.svg" />
+                        </div>            
+                        
+                        <div class="dining-hall-selector">
+                            <select id="dining-hall-selector" name="diningHall">
+                                <option value=1>Main Dining Hall</option>
+                                <option value=2>Convocation Dining Hall</option>
+                                <option value=3>Jubilee Dining Hall</option>
+                            </select>
                         </div>
                         
                         <!-- Create Account Button -->
@@ -63,5 +70,5 @@
         </div>
     </body>
 
-    <script src="../src/js/signup.js"></script>
+    <script src="../src/js/staffSignup.js"></script>
 </html>

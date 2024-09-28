@@ -194,6 +194,7 @@ function adjustToTimeZone(dateString) {
     return localDate.toLocaleDateString('en-US', options);
 }
 
+
 function displayReservationDetails(reservation) {
     const detailsContainer = document.getElementById('reservation-details');
     const modal = document.getElementById('reservation-modal');
