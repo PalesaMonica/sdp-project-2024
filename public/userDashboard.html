@@ -1,21 +1,132 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="css/userDashboard.css" />
     <title>CampusCrave Dashboard</title>
-  </head>
-  <body>
-    <div class="container">
-      <header class="header">
-        <div class="logo">
-          <img src="images/option-21.svg" alt="CampusCrave Logo" onclick="backToDash()">
-          <span class="logo-text"  >Campus<span class="crave">Crave</span></span>
-        </div>
-      </header>
+
+    <style>
+        /* Basic Reset */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* Body and General Styles */
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #1e2939; /* Changed background color */
+            color: white; /* Ensure text is visible against dark background */
+            transition: margin-left 0.3s;
+        }
+
+        /* Navbar Button for Opening the Menu */
+        .open-btn {
+            font-size: 24px;
+            padding: 10px;
+            cursor: pointer;
+            background-color: #FF6a3d;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 100;
+            transition: background-color 0.3s ease;
+        }
+
+        .open-btn:hover {
+            background-color: #FF6a3d;
+        }
+
+        /* Slide-Out Menu */
+        .sidenav {
+            height: 100%; /* Full-height: Cover the whole page */
+            width: 0; /* Initially hidden */
+            position: fixed;
+            top: 0;
+            left: 0;
+            background-color: #1e2939; /* Dark background for the menu */
+            overflow-x: hidden; /* Disable horizontal scroll */
+            transition: 0.3s; /* Transition effect for menu */
+            padding-top: 60px; /* Space for top content */
+            z-index: 101;
+        }
+
+        /* Menu Links */
+        .sidenav a {
+            padding: 15px 30px;
+            text-decoration: none;
+            font-size: 18px;
+            color: white;
+            display: block;
+            transition: background-color 0.2s ease;
+        }
+        
+
+        .sidenav a:hover {
+            background-color: #FF6a3d;
+            color: white;
+        }
+
+        /* Close Button */
+        .sidenav .close-btn {
+            position: absolute;
+            top: 20px;
+            right: 25px;
+            font-size: 36px;
+            margin-left: 50px;
+            color: white;
+            cursor: pointer;
+        }
+
+
+        /* Content to slide over when the menu is open */
+        .content {
+            padding: 0px 20px;
+            transition: margin-left 0.3s ease;
+            text-align: left; /* Aligns content with the navigation bar */
+        }
+
+        /* For smaller screens */
+        @media (max-height: 450px) {
+            .sidenav {padding-top: 15px;}
+            .sidenav a {font-size: 16px;}
+        }
+    </style><div id="sidenav" class="sidenav">
+      <span class="close-btn" onclick="closeNav()">&times;</span>
+      <a href="userDashboard.html">Home</a>
+      <a href="alerts.html">Alerts</a>
+      <a href="notification.html">Maintenance Notification</a>
+      <a href="userProfile.html">Manage Account</a>
+      <a href="login.html">Logout</a>
+  </div>
+</head>
+<body>
+    <!-- Button to open the side navigation -->
+    <button class="open-btn" onclick="openNav()">☰</button>
+
+    <!-- Slide-Out Navigation Menu -->
+    <div id="sidenav" class="sidenav">
+      <span class="close-btn" onclick="closeNav()">&times;</span>
+      <a href="userDashboard.html">Home</a> <!-- Home is now userDashboard.html -->
+      <a href="alerts.html">Alerts</a>
+      <a href="maintenanceNotification.html">Maintenance Notification</a>
+      <a href="userProfile.html">Manage Account</a> <!-- Manage Account is now userprofile.html -->
+      <a href="login.html">Logout</a> <!-- Updated Logout link -->
+
+  </div>
+
+    <div class="container"><a href="" onclick="logout()"></a> <!-- Updated Logout link -->
       <main>
-        <div class="welcome">Welcome <span id="username"> John</span></div>
+        <!-- Main Content -->
+        <div class="content" id="mainContent">
+          <h1>Welcome to Campus Crave, <span id="username">User</span>!</h1>
+            <p>Your dining experience, made easy. Explore, reserve, and enjoy—delicious moments are just a tap away!</p>
+        </div>
         <div class="dashboard">
           <div class="grid">
             <div class="grid-item" onclick="window.location.href='menu.html'">
@@ -50,32 +161,68 @@
             </div>
             <div
               class="grid-item"
-              onclick="window.location.href='reservations.html'"
+              onclick="window.location.href='diningHalls.html'"
             >
               <svg viewBox="0 0 24 24" fill="currentColor">
                 <path
                   d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM7 10h5v5H7z"
                 />
               </svg>
-              Reservations
+              Reservation
             </div>
           </div>
         </div>
       </main>
       <footer class="footer">
         <div class="footer-item" onclick="window.location.href='feedback.html'">
-
           Feedback
           <svg viewBox="0 0 24 24" fill="rgba(255, 255, 255, 0.1)">
             <path
-              d="M20 2H4c-1.1 0-1.99.9-1.99 2L2 22l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-7 12h-2v-2h2v2zm0-4h-2V6h2v4z"
+              d="M12 2C6.48 2 2 6.48 2 12c0 5.52 4.48 10 10 10s10-4.48 10-10S17.52 2 12 2zm1 17h-2v-2h2v2zm0-4h-2V7h2v8z"
             />
           </svg>
         </div>
 
       </footer>
     </div>
-  </body>
 
-  <script src="/src/js/userDashboard.js"></script>
+    <script>
+      document.addEventListener('DOMContentLoaded', () => {
+          // Fetch the logged-in user's username from the backend
+          fetch('/get-username', {
+              method: 'GET',
+              headers: {
+                  'Content-Type': 'application/json',
+                  'Authorization': `Bearer ${localStorage.getItem('token')}` // if you're using JWT
+              }
+          })
+          .then(response => {
+              if (!response.ok) {
+                  throw new Error('Network response was not ok');
+              }
+              return response.json();
+          })
+          .then(data => {
+              // Update the span with the user's username
+              const usernameSpan = document.getElementById('username');
+              usernameSpan.textContent = data.username;
+          })
+          .catch(error => {
+              console.error('There was a problem with the fetch operation:', error);
+          });
+      });
+
+      // Function to open the side navigation
+      function openNav() {
+          document.getElementById("sidenav").style.width = "250px"; // Set width to 250px
+          document.body.style.marginLeft = "250px"; // Shift content to the right
+      }
+
+      // Function to close the side navigation
+      function closeNav() {
+          document.getElementById("sidenav").style.width = "0"; // Hide the menu
+          document.body.style.marginLeft = "0"; // Reset content margin
+      }
+  </script>
+</body>
 </html>
