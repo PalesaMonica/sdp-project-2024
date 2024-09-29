@@ -1,33 +1,8 @@
-// Mock data for alerts
-const mockAlerts = [
-    {
-        id: 1,
-        message: "Flood warning issued for low-lying areas on campus.",
-        status: "active",
-        affected_area: "South Campus",
-        timestamp: "2024-08-19T12:34:56Z"
-    },
-    {
-        id: 2,
-        message: "Electrical maintenance scheduled in the Main Dining Hall.",
-        status: "inactive",
-        affected_area: "Main Dining Hall",
-        timestamp: "2024-09-01T09:20:00Z"
-    },
-    {
-        id: 3,
-        message: "Power outage reported in Convocation Hall. Expected to be resolved by 3:00 PM.",
-        status: "active",
-        affected_area: "Convocation Dining Hall",
-        timestamp: "2024-09-27T11:45:00Z"
-    }
-];
-
-// Array to store the combined notifications (mock alerts + real-time notifications)
+// Array to store the combined notifications (real-time notifications + admin notifications)
 let notifications = [];
 
 // Initialize Socket.IO for real-time notifications
-const socket = io();  // Assumes Socket.IO client is included in the HTML
+const socket = io(); // Assumes Socket.IO client is included in the HTML
 
 // Function to fetch existing admin notifications from the server
 function fetchAdminNotifications() {
@@ -36,62 +11,40 @@ function fetchAdminNotifications() {
     })
     .then(response => {
         if (response.status === 401) {
-          // Redirect the user to the login page
-          window.location.href = '/login';
+            // Redirect the user to the login page
+            window.location.href = '/login';
         } else {
-          return response.json();
+            return response.json();
         }
-      })
+    })
     .then(data => {
         console.log("Fetched admin notifications:", data);
+        // Correctly map the unread status based on `is_read` value from the server
         return data.map(notification => ({
             id: notification.id,
             type: 'admin',
             title: notification.title,
             content: notification.message,
-            unread: notification.is_read === 0,  // Mark as unread if is_read is 0 (false)
+            unread: notification.is_read === 0 || notification.is_read === false, // Correctly mark as unread if is_read is false or 0
             timestamp: new Date(notification.created_at).toLocaleString(),
-            icon: '../images/info.png'  // Ensure correct relative path for admin icon
+            icon: '../images/info.png' // Ensure correct relative path for admin icon
         }));
     })
     .catch(error => {
         console.error('Error fetching admin notifications:', error);
-        return [];  // Return an empty array if fetch fails
+        return []; // Return an empty array if fetch fails
     });
 }
 
-// Function to use mock alerts instead of fetching from an API
-function fetchMockAlerts() {
-    return new Promise((resolve) => {
-        const diningHallAlerts = mockAlerts.filter(alert => 
-            alert.affected_area.toLowerCase().includes('dining hall')
-        );
-
-        const alerts = diningHallAlerts.map(alert => ({
-            id: alert.id,
-            type: 'alert',
-            title: `Alert: ${alert.affected_area}`,
-            content: alert.message,
-            status: alert.status,
-            unread: alert.status === 'active',
-            timestamp: new Date(alert.timestamp).toLocaleString(),
-            icon: '../images/alert.png'
-        }));
-
-        setTimeout(() => resolve(alerts), 500);
-    });
-}
-
-// Function to load read states from localStorage
 function loadReadStates() {
     const readStates = JSON.parse(localStorage.getItem('readStates')) || {};
     notifications.forEach(notification => {
+        // Only update if the notification was marked as read in localStorage
         if (readStates[notification.id]) {
             notification.unread = false; // Mark as read if stored in local storage
         }
     });
 }
-
 // Function to display notifications
 function displayNotifications() {
     const notificationsList = document.getElementById('notifications-list');
@@ -111,16 +64,54 @@ function displayNotifications() {
             <div class="icon">
                 <img src="${notification.icon}" alt="${notification.type} Icon" width="40px" height="40px">
             </div>
-            <div>
+            <div class="notification-content">
                 <h2>${notification.title}</h2>
                 <p>${notification.content}</p>
-                ${notification.type === 'alert' ? `<p>Status: <strong>${notification.status}</strong></p>` : ''}
                 <p><small>${notification.timestamp || ''}</small></p>
-                ${notification.unread ? `<button class="mark-read-btn" onclick="markAsRead(${notification.id})">Mark as Read</button>` : ''}
             </div>
         `;
 
+        // Add a click event listener to each notification
+        notificationElement.addEventListener('click', () => {
+            handleNotificationClick(notification);
+        });
+
         notificationsList.appendChild(notificationElement);
+    });
+}
+
+// Function to handle a notification click
+function handleNotificationClick(notification) {
+    // Example behavior: Mark notification as read and update UI
+    notification.unread = false;
+
+    // Optional: If you want to update the backend when a notification is read, you can call an API like this:
+    markNotificationAsRead(notification.id);
+
+    // Update local storage to reflect the read status
+    const readStates = JSON.parse(localStorage.getItem('readStates')) || {};
+    readStates[notification.id] = true;
+    localStorage.setItem('readStates', JSON.stringify(readStates));
+
+    displayNotifications(); // Re-render the notifications list
+    updateUnreadCount();    // Update the unread count in the notification bar
+
+    console.log(`Notification clicked: ${notification.title}`);
+}
+
+// Optional: Function to update read status in the backend
+function markNotificationAsRead(notificationId) {
+    fetch(`/notifications/${notificationId}/read`, {
+        method: 'POST',
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error(`Failed to mark notification as read: ${response.statusText}`);
+        }
+        console.log(`Notification ${notificationId} marked as read on the server.`);
+    })
+    .catch(error => {
+        console.error('Error marking notification as read:', error);
     });
 }
 
@@ -140,39 +131,15 @@ function updateUnreadCount() {
 
     localStorage.setItem('unreadCount', unreadCount);
 }
-
-// Function to mark notifications as read
-function markAsRead(id) {
-    const notification = notifications.find(n => n.id === id);
-
-    if (notification) {
-        notification.unread = false;
-
-        // Update localStorage for read states
-        const readStates = JSON.parse(localStorage.getItem('readStates')) || {};
-        readStates[notification.id] = true; // Mark notification as read
-        localStorage.setItem('readStates', JSON.stringify(readStates));
-
-        // Refresh the notifications display
-        displayNotifications();
-        updateUnreadCount();
-        
-        // Auto-refresh the page
-        setTimeout(() => {
-            window.location.reload();
-        }, 2000); // Refresh after 2 seconds
-    }
-}
-
 function goBack() {
     window.location.href = '../../userDashboard.html'; // Replace with the actual page you want to go back to
 }
 
 // Initialize the notifications on page load
 window.onload = () => {
-    Promise.all([fetchAdminNotifications(), fetchMockAlerts()])
-    .then(([adminNotifications, alerts]) => {
-        notifications = [...adminNotifications, ...alerts];
+    fetchAdminNotifications() // Fetch admin notifications only
+    .then(adminNotifications => {
+        notifications = [...adminNotifications];
 
         loadReadStates(); // Load read states from local storage
         displayNotifications();
@@ -187,7 +154,7 @@ window.onload = () => {
             type: 'admin',
             title: newNotification.title,
             content: newNotification.message,
-            unread: true,  // New notifications are unread
+            unread: true, // New notifications are unread
             timestamp: new Date(newNotification.created_at).toLocaleString(),
             icon: '../images/info.png'
         });
@@ -195,4 +162,15 @@ window.onload = () => {
         displayNotifications();
         updateUnreadCount();
     });
+
+    // Add event listener to reset count when notification bar is clicked
+    const notificationBar = document.getElementById('notification-link');
+    if (notificationBar) {
+        notificationBar.addEventListener('click', () => {
+            notifications.forEach(notification => {
+                notification.unread = false; // Reset unread status
+            });
+            updateUnreadCount(); // Update the count in the notification bar
+        });
+    }
 };

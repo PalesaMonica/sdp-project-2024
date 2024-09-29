@@ -1388,27 +1388,45 @@ app.post("/change-password", async (req, res) => {
   }
 });
 
-//notification apis
 app.get('/notifications', (req, res) => {
-  connection.query('SELECT * FROM notifications', (err, results) => {
+  const userId = req.user.id; // Access the user ID from the request
+
+  const query = `
+      SELECT n.id, n.title, n.message, n.dining_hall, 
+             un.is_read, n.created_at 
+      FROM notifications n
+      LEFT JOIN user_notifications un ON n.id = un.notification_id AND un.user_id = ?
+      ORDER BY n.created_at DESC
+  `;
+
+  connection.query(query, [userId], (err, notifications) => {
       if (err) {
           console.error('Error fetching notifications:', err);
-          res.sendStatus(500);
-          return;
+          return res.status(500).send('Internal Server Error');
       }
-      res.json(results);
+
+      // Map the notifications to a user-friendly format
+      const formattedNotifications = notifications.map(notification => ({
+          id: notification.id,
+          title: notification.title,
+          message: notification.message,
+          is_read: notification.is_read ? notification.is_read : false, // Default to false if not found
+          created_at: new Date(notification.created_at).toLocaleString() // Format the timestamp
+      }));
+
+      // Send the notifications back to the client
+      res.json(formattedNotifications);
   });
 });
 
-// Route to create a new notification
 app.post('/notifications', (req, res) => {
   const { title, message, dining_hall } = req.body;
 
-  // Validate input
   if (!title || !message || !dining_hall) {
       return res.status(400).send('All fields are required');
   }
 
+  // Insert the notification into the notifications table
   const query = 'INSERT INTO notifications (title, message, dining_hall) VALUES (?, ?, ?)';
   
   connection.query(query, [title, message, dining_hall], (err, result) => {
@@ -1416,40 +1434,73 @@ app.post('/notifications', (req, res) => {
           console.error('Error inserting notification:', err);
           return res.status(500).send('Internal Server Error');
       }
-    
-      // Emit the new notification to all connected clients
-      io.emit('new_notification', { id: result.insertId, title, message, dining_hall });
-      res.sendStatus(200);
+
+      // Insert an entry for each user in the user_notifications table
+      const notificationId = result.insertId;
+      const userQuery = 'SELECT id FROM users';
+
+      connection.query(userQuery, (err, users) => {
+          if (err) {
+              console.error('Error fetching users:', err);
+              return res.status(500).send('Internal Server Error');
+          }
+
+          const insertPromises = users.map(user => {
+              return new Promise((resolve, reject) => {
+                  const userNotificationQuery = 'INSERT INTO user_notifications (user_id, notification_id) VALUES (?, ?)';
+                  connection.query(userNotificationQuery, [user.id, notificationId], (err) => {
+                      if (err) {
+                          return reject(err);
+                      }
+                      resolve();
+                  });
+              });
+          });
+
+          Promise.all(insertPromises)
+              .then(() => {
+                  // Emit notification to all connected clients if needed
+                  const notificationPayload = {
+                      id: notificationId,
+                      title,
+                      message,
+                      dining_hall,
+                  };
+                  io.emit('new_notification', notificationPayload);
+                  res.sendStatus(200);
+              })
+              .catch(() => {
+                  res.status(500).send('Internal Server Error');
+              });
+      });
   });
 });
 
-app.put('/notifications/:id/read', (req, res) => {
+// Endpoint to mark a notification as read
+app.post('/notifications/:id/read', (req, res) => {
   const notificationId = req.params.id;
   const userId = req.user.id;
 
-  connection.collection('user_read_notifications').updateOne(
-      { user_id: userId, notification_id: notificationId },
-      { $set: { user_id: userId, notification_id: notificationId } },
-      { upsert: true } // Insert if it doesn't exist
-  )
-  .then(result => {
-      res.status(200).send('Notification marked as read');
-  })
-  .catch(error => {
-      res.status(500).send('Error marking notification as read');
+  // Update the read status for the user
+  const query = 'UPDATE user_notifications SET is_read = 1 WHERE notification_id = ? AND user_id = ?';
+
+  connection.query(query, [notificationId, userId], (err, result) => {
+      if (err) {
+          console.error('Error updating notification read status:', err);
+          return res.status(500).send('Internal Server Error');
+      }
+
+      if (result.affectedRows > 0) {
+          res.sendStatus(200); // Successfully updated
+      } else {
+          res.status(404).send('Notification not found'); // No matching notification
+      }
   });
 });
 
-app.get('/notifications/read-status', (req, res) => {
-  const userId = req.user.id; // Get the user ID from the session
-  connection.collection('user_read_notifications').find({ user_id: userId }).toArray()
-      .then(readNotifications => {
-          res.status(200).json(readNotifications);
-      })
-      .catch(error => {
-          res.status(500).send('Error fetching read statuses');
-      });
-});
+
+// Removed the mark-as-read endpoint
+
 
 io.on('connection', (socket) => {
   console.log('A user connected');
