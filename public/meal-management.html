@@ -7,6 +7,16 @@
     <link rel="stylesheet" href="css/meal-management.css">
 </head>
 <body>
+    <button class="open-btn" onclick="openNav()">☰</button>
+
+    <!-- Slide-Out Navigation Menu -->
+    <div id="sidenav" class="sidenav">
+      <span class="close-btn" onclick="closeNav()">&times;</span>
+      <a href="meal-management.html">Home</a>
+      <a href="bookings" id="notification-link">Event Bookings <span id="unread-count" class="unread-count">0</span></a>
+      <a href="adminNotification">Create Notification</a>
+      <a href="login.html">Logout</a>
+    </div>
     <div class="container">
         <div class="header">
             <div class="logo">

@@ -94,6 +94,16 @@
             .sidenav {padding-top: 15px;}
             .sidenav a {font-size: 16px;}
         }
+
+      .unread-count {
+    background-color: #FF6A3D;  /* Background color */
+    color: white;               /* Text color */
+    border-radius: 50%;         /* Make it round */
+    padding: 3px 7px;           /* Padding for size */
+    margin-left: 5px;           /* Space between text and count */
+    font-size: 14px;            /* Font size */
+}
+
     </style>
   </head>
   <body>
@@ -104,8 +114,7 @@
     <div id="sidenav" class="sidenav">
       <span class="close-btn" onclick="closeNav()">&times;</span>
       <a href="userDashboard.html">Home</a>
-      <a href="alerts.html">Alerts</a>
-      <a href="notification.html">Maintenance Notification</a>
+      <a href="user" id="notification-link">Notification <span id="unread-count" class="unread-count">0</span></a>
       <a href="userProfile.html">Manage Account</a>
       <a href="login.html">Logout</a>
     </div>

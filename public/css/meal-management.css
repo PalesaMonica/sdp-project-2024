@@ -117,3 +117,85 @@ select{
     word-wrap: break-word;   /* Ensure long words break and wrap to the next line */
     max-width: 100%;
 }
+
+.open-btn {
+    font-size: 24px;
+    width: 50px;
+    padding: 10px;
+    cursor: pointer;
+    background-color: #FF6a3d;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    z-index: 100;
+    transition: background-color 0.3s ease;
+}
+
+.open-btn:hover {
+    background-color: #FF6a3d;
+}
+
+/* Slide-Out Menu */
+.sidenav {
+    height: 100%; /* Full-height: Cover the whole page */
+    width: 0; /* Initially hidden */
+    position: fixed;
+    top: 0;
+    left: 0;
+    background-color: #1e2939; /* Dark background for the menu */
+    overflow-x: hidden; /* Disable horizontal scroll */
+    transition: 0.3s; /* Transition effect for menu */
+    padding-top: 60px; /* Space for top content */
+    z-index: 101;
+}
+
+/* Menu Links */
+.sidenav a {
+    padding: 15px 30px;
+    text-decoration: none;
+    font-size: 18px;
+    color: white;
+    display: block;
+    transition: background-color 0.2s ease;
+}
+
+.sidenav a:hover {
+    background-color: #FF6a3d;
+    color: white;
+}
+
+/* Close Button */
+.sidenav .close-btn {
+    position: absolute;
+    top: 20px;
+    right: 25px;
+    font-size: 36px;
+    margin-left: 50px;
+    color: white;
+    cursor: pointer;
+}
+
+/* Content to slide over when the menu is open */
+.content {
+    padding: 0px 20px;
+    transition: margin-left 0.3s ease;
+    text-align: left; /* Aligns content with the navigation bar */
+}
+
+/* For smaller screens */
+@media (max-height: 450px) {
+    .sidenav {padding-top: 15px;}
+    .sidenav a {font-size: 16px;}
+}
+
+.unread-count {
+background-color: #FF6A3D;  /* Background color */
+color: white;               /* Text color */
+border-radius: 50%;         /* Make it round */
+padding: 3px 7px;           /* Padding for size */
+margin-left: 5px;           /* Space between text and count */
+font-size: 14px;            /* Font size */
+}

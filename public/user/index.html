@@ -1,0 +1,31 @@
+
+<!DOCTYPE html> <!--/user/index.html-->
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Notifications</title>
+    <link rel="stylesheet" href="../css/userstyle.css">
+    <script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script>
+    <script src="../../src/js/user.js" defer></script>
+    
+</head>
+<body>
+    <header class="header">
+        <div class="logo">
+            <button class="back-button" onclick="goBack()">
+                <img src="../images/Option 2 1.png" alt="Back Button" class="back-button-image"> <!-- Back button image -->
+            </button>
+          <span class="logo-text"  >Campus<span class="crave">Crave</span></span>
+        </div>
+      </header>
+    <div class="container">
+        <div class="heading">Notifications</div>
+        <div class="notifications-container">
+            <div id="notifications-list" class="notifications-list"></div>
+            <div id="alerts-list" class="alerts-list"></div>
+        </div>
+    </div>
+    
+</body>
+</html>

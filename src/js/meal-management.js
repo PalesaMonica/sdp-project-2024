@@ -96,3 +96,17 @@ function addNewMeal() {
         })
         .catch(error => console.error('Error adding new meal:', error));
 }
+
+
+// Function to open the slide-out menu
+function openNav() {
+  document.getElementById("sidenav").style.width = "250px";
+  document.body.style.marginLeft = "250px";
+}
+
+// Function to close the slide-out menu
+function closeNav() {
+  document.getElementById("sidenav").style.width = "0";
+  document.body.style.marginLeft = "0";
+}
+

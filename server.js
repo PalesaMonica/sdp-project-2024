@@ -10,10 +10,18 @@ const passport = require("passport");
 const cors = require('cors');
 const bcrypt = require("bcryptjs"); // For password hashing
 const GoogleStrategy = require("passport-google-oauth20").Strategy;
+const http = require('http');
 require("dotenv").config();
 
 // Initialize the Express app
 const app = express();
+const server = http.createServer(app);
+const io = require('socket.io')(server, {
+  cors: {
+      origin: "*", // Allow any origin for now
+      methods: ["GET", "POST"]
+  }
+});
 // Password validation regex
 const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{8,}$/;
 app.use(express.json());
@@ -134,7 +142,7 @@ app.use(express.static(path.join(__dirname, "public")));
 
 // Serve JavaScript from 'src/js' folder
 app.use('/src', express.static(path.join(__dirname, 'src/')));
-
+app.use('/socket.io', express.static(path.join(__dirname, 'node_modules', 'socket.io', 'client-dist')));
 // Use body-parser middleware to parse incoming requests
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
@@ -1380,6 +1388,65 @@ app.post("/change-password", async (req, res) => {
   }
 });
 
+//notification apis
+app.get('/notifications', (req, res) => {
+  connection.query('SELECT * FROM notifications', (err, results) => {
+      if (err) {
+          console.error('Error fetching notifications:', err);
+          res.sendStatus(500);
+          return;
+      }
+      res.json(results);
+  });
+});
+
+// Route to create a new notification
+app.post('/notifications', (req, res) => {
+  const { title, message, dining_hall } = req.body;
+
+  // Validate input
+  if (!title || !message || !dining_hall) {
+      return res.status(400).send('All fields are required');
+  }
+
+  const query = 'INSERT INTO notifications (title, message, dining_hall) VALUES (?, ?, ?)';
+  
+  connection.query(query, [title, message, dining_hall], (err, result) => {
+      if (err) {
+          console.error('Error inserting notification:', err);
+          return res.status(500).send('Internal Server Error');
+      }
+    
+      // Emit the new notification to all connected clients
+      io.emit('new_notification', { id: result.insertId, title, message, dining_hall });
+      res.sendStatus(200);
+  });
+});
+
+// Route to mark a notification as read
+// Route to mark a notification as read
+app.put('/notifications/:id/read', (req, res) => {
+  const { id } = req.params;
+  const query = 'UPDATE notifications SET is_read = true WHERE id = ?';  // We only update the read status, no deletion
+  connection.query(query, [id], (err, result) => {
+      if (err) {
+          console.error('Error updating notification:', err);
+          res.sendStatus(500);
+          return;
+      }
+      res.sendStatus(200);
+  });
+});
+
+
+io.on('connection', (socket) => {
+  console.log('A user connected');
+
+  // Handle disconnect
+  socket.on('disconnect', () => {
+    console.log('User disconnected');
+  });
+});
 
 // Start the server
 const port = process.env.PORT || 3000;

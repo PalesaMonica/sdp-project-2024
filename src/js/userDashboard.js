@@ -9,6 +9,9 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     })
     .catch((error) => console.error("Error fetching username:", error));
+    
+    const unreadCount = localStorage.getItem('unreadCount') || 0; // Default to 0 if not found
+    document.getElementById("unread-count").textContent = unreadCount;
 });
 
 function navigate(page) {

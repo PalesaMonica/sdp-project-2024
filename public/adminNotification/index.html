@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Notification</title>
+    <link rel="stylesheet" href="../css/adminstyle.css">
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="../../src/js/admin.js" defer></script>
+</head>
+<body>
+    <header class="header">
+        <div class="logo">
+            <button class="back-button" onclick="goBack()">
+                <img src="../images/Option 2 1.png" alt="Back Button" class="back-button-image"> <!-- Back button image -->
+            </button>
+          <span class="logo-text"  >Campus<span class="crave">Crave</span></span>
+        </div>
+      </header>
+    <div class="container">
+        <div class="form">
+            <!-- Title Heading -->
+            <div class="heading">Create Notification</div>
+
+            <!-- Dining Hall Dropdown -->
+            <div class="input-container">
+                <div class="label">Dining Hall:</div>
+                <select id="dining-hall-select" class="input-field">
+                    <option value="">Select Dining Hall</option>
+                    <option value="Jubilee">Jubilee Dining Hall</option>
+                    <option value="Convocation">Convocation Dining Hall</option>
+                    <option value="Main">Main Dining Hall</option>
+                </select>
+            </div>
+
+            <!-- Title Input Field -->
+            <div class="input-container">
+                <div class="label">Title:</div>
+                <input type="text" class="input-field" id="title-input">
+            </div>
+
+            <!-- Message Input Field -->
+            <div class="input-container">
+                <div class="label">Message:</div>
+                <textarea class="textarea-field" id="message-input"></textarea>
+            </div>
+
+            <!-- Send Notification Button -->
+            <button class="send-btn" id="send-btn">Send Notification</button>
+
+            <!-- Success Message -->
+            <div id="success-message" class="success-message" style="display: none;">Notification sent successfully!</div>
+        </div>
+    </div>
+</body>
+</html>
