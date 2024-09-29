@@ -1423,7 +1423,7 @@ app.post('/notifications', (req, res) => {
   });
 });
 
-app.put('/notifications/:id/read',isAuthenticated, (req, res) => {
+app.put('/notifications/:id/read', (req, res) => {
   const notificationId = req.params.id;
   const userId = req.user.id;
 
@@ -1440,7 +1440,7 @@ app.put('/notifications/:id/read',isAuthenticated, (req, res) => {
   });
 });
 
-app.get('/notifications/read-status',isAuthenticated, (req, res) => {
+app.get('/notifications/read-status', (req, res) => {
   const userId = req.user.id; // Get the user ID from the session
   connection.collection('user_read_notifications').find({ user_id: userId }).toArray()
       .then(readNotifications => {
