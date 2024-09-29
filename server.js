@@ -14,6 +14,8 @@ require("dotenv").config();
 
 // Initialize the Express app
 const app = express();
+// Password validation regex
+const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{8,}$/;
 app.use(express.json());
 app.use(cors());
 
@@ -1274,6 +1276,109 @@ function getMealEndTime(mealType) {
       default: return '23:59:59';
   }
 }
+app.get('/get-userrole', (req, res) => {
+  if (req.isAuthenticated()) {
+    const role = req.user.role; // Get the role from the user session
+    res.json({ role }); // Send the role as a JSON response
+  } else {
+    res.status(401).json({ error: "User not authenticated" });
+  }
+});
+
+
+app.get('/get-useremail', (req, res) => {
+  if (req.isAuthenticated()) {
+    const email = req.user.email; // Get the email from the user session
+    res.json({ email }); // Send the email as a JSON response
+  } else {
+    res.status(401).json({ error: "User not authenticated" });
+  }
+});
+app.get("/user-profile", (req, res) => {
+  // Assuming user ID is stored in req.user after authentication
+  const userId = req.user.id; // Adjust as necessary
+
+  connection.query("SELECT id, email, role FROM users WHERE id = ?", [userId], (err, results) => {
+    if (err) {
+      console.error("Database query error:", err);
+      return res.status(500).json({ msg: "Server Error: Database query failed" });
+    }
+
+    if (results.length === 0) {
+      return res.status(404).json({ msg: "User not found." });
+    }
+
+    // Return user data (excluding sensitive information)
+    const user = results[0];
+    return res.status(200).json({ id: user.id, email: user.email, role: user.role });
+  });
+});
+app.post("/change-password", async (req, res) => {
+  const { oldPassword, newPassword, confirmPassword } = req.body;
+
+  // Validate input fields
+  if (!oldPassword || !newPassword || !confirmPassword) {
+    return res.status(400).json({ msg: "All fields are required." });
+  }
+
+  // Validate new password requirements
+  if (
+    newPassword.length < 8 ||
+    !/[A-Z]/.test(newPassword) ||
+    !/[a-z]/.test(newPassword) ||
+    !/[!@#$%^&*]/.test(newPassword)
+  ) {
+    return res.status(400).json({
+      msg: "New password must be at least 8 characters long and include at least one uppercase letter, one lowercase letter, and one special character.",
+    });
+  }
+
+  // Check if new password matches confirm password
+  if (newPassword !== confirmPassword) {
+    return res.status(400).json({ msg: "New password and confirm password do not match." });
+  }
+
+  try {
+    // Assuming user ID is stored in req.user after authentication
+    const userId = req.user.id; // Adjust as necessary
+
+    connection.query("SELECT * FROM users WHERE id = ?", [userId], async (err, results) => {
+      if (err) {
+        console.error("Database query error:", err);
+        return res.status(500).json({ msg: "Server Error: Database query failed" });
+      }
+
+      if (results.length === 0) {
+        return res.status(404).json({ msg: "User not found." });
+      }
+
+      const user = results[0];
+      const isMatch = await bcrypt.compare(oldPassword.trim(), user.password); // Trimmed comparison
+
+      if (!isMatch) {
+        return res.status(400).json({ msg: "Old password is incorrect." });
+      }
+
+      // Hash the new password
+      const hashedNewPassword = await bcrypt.hash(newPassword, 10);
+
+      // Update the password in the database
+      connection.query("UPDATE users SET password = ? WHERE id = ?", [hashedNewPassword, userId], (err) => {
+        if (err) {
+          console.error("Error updating password:", err);
+          return res.status(500).json({ msg: "Server Error: Unable to update password." });
+        }
+
+        return res.status(200).json({ msg: "Password updated successfully." });
+      });
+    });
+  } catch (err) {
+    console.error("Unexpected error:", err);
+    res.status(500).json({
+      msg: `Server Error: Unexpected error occurred - ${err.message}`,
+    });
+  }
+});
 
 
 // Start the server
