@@ -20,7 +20,7 @@ document.addEventListener('DOMContentLoaded', function () {
         }
 
         // Send the POST request to the API
-        fetch('https://cors-anywhere.herokuapp.com/https://campussafetyapp.azurewebsites.net/incidents/report-incidents-external', {
+        fetch('https://campussafetyapp.azurewebsites.net/incidents/report-incidents-external', {
             method: 'POST',
             body: formData,
         })
