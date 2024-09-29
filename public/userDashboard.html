@@ -5,17 +5,119 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" href="css/userDashboard.css" />
     <title>CampusCrave Dashboard</title>
+
+    <style>
+        /* Basic Reset */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* Body and General Styles */
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #1e2939; /* Changed background color */
+            color: white; /* Ensure text is visible against dark background */
+            transition: margin-left 0.3s;
+        }
+
+        /* Navbar Button for Opening the Menu */
+        .open-btn {
+            font-size: 24px;
+            padding: 10px;
+            cursor: pointer;
+            background-color: #FF6a3d;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 100;
+            transition: background-color 0.3s ease;
+        }
+
+        .open-btn:hover {
+            background-color: #FF6a3d;
+        }
+
+        /* Slide-Out Menu */
+        .sidenav {
+            height: 100%; /* Full-height: Cover the whole page */
+            width: 0; /* Initially hidden */
+            position: fixed;
+            top: 0;
+            left: 0;
+            background-color: #1e2939; /* Dark background for the menu */
+            overflow-x: hidden; /* Disable horizontal scroll */
+            transition: 0.3s; /* Transition effect for menu */
+            padding-top: 60px; /* Space for top content */
+            z-index: 101;
+        }
+
+        /* Menu Links */
+        .sidenav a {
+            padding: 15px 30px;
+            text-decoration: none;
+            font-size: 18px;
+            color: white;
+            display: block;
+            transition: background-color 0.2s ease;
+        }
+
+        .sidenav a:hover {
+            background-color: #FF6a3d;
+            color: white;
+        }
+
+        /* Close Button */
+        .sidenav .close-btn {
+            position: absolute;
+            top: 20px;
+            right: 25px;
+            font-size: 36px;
+            margin-left: 50px;
+            color: white;
+            cursor: pointer;
+        }
+
+        /* Content to slide over when the menu is open */
+        .content {
+            padding: 0px 20px;
+            transition: margin-left 0.3s ease;
+            text-align: left; /* Aligns content with the navigation bar */
+        }
+
+        /* For smaller screens */
+        @media (max-height: 450px) {
+            .sidenav {padding-top: 15px;}
+            .sidenav a {font-size: 16px;}
+        }
+    </style>
   </head>
   <body>
+    <!-- Button to open the side navigation -->
+    <button class="open-btn" onclick="openNav()">☰</button>
+
+    <!-- Slide-Out Navigation Menu -->
+    <div id="sidenav" class="sidenav">
+      <span class="close-btn" onclick="closeNav()">&times;</span>
+      <a href="userDashboard.html">Home</a>
+      <a href="alerts.html">Alerts</a>
+      <a href="notification.html">Maintenance Notification</a>
+      <a href="userProfile.html">Manage Account</a>
+      <a href="login.html">Logout</a>
+    </div>
+
     <div class="container">
       <header class="header">
         <div class="logo">
-          <img src="images/option-21.svg" alt="CampusCrave Logo" onclick="backToDash()">
           <span class="logo-text"  >Campus<span class="crave">Crave</span></span>
         </div>
       </header>
       <main>
-        <div class="welcome">Welcome <span id="username"> John</span></div>
+        <div class="welcome">Welcome <span id="username">John</span></div>
         <div class="dashboard">
           <div class="grid">
             <div class="grid-item" onclick="window.location.href='menu.html'">
@@ -64,7 +166,6 @@
       </main>
       <footer class="footer">
         <div class="footer-item" onclick="window.location.href='feedback.html'">
-
           Feedback
           <svg viewBox="0 0 24 24" fill="rgba(255, 255, 255, 0.1)">
             <path
@@ -72,10 +173,22 @@
             />
           </svg>
         </div>
-
       </footer>
     </div>
-  </body>
 
-  <script src="/src/js/userDashboard.js"></script>
+    <script src="/src/js/userDashboard.js"></script>
+    <script>
+      // Function to open the slide-out menu
+      function openNav() {
+        document.getElementById("sidenav").style.width = "250px";
+        document.body.style.marginLeft = "250px";
+      }
+
+      // Function to close the slide-out menu
+      function closeNav() {
+        document.getElementById("sidenav").style.width = "0";
+        document.body.style.marginLeft = "0";
+      }
+    </script>
+  </body>
 </html>

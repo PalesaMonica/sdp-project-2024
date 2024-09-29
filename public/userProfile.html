@@ -356,57 +356,51 @@
                     console.error('There was a problem with the fetch operation for email:', error);
                 });
         });
-        function submitPassword() {
-            const currentPassword = document.getElementById('currentPassword').value;
-            const newPassword = document.getElementById('newPassword').value;
-            const confirmPassword = document.getElementById('confirmPassword').value;
+        async function submitPassword() {
+            const currentPassword = document.getElementById('currentPassword').value.trim();
+            const newPassword = document.getElementById('newPassword').value.trim();
+            const confirmPassword = document.getElementById('confirmPassword').value.trim();
         
-            // First, verify the current password
-            fetch('/verify-current-password', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ currentPassword }),
-            })
-            .then(response => {
+            // Validate input fields
+            if (!currentPassword || !newPassword || !confirmPassword) {
+                alert("All fields are required.");
+                return;
+            }
+        
+            if (newPassword !== confirmPassword) {
+                alert("New password and confirm password do not match.");
+                return;
+            }
+        
+            // Additional password strength checks can be added here
+        
+            try {
+                const response = await fetch('/change-password', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        oldPassword: currentPassword,
+                        newPassword: newPassword,
+                        confirmPassword: confirmPassword,
+                    }),
+                });
+        
                 if (!response.ok) {
-                    throw new Error('Password verification failed');
+                    const errorData = await response.json();
+                    alert(errorData.msg); // Display error message
+                    return;
                 }
-                return response.json();
-            })
-            .then(data => {
-                // If the current password is correct, check new password
-                if (newPassword === confirmPassword) {
-                    if (newPassword === currentPassword) {
-                        alert("New password cannot be the same as the current password.");
-                    } else {
-                        // Proceed to update the password in the database
-                        return fetch('/update-password', {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json',
-                            },
-                            body: JSON.stringify({ newPassword }),
-                        });
-                    }
-                } else {
-                    alert("New passwords do not match.");
-                }
-            })
-            .then(response => {
-                if (response && response.ok) {
-                    alert("Password updated successfully!");
-                    showProfile(); // Return to profile view
-                } else if (response) {
-                    throw new Error('Failed to update password');
-                }
-            })
-            .catch(error => {
-                console.error('Error during password verification or update:', error);
-                alert("Current password is incorrect.");
-            });
+        
+                alert("Password updated successfully.");
+                showProfile(); // Go back to profile view
+            } catch (error) {
+                console.error('Error updating password:', error);
+                alert("An unexpected error occurred.");
+            }
         }
+        
         
         function openNav() {
             document.getElementById("sidenav").style.width = "250px";
@@ -415,6 +409,31 @@
         function closeNav() {
             document.getElementById("sidenav").style.width = "0";
         }
+        async function fetchUserProfile() {
+            try {
+              const response = await fetch('/user-profile', {
+                method: 'GET',
+                headers: {
+                  'Content-Type': 'application/json',
+                  'Authorization': `Bearer ${yourToken}` // Include token if necessary
+                }
+              });
+          
+              if (!response.ok) {
+                throw new Error('Failed to fetch user profile');
+              }
+          
+              const data = await response.json();
+              console.log('User Profile:', data);
+              // Update the UI with user data as needed
+            } catch (error) {
+              console.error('Error fetching user profile:', error);
+            }
+          }
+          
+          // Call the function to fetch the user profile
+          fetchUserProfile();
+          
 
         function showPersonalInfo() {
             document.getElementById("profile").classList.add("hidden");
