@@ -1423,21 +1423,33 @@ app.post('/notifications', (req, res) => {
   });
 });
 
-// Route to mark a notification as read
-// Route to mark a notification as read
-app.put('/notifications/:id/read', (req, res) => {
-  const { id } = req.params;
-  const query = 'UPDATE notifications SET is_read = true WHERE id = ?';  // We only update the read status, no deletion
-  connection.query(query, [id], (err, result) => {
-      if (err) {
-          console.error('Error updating notification:', err);
-          res.sendStatus(500);
-          return;
-      }
-      res.sendStatus(200);
+app.put('/notifications/:id/read',isAuthenticated, (req, res) => {
+  const notificationId = req.params.id;
+  const userId = req.user.id;
+
+  connection.collection('user_read_notifications').updateOne(
+      { user_id: userId, notification_id: notificationId },
+      { $set: { user_id: userId, notification_id: notificationId } },
+      { upsert: true } // Insert if it doesn't exist
+  )
+  .then(result => {
+      res.status(200).send('Notification marked as read');
+  })
+  .catch(error => {
+      res.status(500).send('Error marking notification as read');
   });
 });
 
+app.get('/notifications/read-status',isAuthenticated, (req, res) => {
+  const userId = req.user.id; // Get the user ID from the session
+  connection.collection('user_read_notifications').find({ user_id: userId }).toArray()
+      .then(readNotifications => {
+          res.status(200).json(readNotifications);
+      })
+      .catch(error => {
+          res.status(500).send('Error fetching read statuses');
+      });
+});
 
 io.on('connection', (socket) => {
   console.log('A user connected');
