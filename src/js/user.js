@@ -35,15 +35,15 @@ function fetchAdminNotifications() {
         method: 'GET',
     })
     .then(response => {
-        if (!response.ok) {
-            throw new Error('Failed to fetch admin notifications');
+        if (response.status === 401) {
+          // Redirect the user to the login page
+          window.location.href = '/login';
+        } else {
+          return response.json();
         }
-        return response.json();
-    })
+      })
     .then(data => {
         console.log("Fetched admin notifications:", data);
-
-        // Map the data into the required format, including both read and unread notifications
         return data.map(notification => ({
             id: notification.id,
             type: 'admin',
@@ -63,46 +63,50 @@ function fetchAdminNotifications() {
 // Function to use mock alerts instead of fetching from an API
 function fetchMockAlerts() {
     return new Promise((resolve) => {
-        // Filter the alerts to include only those that mention 'Dining Hall' in the affected area
         const diningHallAlerts = mockAlerts.filter(alert => 
             alert.affected_area.toLowerCase().includes('dining hall')
         );
 
-        // Map the filtered data into the notification format
         const alerts = diningHallAlerts.map(alert => ({
             id: alert.id,
             type: 'alert',
-            title: `Alert: ${alert.affected_area}`,  // Use affected area in the title
+            title: `Alert: ${alert.affected_area}`,
             content: alert.message,
-            status: alert.status,  // Add the status property
-            unread: alert.status === 'active',  // Mark as unread if status is active
+            status: alert.status,
+            unread: alert.status === 'active',
             timestamp: new Date(alert.timestamp).toLocaleString(),
-            icon: '../images/alert.png'  // Correct relative path for alert icon
+            icon: '../images/alert.png'
         }));
 
-        // Simulate async behavior using setTimeout to mimic a fetch
-        setTimeout(() => resolve(alerts), 500);  // 500ms delay
+        setTimeout(() => resolve(alerts), 500);
     });
 }
 
+// Function to load read states from localStorage
+function loadReadStates() {
+    const readStates = JSON.parse(localStorage.getItem('readStates')) || {};
+    notifications.forEach(notification => {
+        if (readStates[notification.id]) {
+            notification.unread = false; // Mark as read if stored in local storage
+        }
+    });
+}
 
-// Function to display notifications, both read and unread
+// Function to display notifications
 function displayNotifications() {
     const notificationsList = document.getElementById('notifications-list');
-    notificationsList.innerHTML = ''; // Clear current content
+    notificationsList.innerHTML = '';
 
     notifications.forEach(notification => {
         const notificationElement = document.createElement('div');
         notificationElement.classList.add('notification');
 
-        // Apply different styling for read and unread notifications
         if (notification.unread) {
-            notificationElement.classList.add('unread');  // Class for unread notifications
+            notificationElement.classList.add('unread');
         } else {
-            notificationElement.classList.add('read');  // Class for read notifications
+            notificationElement.classList.add('read');
         }
 
-        // Create the HTML content for each notification
         notificationElement.innerHTML = `
             <div class="icon">
                 <img src="${notification.icon}" alt="${notification.type} Icon" width="40px" height="40px">
@@ -116,13 +120,8 @@ function displayNotifications() {
             </div>
         `;
 
-        // Append each notification to the main list
         notificationsList.appendChild(notificationElement);
     });
-}
-
-function autoRefreshPage() {
-    window.location.reload();  // This will reload the entire page
 }
 
 // Function to calculate the count of unread notifications
@@ -139,36 +138,29 @@ function updateUnreadCount() {
         unreadCountElement.textContent = unreadCount;
     }
 
-    // Update the unread count in local storage
     localStorage.setItem('unreadCount', unreadCount);
 }
-
 
 // Function to mark notifications as read
 function markAsRead(id) {
     const notification = notifications.find(n => n.id === id);
 
     if (notification) {
-        if (notification.type === 'admin') {
-            fetch(`/notifications/${id}/read`, {
-                method: 'PUT',
-            })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Failed to mark notification as read');
-                }
-                notification.unread = false;
-                autoRefreshPage();  // Auto refresh the entire page
-            })
-            .catch(error => {
-                console.error('Error marking notification as read:', error);
-            });
-        } else if (notification.type === 'alert') {
-            notification.unread = false;
-            autoRefreshPage();  // Auto refresh the entire page
-        }
+        notification.unread = false;
+
+        // Update localStorage for read states
+        const readStates = JSON.parse(localStorage.getItem('readStates')) || {};
+        readStates[notification.id] = true; // Mark notification as read
+        localStorage.setItem('readStates', JSON.stringify(readStates));
+
+        // Refresh the notifications display
         displayNotifications();
         updateUnreadCount();
+        
+        // Auto-refresh the page
+        setTimeout(() => {
+            window.location.reload();
+        }, 2000); // Refresh after 2 seconds
     }
 }
 
@@ -180,12 +172,9 @@ function goBack() {
 window.onload = () => {
     Promise.all([fetchAdminNotifications(), fetchMockAlerts()])
     .then(([adminNotifications, alerts]) => {
-        // Combine fetched admin notifications with mock alerts
         notifications = [...adminNotifications, ...alerts];
 
-        console.log("Combined notifications:", notifications);
-
-        // Display both read and unread notifications
+        loadReadStates(); // Load read states from local storage
         displayNotifications();
         updateUnreadCount();
     });
@@ -193,8 +182,6 @@ window.onload = () => {
     // Listen for new notifications in real-time
     socket.on('newNotification', (newNotification) => {
         console.log('Received new notification:', newNotification);
-
-        // Add the new real-time notification to the existing list
         notifications.push({
             id: newNotification.id,
             type: 'admin',
@@ -202,10 +189,9 @@ window.onload = () => {
             content: newNotification.message,
             unread: true,  // New notifications are unread
             timestamp: new Date(newNotification.created_at).toLocaleString(),
-            icon: '../images/info.png'  // Correct relative path for new admin notification
+            icon: '../images/info.png'
         });
 
-        // Refresh display to show the new unread notification
         displayNotifications();
         updateUnreadCount();
     });
