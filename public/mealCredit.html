@@ -3,32 +3,35 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="css/mealCredit.css" />
     <title>Meal Credits</title>
-
+    <link rel="stylesheet" href="css/mealCredit.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/dayjs/1.10.7/dayjs.min.js"></script>
 </head>
 <body>
     <div class="container">
         <div class="header">
-            <button class="back-button" onclick="window.location.href='userDashboard.html'">&#8592;</button>
-            <h1>Meal Credits</h1>
-            <button class="home-button">&#8962;</button>
+            <div class="logo">
+                <img src="images/option-21.svg" alt="CampusCrave Logo" onclick="window.location.href='userDashboard.html'">
+                <span class="logo-text" onclick="window.location.href='userDashboard.html'" >Campus<span class="crave" onclick="window.location.href='userDashboard.html'">Crave</span></span>
+            </div>
         </div>
+
+        <main class="meal-Credits-container">
+            <h1>Meal Credits</h1>
+            <div id="reservations-list"></div>
+        </main>
+
         <div class="credits-card">
-            <p>Available Credits</p>
-            <p class="credits-amount">R13 580.00</p>
+            <h2>Available Credits</h2>
+            <div id="credits-amount" class="amount">Loading...</div>
         </div>
         <div class="transactions-header">
             <h2>Recent Transactions</h2>
             <a href="transactionHistory.html" class="view-all">View All</a>
         </div>
-        <div id="transactions-list">
-            <!-- Transactions will be dynamically added here -->
-        </div>
+        <div id="transactions-list"></div>
     </div>
 
+    <script src="../src/js/mealCredit.js"></script>
 </body>
-
-<script src="../src/js/mealCredit.js"></script>
-
 </html>

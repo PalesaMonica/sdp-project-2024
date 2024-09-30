@@ -94,89 +94,92 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     function confirmReservation() {
-            fetch('/api/cart-items')
-                .then(response => response.json())
-                .then(items => {
-                    const reservations = items.map(item => {
-                        let startTime, endTime;
+        fetch('/api/cart-items')
+            .then(response => response.json())
+            .then(items => {
+                if (items.length === 0) {
+                    showToast('Your cart is empty. Please add items to your cart.');
+                    return;
+                }
     
-                        switch (item.meal_type) {
-                            case 'breakfast':
-                                startTime = '07:00:00';
-                                endTime = '09:00:00';
-                                break;
-                            case 'lunch':
-                                startTime = '11:00:00';
-                                endTime = '14:00:00';
-                                break;
-                            case 'dinner':
-                                startTime = '16:00:00';
-                                endTime = '19:00:00';
-                                break;
-                            default:
-                                console.error('Unknown meal type');
-                                return null;
-                        }
+                const reservations = items.map(item => {
+                    let startTime, endTime;
     
-                        return {
-                            dining_hall_id: item.dining_hall_id,
-                            username: item.username,
-                            date: item.date,
-                            start_time: startTime,
-                            end_time: endTime,
-                            meal_type: item.meal_type,
-                            user_id: item.user_id
-                        };
-                    });
+                    switch (item.meal_type) {
+                        case 'breakfast':
+                            startTime = '07:00:00';
+                            endTime = '09:00:00';
+                            break;
+                        case 'lunch':
+                            startTime = '11:00:00';
+                            endTime = '14:00:00';
+                            break;
+                        case 'dinner':
+                            startTime = '16:00:00';
+                            endTime = '19:00:00';
+                            break;
+                        default:
+                            console.error('Unknown meal type');
+                            return null;
+                    }
     
-                    const validReservations = reservations.filter(res => res !== null);
+                    return {
+                        dining_hall_id: item.dining_hall_id,
+                        username: item.username,
+                        date: item.date,
+                        start_time: startTime,
+                        end_time: endTime,
+                        meal_type: item.meal_type,
+                        user_id: item.user_id
+                    };
+                });
     
-                    fetch('/api/confirm-reservation', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ reservations: validReservations })
-                    })
-                    .then(response => {
-                        console.log('Confirm reservation response:', response);
-                        if (response.status === 409) {
-                            return response.json().then(data => {
-                                console.log('Conflict data:', data);
-                                // Conflict detected, show conflict modal
-                                conflictReservationId = data.duplicateReservation.id;
-                                cartItemIdToReplace = items.find(item => 
-                                    item.date === data.duplicateReservation.date && 
-                                    item.meal_type === data.duplicateReservation.meal_type
-                                )?.id;
+                const validReservations = reservations.filter(res => res !== null);
     
-                                if (conflictModal) {
-                                    conflictModal.style.display = 'block';  // Show the conflict modal
-                                } else {
-                                    console.error('Conflict modal not found');
-                                }
-                            });
-                        } else if (!response.ok) {
-                            throw new Error(`HTTP error! status: ${response.status}`);
-                        } else {
-                            return response.json();
-                        }
-                    })
-                    .then(data => {
-                        if (data && data.reservationId) {
-                            window.location.href = `reservations.html?id=${data.reservationId}`;
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Error confirming reservation:', error);
-                        showToast('There was an error confirming your reservation. Please try again.');
-                    });
+                fetch('/api/confirm-reservation', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ reservations: validReservations })
+                })
+                .then(response => {
+                    if (response.status === 409) {
+                        return response.json().then(data => {
+                            console.log('Conflict data:', data);
+    
+                            const duplicateReservation = data.duplicateReservation;
+                            cartItemIdToReplace = items.find(item =>
+                                item.date === duplicateReservation.date &&
+                                item.meal_type === duplicateReservation.meal_type
+                            )?.id;
+    
+                            if (conflictModal) {
+                                conflictModal.style.display = 'block';  // Show the conflict modal
+                            } else {
+                                console.error('Conflict modal not found');
+                            }
+                        });
+                    } else if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    } else {
+                        return response.json();
+                    }
+                })
+                .then(data => {
+                    if (data && data.reservationId) {
+                        window.location.href = `reservations.html?id=${data.reservationId}`;
+                    }
                 })
                 .catch(error => {
-                    console.error('Error fetching cart items:', error);
-                    showToast('There was an error fetching your cart items. Please try again.');
+                    console.error('Error confirming reservation:', error);
+                    showToast('There was an error confirming your reservation. Please try again.');
                 });
-        }
-
-        
+            })
+            .catch(error => {
+                console.error('Error fetching cart items:', error);
+                showToast('There was an error fetching your cart items. Please try again.');
+            });
+    }
+      
     function showToast(message, type = 'success') {
         const toast = document.createElement('div');
         toast.className = `toast toast-${type}`;

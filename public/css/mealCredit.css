@@ -1,102 +1,111 @@
+:root {
+    --primary-color: #ff6a3d;
+    --background-color: #1a1e2e;
+    --text-color: #ffffff;
+}
+
 body {
     font-family: Arial, sans-serif;
     margin: 0;
     padding: 0;
-    background-color: #1A2238;
+    background-color: var(--background-color);
+    color: var(--text-color);
 }
-
 .container {
-    max-width: 95%;
+    max-width: 800px;
     margin: 0 auto;
     padding: 20px;
 }
-
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
 .header {
     display: flex;
     justify-content: space-between;
-    color: white;
     align-items: center;
     margin-bottom: 20px;
 }
 
-.logout-button {
-    background: none;
-    border: none;
-    color: #FF6A3D;
-    font-size: 24px;
-    cursor: pointer;
-}
-
-.credits-card {
-    background-color: #FF6A3D;
-    color: #1A2238;
-    padding: 20px;
-    border-radius: 10px;
-    margin-bottom: 20px;
-}
-
-.credits-amount {
-    font-size: 24px;
-    font-weight: bold;
-    color: white; /* Make the credits text bold and white */
-}
-
-.transactions-header {
-    display: flex;
-    justify-content: space-between;
-    color: white;
-    align-items: center;
-    margin-bottom: 10px;
-}
-
-.view-all {
-    color: #FF6A3D;
-    text-decoration: none;
-}
-
-.transaction {
-    background-color: white;
-    padding: 10px;
-    margin-bottom: 10px;
-    border-radius: 5px;
-    display: flex;
-    justify-content: space-between;
-}
-
-.transaction-details {
-    display: flex;
-    flex-direction: column;
-}
-
-.transaction-amount {
-    color: #e74c3c;
-    font-weight: bold;
-}
-
-.transaction-amount.positive {
-    color: #2ecc71;
-}
-
-/* Update CampusCrave logo and text */
 .logo {
     display: flex;
     align-items: center;
-    margin: 20px 0;
     cursor: pointer;
 }
 
 .logo img {
-    width: 50px; /* Adjust logo size */
-    height: auto;
+    width: 40px;
+    height: 40px;
     margin-right: 10px;
 }
 
 .logo-text {
     font-size: 24px;
-    color: #FFFFFF; /* White color for text */
+    font-weight: bold;
 }
 
 .crave {
-    color: #FF6A3D; /* Highlight 'Crave' in an accent color */
+    color: var(--primary-color);
 }
 
+.meal-Credits-container {
+    max-width: 1200px;
+    margin: 0 auto;
+
+}
+.credits-card {
+    background-color: var(--primary-color);
+    color: var(--background-color);
+    padding: 20px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+    text-align: center;
+}
+.credits-card h2 {
+    margin: 0;
+    font-size: 1.2em;
+}
+.credits-card .amount {
+    font-size: 2em;
+    font-weight: bold;
+    margin-top: 10px;
+}
+.transactions-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+.view-all {
+    color: var(--primary-color);
+    text-decoration: none;
+}
+#transactions-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+.transaction {
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    padding: 10px;
+    border-radius: 5px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: rgba(255, 255, 255, 0.05);
+}
+.transaction-details {
+    flex-grow: 1;
+}
+.transaction-amount {
+    font-weight: bold;
+    white-space: nowrap;
+}
+/* Positive and negative amount colors */
+.transaction-amount.negative {
+    color: green;
+}
+.transaction-amount.positive {
+    color: red;
+}

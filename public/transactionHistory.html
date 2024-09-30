@@ -3,27 +3,32 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="css/transactionHistory.css" />
     <title>Transaction History</title>
+    <link rel="stylesheet" href="css/transactionHistory.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/dayjs/1.10.7/dayjs.min.js"></script>
 </head>
 <body>
     <div class="container">
         <div class="header">
-            <button class="back-button" onclick="window.location.href='mealCredit.html'">&#8592;</button>
+            <div class="logo">
+                <img src="images/option-21.svg" alt="CampusCrave Logo" onclick="backToDash()">
+                <span class="logo-text" onclick="window.location.href='mealCredit.html'" >Campus<span class="crave" onclick="window.location.href='mealCredit.html'">Crave</span></span>
+            </div>
+        </div>
+
+        <main class="transactions-container">
             <h1>Transaction History</h1>
-            <button class="home-button" onclick="window.location.href='userDashboard.html'">&#8962;</button>
-        </div>
+            <div id="reservations-list"></div>
+        </main>
+
         <div class="tabs">
-            <button class="tab active" data-period="day">Day</button>
-            <button class="tab" data-period="week">Week</button>
-            <button class="tab" data-period="month">Month</button>
+            <div class="tab active" data-period="day">Day</div>
+            <div class="tab" data-period="week">Week</div>
+            <div class="tab" data-period="month">Month</div>
         </div>
-        <div id="transactions-list">
-            <!-- Transactions will be dynamically added here -->
-        </div>
+        <div id="transactions-list"></div>
     </div>
+
+    <script src="../src/js/transactionHistory.js"></script>
 </body>
-
-<script src="../src/js/transactionHistory.js"></script>
-
 </html>
