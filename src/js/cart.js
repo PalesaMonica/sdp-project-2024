@@ -49,7 +49,14 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function fetchCartItems() {
         fetch('/api/cart-items')
-            .then(response => response.json())
+        .then((response) => {
+            if (response.status === 401) {
+              // Redirect to login page if user is not authorized
+              window.location.href = "/login";
+              throw new Error("Unauthorized access. Redirecting to login...");
+            }
+            return response.json();
+          })
             .then(items => {
                 cartItems = items; // Store the fetched items
                 displayCartItems(items);
@@ -95,7 +102,14 @@ document.addEventListener('DOMContentLoaded', function() {
     
     function confirmReservation() {
         fetch('/api/cart-items')
-            .then(response => response.json())
+        .then((response) => {
+            if (response.status === 401) {
+              // Redirect to login page if user is not authorized
+              window.location.href = "/login";
+              throw new Error("Unauthorized access. Redirecting to login...");
+            }
+            return response.json();
+          })
             .then(items => {
                 if (items.length === 0) {
                     showToast('Your cart is empty. Please add items to your cart.');
@@ -142,7 +156,12 @@ document.addEventListener('DOMContentLoaded', function() {
                     body: JSON.stringify({ reservations: validReservations })
                 })
                 .then(response => {
-                    if (response.status === 409) {
+                    if (response.status === 401) {
+                        // Redirect to login page if user is not authorized
+                        window.location.href = "/login";
+                        throw new Error("Unauthorized access. Redirecting to login...");
+                      }
+                   else if (response.status === 409) {
                         return response.json().then(data => {
                             console.log('Conflict data:', data);
     
@@ -223,7 +242,12 @@ document.addEventListener('DOMContentLoaded', function() {
         })
         .then(response => {
             console.log('Replace reservation response:', response);
-            if (!response.ok) {
+            if (response.status === 401) {
+                // Redirect to login page if user is not authorized
+                window.location.href = "/login";
+                throw new Error("Unauthorized access. Redirecting to login...");
+              }
+            else if (!response.ok) {
                 if (response.status === 409) {
                     return response.json().then(data => {
                         throw new Error('Conflict with existing reservation');
@@ -261,7 +285,12 @@ document.addEventListener('DOMContentLoaded', function() {
     function removeItem(id) {
         return fetch(`/api/remove-from-cart/${id}`, { method: 'DELETE' })
             .then(response => {
-                if (!response.ok) {
+                if (response.status === 401) {
+                    // Redirect to login page if user is not authorized
+                    window.location.href = "/login";
+                    throw new Error("Unauthorized access. Redirecting to login...");
+                  }
+                else if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }
                 return response.json();

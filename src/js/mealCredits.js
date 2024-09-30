@@ -1,7 +1,14 @@
 document.addEventListener('DOMContentLoaded', () => {
     function fetchMealCredits() {
         return fetch('/api/meal-credits')
-            .then(response => response.json())
+        .then((response) => {
+            if (response.status === 401) {
+              // Redirect to login page if user is not authorized
+              window.location.href = "/login";
+              throw new Error("Unauthorized access. Redirecting to login...");
+            }
+            return response.json();
+          })
             .then(data => {
                 if (data.remaining_credits !== undefined) {
                     document.querySelector('.credits-amount').textContent = `R${data.remaining_credits.toFixed(2)}`;

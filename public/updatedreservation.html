@@ -88,7 +88,12 @@
       // Fetch updated reservation details from the server
       fetch(`/api/reservations/${reservationId}`)
         .then(response => {
-          if (!response.ok) {
+          if (response.status === 401) {
+                // Redirect to login page if user is not authorized
+                window.location.href = "/login";
+                throw new Error("Unauthorized access. Redirecting to login...");
+              }
+        else  if (!response.ok) {
             throw new Error('Network response was not ok');
           }
           return response.json();

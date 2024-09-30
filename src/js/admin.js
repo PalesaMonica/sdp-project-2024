@@ -19,7 +19,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 body: JSON.stringify({ title, message, dining_hall: diningHall }),
             })
             .then(response => {
-                if (!response.ok) {
+                if (response.status === 401) {
+                    // Redirect to login page if user is not authorized
+                    window.location.href = "/login";
+                    throw new Error("Unauthorized access. Redirecting to login...");
+                  }
+              else  if (!response.ok) {
                     throw new Error('Network response was not ok');
                 }
                 return response.text(); // Return response text for further validation if needed
@@ -47,5 +52,5 @@ function autoRefreshPage() {
 }
 
 function goBack() {
-    window.location.href = '../../userDashboard.html'; // Replace with the actual page you want to go back to
+    window.location.href = '../../meal-management.html'; // Replace with the actual page you want to go back to
 }

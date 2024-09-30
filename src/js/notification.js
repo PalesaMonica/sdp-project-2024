@@ -105,7 +105,12 @@ function markNotificationAsRead(notificationId) {
         method: 'POST',
     })
     .then(response => {
-        if (!response.ok) {
+        if (response.status === 401) {
+            // Redirect to login page if user is not authorized
+            window.location.href = "/login";
+            throw new Error("Unauthorized access. Redirecting to login...");
+          }
+      else  if (!response.ok) {
             throw new Error(`Failed to mark notification as read: ${response.statusText}`);
         }
         console.log(`Notification ${notificationId} marked as read on the server.`);

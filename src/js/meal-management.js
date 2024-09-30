@@ -8,7 +8,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
 function loadCurrentMenu() {
     fetch('/api/current-menu')
-        .then(response => response.json())
+    .then((response) => {
+        if (response.status === 401) {
+          // Redirect to login page if user is not authorized
+          window.location.href = "/login";
+          throw new Error("Unauthorized access. Redirecting to login...");
+        }
+        return response.json();
+      })
         .then(menu => {
             const menuContainer = document.getElementById('current-menu');
             menuContainer.innerHTML = '';
@@ -22,7 +29,14 @@ function loadCurrentMenu() {
 
 function loadAvailableMeals() {
     fetch('/api/available-meals')
-        .then(response => response.json())
+    .then((response) => {
+        if (response.status === 401) {
+          // Redirect to login page if user is not authorized
+          window.location.href = "/login";
+          throw new Error("Unauthorized access. Redirecting to login...");
+        }
+        return response.json();
+      })
         .then(meals => {
             const mealSelect = document.getElementById('meal-select');
             meals.forEach(meal => {
@@ -56,7 +70,14 @@ function addToMenu() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ mealId })
     })
-        .then(response => response.json())
+    .then((response) => {
+        if (response.status === 401) {
+          // Redirect to login page if user is not authorized
+          window.location.href = "/login";
+          throw new Error("Unauthorized access. Redirecting to login...");
+        }
+        return response.json();
+      })
         .then(() => {
             loadCurrentMenu();
             document.getElementById('meal-select').value = '';
@@ -66,7 +87,14 @@ function addToMenu() {
 
 function removeFromMenu(menuItemId) {
     fetch(`/api/remove-from-menu/${menuItemId}`, { method: 'DELETE' })
-        .then(response => response.json())
+    .then((response) => {
+        if (response.status === 401) {
+          // Redirect to login page if user is not authorized
+          window.location.href = "/login";
+          throw new Error("Unauthorized access. Redirecting to login...");
+        }
+        return response.json();
+      })
         .then(() => loadCurrentMenu())
         .catch(error => console.error('Error removing meal from menu:', error));
 }
@@ -85,7 +113,14 @@ function addNewMeal() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(newMeal)
     })
-        .then(response => response.json())
+    .then((response) => {
+        if (response.status === 401) {
+          // Redirect to login page if user is not authorized
+          window.location.href = "/login";
+          throw new Error("Unauthorized access. Redirecting to login...");
+        }
+        return response.json();
+      })
         .then(() => {
             loadAvailableMeals();
             // Clear input fields
