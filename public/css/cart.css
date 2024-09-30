@@ -39,6 +39,22 @@ body {
     color: var(--primary-color);
 }
 
+.reservation-button {
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.reservation-button:hover {
+    background-color: #e55d3b; /* Darker color on hover */
+}
+
 .cart-container {
     max-width: 1200px;
     margin: 0 auto;

@@ -144,20 +144,26 @@ function displayReservations(reservations) {
     }
 
     const groupedReservations = groupReservationsByDay(reservations);
+    
+    // Sort dates chronologically
+    const sortedDates = Object.keys(groupedReservations).sort((a, b) => 
+        new Date(a) - new Date(b)
+    );
 
-    for (const [date, dateReservations] of Object.entries(groupedReservations)) {
+    // Display reservations using sorted dates
+    sortedDates.forEach(date => {
         const groupElement = document.createElement('div');
         groupElement.className = 'reservation-group';
 
         groupElement.innerHTML = `<h2>${formatDate(date)}</h2>`;
 
-        dateReservations.forEach(reservation => {
+        groupedReservations[date].forEach(reservation => {
             const reservationElement = createReservationElement(reservation);
             groupElement.appendChild(reservationElement);
         });
 
         reservationsList.appendChild(groupElement);
-    }
+    });
 }
 
 function groupReservationsByDay(reservations) {
@@ -289,7 +295,8 @@ function deleteReservation(reservationId) {
         })
         .then(data => {
             console.log('Reservation cancelled:', data);
-            document.getElementById('reservation-modal').style.display = 'none';
+            //alert('Reservation cancelled successfully.');  
+            document.getElementById('reservation-modal').style.display = 'none'; // Hide modal
             fetchReservations(); // Refresh the reservations list
         })
         .catch(error => {
@@ -298,6 +305,7 @@ function deleteReservation(reservationId) {
         });
     }
 }
+
 
 
 function formatDate(dateString) {

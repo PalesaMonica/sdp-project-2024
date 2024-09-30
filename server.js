@@ -614,8 +614,13 @@ app.get('/api/reservations/:reservationId', (req, res) => {
 
 // Route to post a new reservation
 app.post('/api/confirm-reservation', (req, res) => {
-  const userId = req.user.id;  
-  const username = req.user.username;
+  const userId = req.user?.id;
+  const username = req.user?.username;
+
+  if (!userId || !username) {
+      console.error('User not authenticated');
+      return res.status(401).json({ error: 'User not authenticated' });
+  }
 
   const queryCart = `
       SELECT ci.id, ci.date, ci.meal_type, ci.dining_hall_id
@@ -623,7 +628,6 @@ app.post('/api/confirm-reservation', (req, res) => {
       WHERE ci.user_id = ?
   `;
 
-  // Fetch all cart items for the user
   connection.query(queryCart, [userId], (err, cartItems) => {
       if (err) {
           console.error('Error fetching cart items:', err);
@@ -634,7 +638,6 @@ app.post('/api/confirm-reservation', (req, res) => {
           return res.status(400).json({ error: 'Cart is empty' });
       }
 
-      // Begin transaction to ensure atomicity
       connection.beginTransaction(err => {
           if (err) {
               console.error('Error starting transaction:', err);
@@ -643,7 +646,7 @@ app.post('/api/confirm-reservation', (req, res) => {
 
           const checkDuplicateQuery = `
               SELECT * FROM reservations
-              WHERE user_id = ? AND meal_type = ? AND date = ? AND status != 'cancelled'
+              WHERE user_id = ? AND meal_type = ? AND date = ? AND status = 'confirmed'
           `;
 
           const insertReservation = `
@@ -652,6 +655,7 @@ app.post('/api/confirm-reservation', (req, res) => {
               VALUES (?, ?, ?, ?, ?, ?, ?, 'confirmed')
           `;
 
+          let duplicateFound = false;
           cartItems.forEach((item, index) => {
               let startTime, endTime;
               switch (item.meal_type) {
@@ -668,12 +672,10 @@ app.post('/api/confirm-reservation', (req, res) => {
                       endTime = '19:00:00';
                       break;
                   default:
-                      console.error('Unknown meal type');
-                      return;
+                      return res.status(400).json({ error: 'Unknown meal type' });
               }
 
-              const utcDate = new Date(item.date);
-              const localDate = new Date(utcDate.getTime() + (2 * 60 * 60 * 1000));
+              const localDate = new Date(new Date(item.date).getTime() + (2 * 60 * 60 * 1000));
 
               connection.query(checkDuplicateQuery, [userId, item.meal_type, localDate.toISOString().split('T')[0]], (err, results) => {
                   if (err) {
@@ -684,17 +686,10 @@ app.post('/api/confirm-reservation', (req, res) => {
                   }
 
                   if (results.length > 0) {
-                      // Duplicate found, but status is not 'cancelled'
-                      if (index === cartItems.length - 1) {
-                          connection.commit(err => {
-                              if (err) {
-                                  return connection.rollback(() => {
-                                      console.error('Transaction commit failed:', err);
-                                      return res.status(500).json({ error: 'Failed to commit transaction' });
-                                  });
-                              }
-
-                              return res.status(409).json({
+                      if (!duplicateFound) {
+                          duplicateFound = true;
+                          return connection.rollback(() => {
+                              res.status(409).json({
                                   error: 'Duplicate reservation found',
                                   duplicateReservation: {
                                       id: results[0].id,
@@ -706,7 +701,6 @@ app.post('/api/confirm-reservation', (req, res) => {
                           });
                       }
                   } else {
-                      // No duplicate, insert the new reservation
                       connection.query(insertReservation, [
                           item.dining_hall_id,
                           userId,
@@ -723,8 +717,7 @@ app.post('/api/confirm-reservation', (req, res) => {
                               });
                           }
 
-                          // If this is the last item, commit the transaction
-                          if (index === cartItems.length - 1) {
+                          if (index === cartItems.length - 1 && !duplicateFound) {
                               connection.commit(err => {
                                   if (err) {
                                       return connection.rollback(() => {
@@ -733,7 +726,6 @@ app.post('/api/confirm-reservation', (req, res) => {
                                       });
                                   }
 
-                                  // Clear the cart after successful reservation
                                   const clearCartQuery = `DELETE FROM cart_items WHERE user_id = ?`;
                                   connection.query(clearCartQuery, [userId], (err) => {
                                       if (err) {
@@ -741,7 +733,6 @@ app.post('/api/confirm-reservation', (req, res) => {
                                           return res.status(500).json({ error: 'Failed to clear cart' });
                                       }
 
-                                      // Send a success response with a redirect URL
                                       res.status(201).json({ message: 'Reservation confirmed and cart cleared', redirectUrl: `/reservations.html?id=${result.insertId}` });
                                   });
                               });
@@ -752,6 +743,56 @@ app.post('/api/confirm-reservation', (req, res) => {
           });
       });
   });
+
+  function handleResponse(res, connection, duplicateReservations, failedInserts) {
+    if (duplicateReservations.length > 0 || failedInserts.length > 0) {
+      connection.rollback(() => {
+        let errorMessage = '';
+        if (duplicateReservations.length > 0) {
+          errorMessage += 'Duplicate reservations found. ';
+        }
+        if (failedInserts.length > 0) {
+          errorMessage += 'Some reservations failed to insert. ';
+        }
+        return res.status(409).json({
+          success: false,
+          error: errorMessage.trim(),
+          duplicateReservations,
+          failedInserts
+        });
+      });
+    } else {
+      connection.commit(err => {
+        if (err) {
+          return connection.rollback(() => {
+            console.error('Transaction commit failed:', err);
+            return res.status(500).json({
+              success: false,
+              error: 'Failed to commit transaction'
+            });
+          });
+        }
+
+        // Clear the cart after successful reservation
+        const clearCartQuery = `DELETE FROM cart_items WHERE user_id = ?`;
+        connection.query(clearCartQuery, [userId], (err) => {
+          if (err) {
+            console.error('Error clearing cart:', err);
+            return res.status(500).json({
+              success: false,
+              error: 'Failed to clear cart'
+            });
+          }
+
+          // Send a success response
+          res.status(201).json({
+            success: true,
+            message: 'Reservations confirmed and cart cleared'
+          });
+        });
+      });
+    }
+  }
 });
 
 app.put('/api/replace-reservation/:id', (req, res) => {
@@ -814,7 +855,7 @@ app.put('/api/replace-reservation/:id', (req, res) => {
         // 3. Check for conflicts
         const checkConflicts = `
           SELECT * FROM reservations
-          WHERE user_id = ? AND date = ? AND meal_type = ? AND id != ?
+          WHERE user_id = ? AND date = ? AND meal_type = ? AND id != ? AND status = 'confirmed'
         `;
 
         connection.query(checkConflicts, [userId, cartItem.date, cartItem.meal_type, existingReservationId], (err, conflicts) => {
@@ -936,23 +977,89 @@ app.get('/api/cart-item/:id', (req, res) => {
 app.delete('/api/reservations/:id', (req, res) => {
   const reservationId = req.params.id;
 
-  const query = 'UPDATE reservations SET status = ? WHERE id = ?';
+  // First, query to get the reservation details by ID (user_id, date, meal_type)
+  const getReservationQuery = `
+    SELECT user_id, date, meal_type 
+    FROM reservations 
+    WHERE id = ?
+  `;
 
-  connection.query(query, ['cancelled', reservationId], (error, results) => {
+  connection.query(getReservationQuery, [reservationId], (error, results) => {
     if (error) {
-      console.error('Error updating reservation status:', error);
+      console.error('Error retrieving reservation:', error);
       res.status(500).json({ error: 'Internal server error' });
       return;
     }
 
-    if (results.affectedRows === 0) {
+    if (results.length === 0) {
       res.status(404).json({ error: 'Reservation not found' });
       return;
     }
 
-    res.status(200).json({ message: 'Reservation cancelled successfully' });
+    const { user_id, date, meal_type } = results[0];
+
+    // Check if there is already a "cancelled" reservation with the same user_id, date, and meal_type
+    const checkCancelledQuery = `
+      SELECT id 
+      FROM reservations 
+      WHERE user_id = ? AND date = ? AND meal_type = ? AND status = 'cancelled'
+    `;
+
+    connection.query(checkCancelledQuery, [user_id, date, meal_type], (error, cancelledResults) => {
+      if (error) {
+        console.error('Error checking for cancelled reservation:', error);
+        res.status(500).json({ error: 'Internal server error' });
+        return;
+      }
+
+      // If a cancelled reservation is found, delete it
+      if (cancelledResults.length > 0) {
+        const deleteCancelledQuery = `DELETE FROM reservations WHERE id = ?`;
+        connection.query(deleteCancelledQuery, [cancelledResults[0].id], (error, deleteResults) => {
+          if (error) {
+            console.error('Error deleting cancelled reservation:', error);
+            res.status(500).json({ error: 'Internal server error' });
+            return;
+          }
+
+          console.log('Cancelled reservation deleted successfully');
+        });
+      }
+
+      // Now check if a "confirmed" reservation exists and change it to "cancelled"
+      const checkConfirmedQuery = `
+        SELECT id 
+        FROM reservations 
+        WHERE user_id = ? AND date = ? AND meal_type = ? AND status = 'confirmed'
+      `;
+
+      connection.query(checkConfirmedQuery, [user_id, date, meal_type], (error, confirmedResults) => {
+        if (error) {
+          console.error('Error checking for confirmed reservation:', error);
+          res.status(500).json({ error: 'Internal server error' });
+          return;
+        }
+
+        // If a confirmed reservation is found, update it to "cancelled"
+        if (confirmedResults.length > 0) {
+          const updateConfirmedQuery = `UPDATE reservations SET status = 'cancelled' WHERE id = ?`;
+          connection.query(updateConfirmedQuery, [confirmedResults[0].id], (error, updateResults) => {
+            if (error) {
+              console.error('Error updating confirmed reservation:', error);
+              res.status(500).json({ error: 'Internal server error' });
+              return;
+            }
+
+            res.status(200).json({ message: 'Reservation status updated to cancelled successfully' });
+          });
+        } else {
+          res.status(404).json({ error: 'No confirmed reservation found' });
+        }
+      });
+    });
   });
 });
+
 
 app.get('/api/transactions', (req, res) => {
   const query = 'SELECT * FROM transactions WHERE user_id = ?';
