@@ -22,12 +22,11 @@ window.addEventListener('load', () => {
     })
     .catch((error) => console.error("Error fetching dietary preference:", error));
 
-       // Add resize event listener
-       window.addEventListener('resize', debounce(() => {
+    // Add resize event listener
+    window.addEventListener('resize', debounce(() => {
         updateGrids();
     }, 250));
-
-  });
+});
 
   function debounce(func, wait) {
     let timeout;

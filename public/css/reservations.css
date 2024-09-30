@@ -12,6 +12,12 @@ body {
     color: var(--text-color);
 }
 
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
 .header {
     display: flex;
     justify-content: space-between;
@@ -38,6 +44,22 @@ body {
 
 .crave {
     color: var(--primary-color);
+}
+
+.menu-button {
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.menu-button:hover {
+    background-color: #e55d3b; /* Darker color on hover */
 }
 
 .reservations-container {
@@ -140,21 +162,6 @@ body {
     color: var(--text-color);
 }
 
-#close-modal {
-    background-color: var(--primary-color);
-    color: white;
-    border: none;
-    padding: 10px 20px;
-    margin-top: 20px;
-    cursor: pointer;
-    border-radius: 5px;
-    transition: background-color 0.3s ease;
-}
-
-#close-modal:hover {
-    background-color: #e55542;
-}
-
 #reservation-details {
     text-align: left;
 }
@@ -172,4 +179,67 @@ body {
     display: block;
     margin: 20px auto;
     max-width: 200px;
+}
+
+#close-modal {
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    margin-top: 20px;
+    margin-left: 60%;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: background-color 0.3s ease;
+}
+
+#close-modal:hover {
+    background-color: #e55542;
+}
+
+#delete-reservation {
+    background-color: #ff4136;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: background-color 0.3s ease;
+}
+
+#delete-reservation:hover {
+    background-color: #e60000;
+}   
+
+#delete-reservation-modal {
+    display: none; /* Hidden by default */
+    position: fixed;
+    z-index: 1000; /* Ensure it sits on top of other elements */
+    left: 0;
+    top: 0;
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    background-color: rgba(0, 0, 0, 0.7); /* Black background with opacity */
+}
+
+#Yes-btn, #No-btn {
+    background-color: var(--primary-color);
+    color: white;
+    padding: 10px 20px;
+    margin: 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+#Yes-btn , #No-btn{
+    background-color: #ff4d4d;
+}
+
+#Yes-btn:hover {
+    background-color: #e55542;
+}
+
+#No-btn:hover {
+    background-color: #e60000;
 }

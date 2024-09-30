@@ -20,7 +20,7 @@ body {
 .header {
     position: absolute;
     top: 20px;
-    left: 20px;
+    left: 10%;
     display: flex;
     align-items: center;
 }
@@ -28,6 +28,7 @@ body {
 .logo {
     display: flex;
     align-items: center;
+
 }
 
 .logo img {
@@ -48,8 +49,8 @@ body {
 
 .menu-button {
     position: fixed;
-    top: 25px;
-    right: 40px;
+    top: 3%;
+    right: 10%;
     background-color: var(--primary-color);
     color: white;
     border: none;

@@ -335,7 +335,6 @@ select:focus {
     display: block;
 }
 
-/* Duplicate item modal styling */
 #duplicate-modal {
     display: none;
     position: fixed;

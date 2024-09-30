@@ -3,17 +3,61 @@ document.addEventListener('DOMContentLoaded', function() {
 
     const modal = document.getElementById('reservation-modal');
     const closeButton = document.getElementById('close-modal');
+    const deleteButton = document.getElementById('delete-reservation');
+    
+    const deleteReservationModal = document.getElementById('delete-reservation-modal');
+    const yesButton = document.getElementById('Yes-btn');
+    const noButton = document.getElementById('No-btn');
+
+    let reservationIdToDelete = null;
 
     closeButton.addEventListener('click', function() {
         modal.style.display = 'none';
     });
 
+    deleteButton.addEventListener('click', function() {
+        reservationIdToDelete = modal.getAttribute('data-reservation-id');
+        deleteReservationModal.style.display = 'block'; // Show the custom confirmation modal
+    });
+
+    // When clicking 'No', just hide the modal
+    noButton.addEventListener('click', function() {
+        deleteReservationModal.style.display = 'none';
+    });
+
+    // When clicking 'Yes', proceed with deletion
+    yesButton.addEventListener('click', function() {
+        if (reservationIdToDelete) {
+            fetch(`/api/reservations/${reservationIdToDelete}`, {
+                method: 'DELETE',
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log('Reservation deleted:', data);
+                document.getElementById('reservation-modal').style.display = 'none';
+                deleteReservationModal.style.display = 'none';
+                fetchReservations(); // Refresh the reservations list
+            })
+            .catch(error => {
+                console.error('Error deleting reservation:', error);
+                alert('Failed to delete reservation. Please try again.');
+            });
+        }
+    });
+
     window.addEventListener('click', function(event) {
-        if (event.target === modal) {
+        if (event.target === modal || event.target === deleteReservationModal) {
             modal.style.display = 'none';
+            deleteReservationModal.style.display = 'none';
         }
     });
 });
+
 
 function fetchReservations() {
     // Use dates with +02:00 offset
@@ -199,6 +243,8 @@ function displayReservationDetails(reservation) {
     const detailsContainer = document.getElementById('reservation-details');
     const modal = document.getElementById('reservation-modal');
 
+    modal.setAttribute('data-reservation-id', reservation.id);
+
     const formattedDate = adjustToTimeZone(reservation.date);
     // Generate QR code
     const qrCanvas = document.createElement('canvas');
@@ -229,6 +275,28 @@ function displayReservationDetails(reservation) {
 
 }
 
+function deleteReservation(reservationId) {
+    if (confirm('Are you sure you want to delete this reservation?')) {
+        fetch(`/api/reservations/${reservationId}`, {
+            method: 'DELETE',
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return response.json();
+        })
+        .then(data => {
+            console.log('Reservation deleted:', data);
+            document.getElementById('reservation-modal').style.display = 'none';
+            fetchReservations(); // Refresh the reservations list
+        })
+        .catch(error => {
+            console.error('Error deleting reservation:', error);
+            alert('Failed to delete reservation. Please try again.');
+        });
+    }
+}
 
 
 function formatDate(dateString) {

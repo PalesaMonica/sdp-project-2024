@@ -2,6 +2,7 @@ const express = require("express");
 const path = require("path");
 const mysql = require("mysql2");
 const fs = require("fs");
+const jwt = require('jsonwebtoken');
 const bodyParser = require("body-parser");
 const session = require("express-session");
 const Reservation = require("./src/reservation/reservation");
@@ -10,7 +11,10 @@ const passport = require("passport");
 const cors = require('cors');
 const bcrypt = require("bcryptjs"); // For password hashing
 const GoogleStrategy = require("passport-google-oauth20").Strategy;
+const authenticateUser = require('./middlewares/authenticateUser');
+
 require("dotenv").config();
+
 
 // Initialize the Express app
 const app = express();
@@ -151,45 +155,6 @@ app.get(
   }
 );
 
-app.get("/userDashboard", (req, res) => {
-  if (req.isAuthenticated()) {
-    const username =
-      req.user.displayName || req.user.username || "{{username}}";
-
-    // Read the HTML file
-    fs.readFile(
-      path.join(__dirname, "public", "userDashboard.html"),
-      "utf8",
-      (err, data) => {
-        if (err) {
-          console.error("Error reading the HTML file:", err);
-          return res
-            .status(500)
-            .send("Server Error: Unable to load the dashboard");
-        }
-
-        // Inject the user's name into the HTML
-        const modifiedData = data.replace("{{username}}", username);
-
-        // Send the modified HTML as a response
-        res.send(modifiedData);
-      }
-    );
-  } else {
-    res.redirect("/login");
-  }
-});
-
-app.post("/logout", (req, res) => {
-  req.logout((err) => {
-    if (err) {
-      console.error("Error during logout:", err);
-      return res.status(500).json({ msg: "Server Error: Unable to log out" });
-    }
-    res.redirect("/login");
-  });
-});
-
 // Route to serve the signup page
 app.get("/signup", (req, res) => {
   res.sendFile(path.join(__dirname, "public", "signup.html"));
@@ -305,7 +270,6 @@ app.post("/staffSignup", async (req, res) => {
   }
 });
 
-
 // Handle the login form submission
 app.post("/login", (req, res) => {
   const { email, password } = req.body;
@@ -352,6 +316,44 @@ app.post("/login", (req, res) => {
       msg: `Server Error: Unexpected error occurred - ${err.message}`,
     });
   }
+});
+
+// app.use(authenticateUser);
+
+app.get("/userDashboard", (req, res) => {
+  if (req.isAuthenticated()) {
+    const username =
+      req.user.displayName || req.user.username || "{{username}}";
+
+    // Read the HTML file
+    fs.readFile(
+      path.join(__dirname, "public", "userDashboard.html"),
+      "utf8",
+      (err, data) => {
+        if (err) {
+          console.error("Error reading the HTML file:", err);
+          return res
+            .status(500)
+            .send("Server Error: Unable to load the dashboard");
+        }
+
+        // Inject the user's name into the HTML
+        const modifiedData = data.replace("{{username}}", username);
+
+        // Send the modified HTML as a response
+        res.send(modifiedData);
+      }
+    );
+  } else {
+    res.redirect("/login");
+  }
+});
+
+app.post("/logout", (req, res) => {
+  // Clear the JWT cookie
+  res.clearCookie('token');
+  // Redirect the user to the login page
+  res.status(200).json({ msg: "Logout successful", redirectUrl: '/login' });
 });
 
 app.post('/saveDietPreference', (req, res) => {
@@ -927,15 +929,25 @@ app.get('/api/cart-item/:id', (req, res) => {
 
 
 // Route to cancel a reservation
-app.delete('/api/reservations/:id', async (req, res) => {
-  const { id } = req.params;
-  const { reason } = req.body;
-  try {
-      await Reservation.cancelReservation(id, reason);
-      res.status(200).json({ message: 'Reservation cancelled successfully' });
-  } catch (error) {
-      res.status(400).json({ message: 'Error cancelling reservation', error: error.message });
-  }
+app.delete('/api/reservations/:id', (req, res) => {
+  const reservationId = req.params.id;
+
+  const query = 'DELETE FROM reservations WHERE id = ?';
+  
+  connection.query(query, [reservationId], (error, results) => {
+    if (error) {
+      console.error('Error deleting reservation:', error);
+      res.status(500).json({ error: 'Internal server error' });
+      return;
+    }
+
+    if (results.affectedRows === 0) {
+      res.status(404).json({ error: 'Reservation not found' });
+      return;
+    }
+
+    res.status(200).json({ message: 'Reservation deleted successfully' });
+  });
 });
 
 //feedback routing

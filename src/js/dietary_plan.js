@@ -37,11 +37,6 @@ function confirmSelection(dietPlan) {
         // Reload the page after showing the toaster for 3 seconds
         setTimeout(() => {
             window.location.reload();  // Reload the page
-
-            // After reload, redirect to the menu page after 1 second
-            setTimeout(() => {
-                window.location.href = 'menu.html';
-            }, 1000); // Wait 1 second after reload before redirecting
         }, 1500); // Show the toaster for 3 seconds
     })
     .catch(error => console.error('Error:', error));
