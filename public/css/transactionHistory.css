@@ -2,7 +2,7 @@ body {
     font-family: Arial, sans-serif;
     margin: 0;
     padding: 0;
-    background-color: #f0f0f0;
+    background-color: #1a1e2e;
 }
 .container {
     max-width: 95%;
@@ -14,6 +14,7 @@ body {
     justify-content: space-between;
     align-items: center;
     margin-bottom: 20px;
+    color: white;
 }
 .back-button, .home-button {
     background: none;
@@ -34,15 +35,16 @@ body {
     cursor: pointer;
 }
 .tab.active {
-    background-color: #3498db;
+    background-color: #ff6a3d;
     color: white;
 }
 .transaction {
-    background-color: white;
+    background-color: rgba(255, 255, 255, 0.1);
     padding: 10px;
     margin-bottom: 10px;
     border-radius: 5px;
     display: flex;
+    color: white;
     justify-content: space-between;
 }
 .transaction-details {
@@ -60,4 +62,5 @@ body {
     font-weight: bold;
     margin-top: 20px;
     margin-bottom: 10px;
+    color: white;
 }

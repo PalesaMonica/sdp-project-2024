@@ -2,10 +2,10 @@ body {
     font-family: Arial, sans-serif;
     margin: 0;
     padding: 0;
-    background-color: #f0f0f0;
+    background-color: #1a1e2e;
 }
 .container {
-    max-width: 95%;
+    max-width: 1200px;
     margin: 0 auto;
     padding: 20px;
 }
@@ -15,14 +15,35 @@ body {
     align-items: center;
     margin-bottom: 20px;
 }
-.back-button, .home-button {
-    background: none;
-    border: none;
-    font-size: 24px;
+
+.logo {
+    display: flex;
+    align-items: center;
     cursor: pointer;
 }
+
+.logo img {
+    width: 40px;
+    height: 40px;
+    margin-right: 10px;
+}
+
+.logo-text {
+    font-size: 24px;
+    font-weight: bold;
+}
+
+.crave {
+    color: var(--primary-color);
+}
+
+.meal-Credits-container {
+    max-width: 1200px;
+    margin: 0 auto;
+
+}
 .credits-card {
-    background-color: #1a1e2e;
+    background-color: rgba(255, 255, 255, 0.1);
     color: white;
     padding: 20px;
     border-radius: 10px;
@@ -37,9 +58,10 @@ body {
     justify-content: space-between;
     align-items: center;
     margin-bottom: 10px;
+    color: white;
 }
 .view-all {
-    color: #3498db;
+    color: #ff6a3d;
     text-decoration: none;
 }
 .transaction {

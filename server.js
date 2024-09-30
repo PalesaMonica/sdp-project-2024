@@ -940,11 +940,11 @@ app.get('/api/cart-item/:id', (req, res) => {
 app.delete('/api/reservations/:id', (req, res) => {
   const reservationId = req.params.id;
 
-  const query = 'DELETE FROM reservations WHERE id = ?';
-  
-  connection.query(query, [reservationId], (error, results) => {
+  const query = 'UPDATE reservations SET status = ? WHERE id = ?';
+
+  connection.query(query, ['cancelled', reservationId], (error, results) => {
     if (error) {
-      console.error('Error deleting reservation:', error);
+      console.error('Error updating reservation status:', error);
       res.status(500).json({ error: 'Internal server error' });
       return;
     }
@@ -954,7 +954,37 @@ app.delete('/api/reservations/:id', (req, res) => {
       return;
     }
 
-    res.status(200).json({ message: 'Reservation deleted successfully' });
+    res.status(200).json({ message: 'Reservation cancelled successfully' });
+  });
+});
+
+app.get('/api/transactions', (req, res) => {
+  const query = 'SELECT * FROM transactions WHERE user_id = ?';
+  const userId = req.user.id;
+
+  connection.query(query, [userId], (error, results) => {
+    if (error) {
+      console.error('Error fetching transactions:', error);
+      res.status(500).json({ error: 'Internal server error' });
+      return;
+    }
+
+    res.status(200).json(results);
+  });
+});
+
+app.get('/api/transactions/recent', (req, res) => {
+  const query = 'SELECT * FROM transactions WHERE user_id = ? ORDER BY date DESC LIMIT 4'; // adjust query as needed
+  const userId = req.user.id;
+
+  connection.query(query, [userId], (error, results) => {
+    if (error) {
+      console.error('Error fetching transactions:', error);
+      res.status(500).json({ error: 'Internal server error' });
+      return;
+    }
+
+    res.status(200).json(results);
   });
 });
 
@@ -1312,6 +1342,7 @@ app.get('/get-useremail', (req, res) => {
     res.status(401).json({ error: "User not authenticated" });
   }
 });
+
 app.get("/user-profile", (req, res) => {
   // Assuming user ID is stored in req.user after authentication
   const userId = req.user.id; // Adjust as necessary
@@ -1331,6 +1362,7 @@ app.get("/user-profile", (req, res) => {
     return res.status(200).json({ id: user.id, email: user.email, role: user.role });
   });
 });
+
 app.post("/change-password", async (req, res) => {
   const { oldPassword, newPassword, confirmPassword } = req.body;
 

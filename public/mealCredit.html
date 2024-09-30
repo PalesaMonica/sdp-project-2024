@@ -3,32 +3,207 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="css/mealCredit.css" />
     <title>Meal Credits</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/dayjs/1.10.7/dayjs.min.js"></script>
+    <style>
+        :root {
+            --primary-color: #ff6a3d;
+            --background-color: #1a1e2e;
+            --text-color: #ffffff;
+        }
 
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: var(--background-color);
+            color: var(--text-color);
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+        }
+
+        .logo img {
+            width: 40px;
+            height: 40px;
+            margin-right: 10px;
+        }
+
+        .logo-text {
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .crave {
+            color: var(--primary-color);
+        }
+
+        .meal-Credits-container {
+            max-width: 1200px;
+            margin: 0 auto;
+
+        }
+        .credits-card {
+            background-color: var(--primary-color);
+            color: var(--background-color);
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .credits-card h2 {
+            margin: 0;
+            font-size: 1.2em;
+        }
+        .credits-card .amount {
+            font-size: 2em;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+        .transactions-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        .view-all {
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+        #transactions-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .transaction {
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 10px;
+            border-radius: 5px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: rgba(255, 255, 255, 0.05);
+        }
+        .transaction-details {
+            flex-grow: 1;
+        }
+        .transaction-amount {
+            font-weight: bold;
+            white-space: nowrap;
+        }
+        /* Positive and negative amount colors */
+        .transaction-amount.negative {
+            color: green;
+        }
+        .transaction-amount.positive {
+            color: red;
+        }
+    </style>
 </head>
 <body>
     <div class="container">
         <div class="header">
-            <button class="back-button" onclick="window.location.href='userDashboard.html'">&#8592;</button>
-            <h1>Meal Credits</h1>
-            <button class="home-button">&#8962;</button>
+            <div class="logo">
+                <img src="images/option-21.svg" alt="CampusCrave Logo" onclick="window.location.href='userDashboard.html'">
+                <span class="logo-text" onclick="window.location.href='userDashboard.html'" >Campus<span class="crave" onclick="window.location.href='userDashboard.html'">Crave</span></span>
+            </div>
         </div>
+
+        <main class="meal-Credits-container">
+            <h1>Meal Credits</h1>
+            <div id="reservations-list"></div>
+        </main>
+
         <div class="credits-card">
-            <p>Available Credits</p>
-            <p class="credits-amount">R13 580.00</p>
+            <h2>Available Credits</h2>
+            <div id="credits-amount" class="amount">Loading...</div>
         </div>
         <div class="transactions-header">
             <h2>Recent Transactions</h2>
             <a href="transactionHistory.html" class="view-all">View All</a>
         </div>
-        <div id="transactions-list">
-            <!-- Transactions will be dynamically added here -->
-        </div>
+        <div id="transactions-list"></div>
     </div>
 
+    <script>
+        const diningHalls = {
+            1: "Main",
+            2: "Convocation",
+            3: "Jubilee"
+        };
+
+        // Fetch and display available credits
+        // function fetchCredits() {
+        //     fetch('/api/credits')
+        //         .then(response => response.json())
+        //         .then(data => {
+        //             const creditsElement = document.getElementById('credits-amount');
+        //             creditsElement.innerText = `R${data.credits.toFixed(2)}`;
+        //         })
+        //         .catch(error => {
+        //             console.error('Error fetching credits:', error);
+        //             document.getElementById('credits-amount').innerText = 'Error';
+        //         });
+        // }
+
+        // Fetch and display recent transactions
+        function fetchRecentTransactions() {
+            fetch('/api/transactions/recent')
+                .then(response => response.json())
+                .then(transactions => renderRecentTransactions(transactions))
+                .catch(error => {
+                    console.error('Error fetching transactions:', error);
+                });
+        }
+
+        // Render the recent transactions
+        function renderRecentTransactions(transactions) {
+            const listElement = document.getElementById('transactions-list');
+            listElement.innerHTML = '';
+
+            transactions.forEach(transaction => {
+                const transactionElement = document.createElement('div');
+                transactionElement.classList.add('transaction');
+                
+                const sign = transaction.amount < 0 ? '+ ' : '- ';
+                const colorClass = transaction.amount < 0 ? 'negative' : 'positive';
+
+                transactionElement.innerHTML = `
+                    <div class="transaction-details">
+                        <p><strong>${diningHalls[transaction.dining_hall_id]}</strong> - ${transaction.meal_type}</p>
+                        <p>${dayjs(transaction.date).format('MMMM D, YYYY h:mm A')}</p>
+                        <p>${transaction.status.charAt(0).toUpperCase() + transaction.status.slice(1)}</p>
+                    </div>
+                    <div class="transaction-amount ${colorClass}">
+                        ${sign}R${Math.abs(transaction.amount).toFixed(2)}
+                    </div>
+                `;
+                listElement.appendChild(transactionElement);
+            });
+        }
+
+        // Initial fetch
+        //fetchCredits();
+        fetchRecentTransactions();
+    </script>
 </body>
-
-<script src="../src/js/mealCredit.js"></script>
-
 </html>

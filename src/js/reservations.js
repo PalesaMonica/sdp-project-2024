@@ -60,37 +60,38 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
 function fetchReservations() {
-    // Use dates with +02:00 offset
     const today = new Date(new Date().toLocaleString("en-US", {timeZone: "Africa/Johannesburg"}));
     console.log('Today (+02:00):', today);
-
+  
     const next7Days = new Date(today);
     next7Days.setDate(today.getDate() + 7);
-
+  
     const todayISO = formatDateToISO(today);
     const next7DaysISO = formatDateToISO(next7Days);
-
+  
     fetch(`/api/reservations?fromDate=${todayISO}&toDate=${next7DaysISO}`)
-        .then(response => {
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-            return response.json();
-        })
-        .then(data => {
-            console.log('Received data:', data); 
-            if (!Array.isArray(data)) {
-                throw new Error('Received data is not an array');
-            }
-            // No need to adjust dates if the server is already sending them in the correct timezone
-            displayReservations(data);
-        })
-        .catch(error => {
-            console.error('Error fetching reservations:', error);
-            document.getElementById('reservations-list').innerHTML = `<p>Error loading reservations: ${error.message}</p>`;
-        });
-}
-
+      .then(response => {
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return response.json();
+      })
+      .then(data => {
+        console.log('Received data:', data);
+        if (!Array.isArray(data)) {
+          throw new Error('Received data is not an array');
+        }
+        
+        // Filter out reservations with 'cancelled' status
+        const filteredReservations = data.filter(reservation => reservation.status !== 'cancelled');
+        displayReservations(filteredReservations);
+      })
+      .catch(error => {
+        console.error('Error fetching reservations:', error);
+        document.getElementById('reservations-list').innerHTML = `<p>Error loading reservations: ${error.message}</p>`;
+      });
+  }
+  
 function formatDateToISO(date) {
     return date.toLocaleString("sv-SE", {timeZone: "Africa/Johannesburg"}).split(' ')[0];
 }
@@ -276,7 +277,7 @@ function displayReservationDetails(reservation) {
 }
 
 function deleteReservation(reservationId) {
-    if (confirm('Are you sure you want to delete this reservation?')) {
+    if (confirm('Are you sure you want to cancel this reservation?')) {
         fetch(`/api/reservations/${reservationId}`, {
             method: 'DELETE',
         })
@@ -287,12 +288,12 @@ function deleteReservation(reservationId) {
             return response.json();
         })
         .then(data => {
-            console.log('Reservation deleted:', data);
+            console.log('Reservation cancelled:', data);
             document.getElementById('reservation-modal').style.display = 'none';
             fetchReservations(); // Refresh the reservations list
         })
         .catch(error => {
-            console.error('Error deleting reservation:', error);
+            console.error('Error cancelling reservation:', error);
             alert('Failed to delete reservation. Please try again.');
         });
     }
@@ -356,8 +357,7 @@ function calculateCost(reservation) {
     const mealCosts = {
         'breakfast': 60,
         'lunch': 60,
-        'dinner': 60,
-        'supper': 60
+        'dinner': 60
     };
     return baseCost + (mealCosts[reservation.meal_type] || 0);
 }
