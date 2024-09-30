@@ -1509,6 +1509,90 @@ app.post('/notifications/:id/read', (req, res) => {
 });
 
 
+// route to fetch meal credits and recent transactions
+app.get('/api/meal-credits', async (req, res) => {
+  const userId = req.user.id; // Get user ID from session
+  try {
+    // Fetch user's meal credits
+    const availableCredits = await Reservation.getUserCredits(userId);
+
+    // Fetch recent transactions (add this method in your Reservation.js)
+    const transactions = await Reservation.getRecentTransactions(userId); // Function to fetch recent transactions
+
+    res.status(200).json({
+      remaining_credits: availableCredits,
+      transactions: transactions
+    });
+  } catch (error) {
+    console.error('Error fetching meal credits:', error);
+    res.status(500).json({ message: 'Error fetching meal credits', error: error.message });
+  }
+});
+
+app.post('/api/meal-credits/add', async (req, res) => {
+  const userId = req.user.id; // Get user ID from session
+  const { amount } = req.body; // Amount to add
+  try {
+    await Reservation.addCredits(userId, amount); // Function to add meal credits
+    res.status(200).json({ message: 'Meal credits added successfully' });
+  } catch (error) {
+    console.error('Error adding meal credits:', error);
+    res.status(500).json({ message: 'Error adding meal credits', error: error.message });
+  }
+});
+
+app.post('/api/meal-credits/deduct', async (req, res) => {
+  const userId = req.user.id; // Get user ID from session
+  const { amount } = req.body; // Amount to deduct
+  try {
+    await Reservation.deductCredits(userId, amount); // Deduct meal credits
+    res.status(200).json({ message: 'Meal credits deducted successfully' });
+  } catch (error) {
+    console.error('Error deducting meal credits:', error);
+    res.status(500).json({ message: 'Error deducting meal credits', error: error.message });
+  }
+});
+
+// Route to handle meal plan selection
+app.post("/selectPlan", (req, res) => {
+   //Check if the user is authenticated
+  if (!req.isAuthenticated()) {
+    return res.status(401).json({ msg: "Unauthorized: Please log in." });
+  }
+
+  const userId = req.user.id; // Get the user ID from the session
+  const selectedPlan = req.body.plan; // Get the selected plan from the request body
+
+  let planName;
+  let totalCredits;
+
+  // Determine plan details based on the selected plan
+  if (selectedPlan === 'thrice-daily') {
+    planName = 'Thrice-Daily Plan';
+    totalCredits = 35000; // 3 meals per day for 365 days
+  } else if (selectedPlan === 'twice-daily') {
+    planName = 'Twice-Daily Plan';
+    totalCredits = 25000; // 2 meals per day for 365 days
+  } else {
+    return res.status(400).json({ msg: "Invalid meal plan selected." });
+  }
+
+  // Insert or update meal credits for the user
+  connection.query(
+    "INSERT INTO meal_credits (user_id, plan_name, total_credits, used_credits) VALUES (?, ?, ?, 0) ON DUPLICATE KEY UPDATE plan_name = ?, total_credits = ?, used_credits = 0",
+    [userId, planName, totalCredits, planName, totalCredits],
+    (err, result) => {
+      if (err) {
+        console.error("Database error:", err);
+        return res.status(500).json({ msg: "Server Error: Unable to update meal credits." });
+      }
+
+      return res.status(200).json({ msg: "Meal plan selected successfully.", plan: planName });
+    }
+  );
+});
+
+
 // Removed the mark-as-read endpoint
 
 
