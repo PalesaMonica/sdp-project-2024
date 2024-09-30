@@ -304,18 +304,38 @@ app.post("/login", (req, res) => {
           return res.status(400).json({ msg: "Invalid email or password" });
         }
 
-        req.login(user, (err) => {
-          if (err) {
-            console.error("Error during login:", err);
-            return res
-              .status(500)
-              .json({ msg: "Server Error: Unable to log in" });
-          }
+        // Check if the user has a meal plan
+        connection.query(
+          "SELECT * FROM meal_credits WHERE user_id = ?",
+          [user.id],
+          (err, mealPlanResults) => {
+            if (err) {
+              console.error("Database query error:", err);
+              return res.status(500).json({ msg: "Server Error: Meal plan query failed" });
+            }
 
-          // Check the role of the user and redirect accordingly
-          const redirectUrl = user.role === 'staff' ? '/meal-management.html' : '/userDashboard.html';
-          return res.status(200).json({ msg: "Login successful, redirecting...", redirectUrl });
-        });
+            let redirectUrl;
+            if (mealPlanResults.length === 0) {
+              // No meal plan found, redirect to plan selection
+              redirectUrl = '/planSelection/index.html';
+            } else {
+              // Meal plan exists, redirect to the appropriate dashboard
+              redirectUrl = user.role === 'staff' ? '/meal-management.html' : '/userDashboard.html';
+            }
+
+            // Perform login
+            req.login(user, (err) => {
+              if (err) {
+                console.error("Error during login:", err);
+                return res
+                  .status(500)
+                  .json({ msg: "Server Error: Unable to log in" });
+              }
+
+              return res.status(200).json({ msg: "Login successful, redirecting...", redirectUrl });
+            });
+          }
+        );
       }
     );
   } catch (err) {
