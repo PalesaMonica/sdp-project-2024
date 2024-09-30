@@ -11,13 +11,21 @@ const passport = require("passport");
 const cors = require('cors');
 const bcrypt = require("bcryptjs"); // For password hashing
 const GoogleStrategy = require("passport-google-oauth20").Strategy;
-const authenticateUser = require('./middlewares/authenticateUser');
-
+const http = require('http');
 require("dotenv").config();
 
 
 // Initialize the Express app
 const app = express();
+const server = http.createServer(app);
+const io = require('socket.io')(server, {
+  cors: {
+      origin: "*", // Allow any origin for now
+      methods: ["GET", "POST"]
+  }
+});
+// Password validation regex
+const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{8,}$/;
 app.use(express.json());
 app.use(cors());
 
@@ -136,7 +144,7 @@ app.use(express.static(path.join(__dirname, "public")));
 
 // Serve JavaScript from 'src/js' folder
 app.use('/src', express.static(path.join(__dirname, 'src/')));
-
+app.use('/socket.io', express.static(path.join(__dirname, 'node_modules', 'socket.io', 'client-dist')));
 // Use body-parser middleware to parse incoming requests
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
@@ -1286,7 +1294,232 @@ function getMealEndTime(mealType) {
       default: return '23:59:59';
   }
 }
+app.get('/get-userrole', (req, res) => {
+  if (req.isAuthenticated()) {
+    const role = req.user.role; // Get the role from the user session
+    res.json({ role }); // Send the role as a JSON response
+  } else {
+    res.status(401).json({ error: "User not authenticated" });
+  }
+});
 
+
+app.get('/get-useremail', (req, res) => {
+  if (req.isAuthenticated()) {
+    const email = req.user.email; // Get the email from the user session
+    res.json({ email }); // Send the email as a JSON response
+  } else {
+    res.status(401).json({ error: "User not authenticated" });
+  }
+});
+app.get("/user-profile", (req, res) => {
+  // Assuming user ID is stored in req.user after authentication
+  const userId = req.user.id; // Adjust as necessary
+
+  connection.query("SELECT id, email, role FROM users WHERE id = ?", [userId], (err, results) => {
+    if (err) {
+      console.error("Database query error:", err);
+      return res.status(500).json({ msg: "Server Error: Database query failed" });
+    }
+
+    if (results.length === 0) {
+      return res.status(404).json({ msg: "User not found." });
+    }
+
+    // Return user data (excluding sensitive information)
+    const user = results[0];
+    return res.status(200).json({ id: user.id, email: user.email, role: user.role });
+  });
+});
+app.post("/change-password", async (req, res) => {
+  const { oldPassword, newPassword, confirmPassword } = req.body;
+
+  // Validate input fields
+  if (!oldPassword || !newPassword || !confirmPassword) {
+    return res.status(400).json({ msg: "All fields are required." });
+  }
+
+  // Validate new password requirements
+  if (
+    newPassword.length < 8 ||
+    !/[A-Z]/.test(newPassword) ||
+    !/[a-z]/.test(newPassword) ||
+    !/[!@#$%^&*]/.test(newPassword)
+  ) {
+    return res.status(400).json({
+      msg: "New password must be at least 8 characters long and include at least one uppercase letter, one lowercase letter, and one special character.",
+    });
+  }
+
+  // Check if new password matches confirm password
+  if (newPassword !== confirmPassword) {
+    return res.status(400).json({ msg: "New password and confirm password do not match." });
+  }
+
+  try {
+    // Assuming user ID is stored in req.user after authentication
+    const userId = req.user.id; // Adjust as necessary
+
+    connection.query("SELECT * FROM users WHERE id = ?", [userId], async (err, results) => {
+      if (err) {
+        console.error("Database query error:", err);
+        return res.status(500).json({ msg: "Server Error: Database query failed" });
+      }
+
+      if (results.length === 0) {
+        return res.status(404).json({ msg: "User not found." });
+      }
+
+      const user = results[0];
+      const isMatch = await bcrypt.compare(oldPassword.trim(), user.password); // Trimmed comparison
+
+      if (!isMatch) {
+        return res.status(400).json({ msg: "Old password is incorrect." });
+      }
+
+      // Hash the new password
+      const hashedNewPassword = await bcrypt.hash(newPassword, 10);
+
+      // Update the password in the database
+      connection.query("UPDATE users SET password = ? WHERE id = ?", [hashedNewPassword, userId], (err) => {
+        if (err) {
+          console.error("Error updating password:", err);
+          return res.status(500).json({ msg: "Server Error: Unable to update password." });
+        }
+
+        return res.status(200).json({ msg: "Password updated successfully." });
+      });
+    });
+  } catch (err) {
+    console.error("Unexpected error:", err);
+    res.status(500).json({
+      msg: `Server Error: Unexpected error occurred - ${err.message}`,
+    });
+  }
+});
+
+app.get('/notifications', (req, res) => {
+  const userId = req.user.id; // Access the user ID from the request
+
+  const query = `
+      SELECT n.id, n.title, n.message, n.dining_hall, 
+             un.is_read, n.created_at 
+      FROM notifications n
+      LEFT JOIN user_notifications un ON n.id = un.notification_id AND un.user_id = ?
+      ORDER BY n.created_at DESC
+  `;
+
+  connection.query(query, [userId], (err, notifications) => {
+      if (err) {
+          console.error('Error fetching notifications:', err);
+          return res.status(500).send('Internal Server Error');
+      }
+
+      // Map the notifications to a user-friendly format
+      const formattedNotifications = notifications.map(notification => ({
+          id: notification.id,
+          title: notification.title,
+          message: notification.message,
+          is_read: notification.is_read ? notification.is_read : false, // Default to false if not found
+          created_at: new Date(notification.created_at).toLocaleString() // Format the timestamp
+      }));
+
+      // Send the notifications back to the client
+      res.json(formattedNotifications);
+  });
+});
+
+app.post('/notifications', (req, res) => {
+  const { title, message, dining_hall } = req.body;
+
+  if (!title || !message || !dining_hall) {
+      return res.status(400).send('All fields are required');
+  }
+
+  // Insert the notification into the notifications table
+  const query = 'INSERT INTO notifications (title, message, dining_hall) VALUES (?, ?, ?)';
+  
+  connection.query(query, [title, message, dining_hall], (err, result) => {
+      if (err) {
+          console.error('Error inserting notification:', err);
+          return res.status(500).send('Internal Server Error');
+      }
+
+      // Insert an entry for each user in the user_notifications table
+      const notificationId = result.insertId;
+      const userQuery = 'SELECT id FROM users';
+
+      connection.query(userQuery, (err, users) => {
+          if (err) {
+              console.error('Error fetching users:', err);
+              return res.status(500).send('Internal Server Error');
+          }
+
+          const insertPromises = users.map(user => {
+              return new Promise((resolve, reject) => {
+                  const userNotificationQuery = 'INSERT INTO user_notifications (user_id, notification_id) VALUES (?, ?)';
+                  connection.query(userNotificationQuery, [user.id, notificationId], (err) => {
+                      if (err) {
+                          return reject(err);
+                      }
+                      resolve();
+                  });
+              });
+          });
+
+          Promise.all(insertPromises)
+              .then(() => {
+                  // Emit notification to all connected clients if needed
+                  const notificationPayload = {
+                      id: notificationId,
+                      title,
+                      message,
+                      dining_hall,
+                  };
+                  io.emit('new_notification', notificationPayload);
+                  res.sendStatus(200);
+              })
+              .catch(() => {
+                  res.status(500).send('Internal Server Error');
+              });
+      });
+  });
+});
+
+// Endpoint to mark a notification as read
+app.post('/notifications/:id/read', (req, res) => {
+  const notificationId = req.params.id;
+  const userId = req.user.id;
+
+  // Update the read status for the user
+  const query = 'UPDATE user_notifications SET is_read = 1 WHERE notification_id = ? AND user_id = ?';
+
+  connection.query(query, [notificationId, userId], (err, result) => {
+      if (err) {
+          console.error('Error updating notification read status:', err);
+          return res.status(500).send('Internal Server Error');
+      }
+
+      if (result.affectedRows > 0) {
+          res.sendStatus(200); // Successfully updated
+      } else {
+          res.status(404).send('Notification not found'); // No matching notification
+      }
+  });
+});
+
+
+// Removed the mark-as-read endpoint
+
+
+io.on('connection', (socket) => {
+  console.log('A user connected');
+
+  // Handle disconnect
+  socket.on('disconnect', () => {
+    console.log('User disconnected');
+  });
+});
 
 // Start the server
 const port = process.env.PORT || 3000;

@@ -41,12 +41,12 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 20px;
-  position: sticky; /* This makes the header stick at the top */
-  top: 0; /* This keeps the header at the top of the page */
+  position: sticky; /* Makes the header stick at the top */
+  top: 0; /* Keeps the header at the top */
   z-index: 100; /* Ensures the header stays above other content */
-  background-color: var(--background-color); /* Keep the background intact */
-  padding: 10px;
+  background-color: var(--background-color); /* Keeps the background intact */
+  padding: 10px; /* Padding around the header */
+  margin-bottom: 20px; /* Space below the header */
 }
 
 .logo {
@@ -61,10 +61,10 @@ body {
 }
 
 .logo-text {
-  font-size: 24px;
-  font-weight: bold;
+  font-size: 30px; /* Logo font size */
+  font-weight: bold; /* Logo font weight */
+  display: inline-block; /* Prevent wrapping */
 }
-
 .crave {
   color: var(--primary-color);
 }
