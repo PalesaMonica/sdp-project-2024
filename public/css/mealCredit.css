@@ -1,8 +1,20 @@
+:root {
+    --primary-color: #ff6a3d;
+    --background-color: #1a1e2e;
+    --text-color: #ffffff;
+}
+
 body {
     font-family: Arial, sans-serif;
     margin: 0;
     padding: 0;
-    background-color: #1a1e2e;
+    background-color: var(--background-color);
+    color: var(--text-color);
+}
+.container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
 }
 .container {
     max-width: 1200px;
@@ -43,43 +55,57 @@ body {
 
 }
 .credits-card {
-    background-color: rgba(255, 255, 255, 0.1);
-    color: white;
+    background-color: var(--primary-color);
+    color: var(--background-color);
     padding: 20px;
     border-radius: 10px;
     margin-bottom: 20px;
+    text-align: center;
 }
-.credits-amount {
-    font-size: 24px;
+.credits-card h2 {
+    margin: 0;
+    font-size: 1.2em;
+}
+.credits-card .amount {
+    font-size: 2em;
     font-weight: bold;
+    margin-top: 10px;
 }
 .transactions-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 10px;
-    color: white;
+    margin-bottom: 15px;
 }
 .view-all {
-    color: #ff6a3d;
+    color: var(--primary-color);
     text-decoration: none;
 }
+#transactions-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
 .transaction {
-    background-color: white;
+    border: 1px solid rgba(255, 255, 255, 0.2);
     padding: 10px;
-    margin-bottom: 10px;
     border-radius: 5px;
     display: flex;
     justify-content: space-between;
+    align-items: center;
+    background-color: rgba(255, 255, 255, 0.05);
 }
 .transaction-details {
-    display: flex;
-    flex-direction: column;
+    flex-grow: 1;
 }
 .transaction-amount {
-    color: #e74c3c;
     font-weight: bold;
+    white-space: nowrap;
+}
+/* Positive and negative amount colors */
+.transaction-amount.negative {
+    color: green;
 }
 .transaction-amount.positive {
-    color: #2ecc71;
+    color: red;
 }

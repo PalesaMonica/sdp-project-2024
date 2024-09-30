@@ -643,7 +643,7 @@ app.post('/api/confirm-reservation', (req, res) => {
 
           const checkDuplicateQuery = `
               SELECT * FROM reservations
-              WHERE user_id = ? AND meal_type = ? AND date = ?
+              WHERE user_id = ? AND meal_type = ? AND date = ? AND status != 'cancelled'
           `;
 
           const insertReservation = `
@@ -651,9 +651,6 @@ app.post('/api/confirm-reservation', (req, res) => {
               (dining_hall_id, user_id, username, date, meal_type, start_time, end_time, status) 
               VALUES (?, ?, ?, ?, ?, ?, ?, 'confirmed')
           `;
-
-          let duplicateReservations = [];
-          let failedInserts = [];
 
           cartItems.forEach((item, index) => {
               let startTime, endTime;
@@ -672,11 +669,10 @@ app.post('/api/confirm-reservation', (req, res) => {
                       break;
                   default:
                       console.error('Unknown meal type');
-                      failedInserts.push({ error: 'Unknown meal type', item });
                       return;
               }
 
-              const utcDate = new Date(item.date);  
+              const utcDate = new Date(item.date);
               const localDate = new Date(utcDate.getTime() + (2 * 60 * 60 * 1000));
 
               connection.query(checkDuplicateQuery, [userId, item.meal_type, localDate.toISOString().split('T')[0]], (err, results) => {
@@ -688,7 +684,7 @@ app.post('/api/confirm-reservation', (req, res) => {
                   }
 
                   if (results.length > 0) {
-                      // Duplicate found, send conflict with the existing reservation's ID
+                      // Duplicate found, but status is not 'cancelled'
                       if (index === cartItems.length - 1) {
                           connection.commit(err => {
                               if (err) {
@@ -985,6 +981,26 @@ app.get('/api/transactions/recent', (req, res) => {
     }
 
     res.status(200).json(results);
+  });
+});
+
+app.get('/api/credits/remaining', (req, res) => {
+  const userId = req.user.id; 
+  
+  const query = 'SELECT remaining_credits FROM meal_credits WHERE user_id = ?';
+
+  connection.query(query, [userId], (error, results) => {
+    if (error) {
+      console.error('Error fetching remaining credits:', error);
+      res.status(500).json({ error: 'Internal server error' });
+      return;
+    }
+
+    if (results.length > 0) {
+      res.status(200).json({ remaining_credits: results[0].remaining_credits });
+    } else {
+      res.status(404).json({ error: 'No credits found for the user' });
+    }
   });
 });
 
