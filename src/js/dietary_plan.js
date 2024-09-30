@@ -29,7 +29,14 @@ function confirmSelection(dietPlan) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ dietPlan })
     })
-    .then(response => response.json())
+    .then((response) => {
+        if (response.status === 401) {
+          // Redirect to login page if user is not authorized
+          window.location.href = "/login";
+          throw new Error("Unauthorized access. Redirecting to login...");
+        }
+        return response.json();
+      })
     .then(data => {
         // Show the toaster with the confirmation message
         showToaster(`Your ${dietPlan} diet plan has been confirmed!`);
@@ -55,7 +62,14 @@ function showToaster(message) {
 
 document.addEventListener('DOMContentLoaded', () => {
     fetch('/get-username')
-      .then(response => response.json())
+    .then((response) => {
+        if (response.status === 401) {
+          // Redirect to login page if user is not authorized
+          window.location.href = "/login";
+          throw new Error("Unauthorized access. Redirecting to login...");
+        }
+        return response.json();
+      })
       .then(data => {
         if (data.username) {
           document.getElementById('hello').textContent = `${data.username}!`;
@@ -67,7 +81,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Fetch and display the current dietary plan
     fetch('/get-dietary_preference')
-    .then(response => response.json())
+    .then((response) => {
+        if (response.status === 401) {
+          // Redirect to login page if user is not authorized
+          window.location.href = "/login";
+          throw new Error("Unauthorized access. Redirecting to login...");
+        }
+        return response.json();
+      })
     .then(data => {
         if (data.preference) {
             document.getElementById('current-diet-plan').textContent = data.preference;

@@ -32,7 +32,12 @@ document.addEventListener('DOMContentLoaded', function() {
                 method: 'DELETE',
             })
             .then(response => {
-                if (!response.ok) {
+                if (response.status === 401) {
+                    // Redirect to login page if user is not authorized
+                    window.location.href = "/login";
+                    throw new Error("Unauthorized access. Redirecting to login...");
+                  }
+                else if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }
                 return response.json();
@@ -71,7 +76,12 @@ function fetchReservations() {
   
     fetch(`/api/reservations?fromDate=${todayISO}&toDate=${next7DaysISO}`)
       .then(response => {
-        if (!response.ok) {
+        if (response.status === 401) {
+            // Redirect to login page if user is not authorized
+            window.location.href = "/login";
+            throw new Error("Unauthorized access. Redirecting to login...");
+          }
+        else if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
         return response.json();
@@ -212,7 +222,12 @@ function viewReservationDetails(reservationId) {
 
     fetch(`/api/reservations/${reservationId}`)
         .then(response => {
-            if (!response.ok) {
+            if (response.status === 401) {
+                // Redirect to login page if user is not authorized
+                window.location.href = "/login";
+                throw new Error("Unauthorized access. Redirecting to login...");
+              }
+            else if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
             return response.json();
@@ -288,7 +303,12 @@ function deleteReservation(reservationId) {
             method: 'DELETE',
         })
         .then(response => {
-            if (!response.ok) {
+            if (response.status === 401) {
+                // Redirect to login page if user is not authorized
+                window.location.href = "/login";
+                throw new Error("Unauthorized access. Redirecting to login...");
+              }
+          else  if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
             return response.json();

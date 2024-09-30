@@ -8,7 +8,14 @@ const closeButton = document.getElementsByClassName('close')[0];
 window.addEventListener('load', () => {
     // Fetch the dietary preference and display it
     fetch("/get-dietary_preference")
-    .then((response) => response.json())
+    .then((response) => {
+        if (response.status === 401) {
+          // Redirect to login page if user is not authorized
+          window.location.href = "/login";
+          throw new Error("Unauthorized access. Redirecting to login...");
+        }
+        return response.json();
+      })
     .then((data) => {
       if (data.preference) {
         document.getElementById("diet-preference").textContent = `Your dietary preference is: ${data.preference}`;
@@ -52,7 +59,14 @@ function displayMenu() {
 
     // Fetch the menu items based on dining hall and day of the week
     fetch(`/api/menu?dining_hall=${diningHall}&day_of_week=week`)
-        .then(response => response.json())
+    .then((response) => {
+        if (response.status === 401) {
+          // Redirect to login page if user is not authorized
+          window.location.href = "/login";
+          throw new Error("Unauthorized access. Redirecting to login...");
+        }
+        return response.json();
+      })
         .then(menuItems => {
             // Filter menu items based on dietary preferences
             const filteredMenuItems = menuItems.filter(item => {
@@ -250,7 +264,14 @@ function replaceCartItem(duplicateItemId, item, date) {
             date: date
         })
     })
-    .then(response => response.json())
+    .then((response) => {
+        if (response.status === 401) {
+          // Redirect to login page if user is not authorized
+          window.location.href = "/login";
+          throw new Error("Unauthorized access. Redirecting to login...");
+        }
+        return response.json();
+      })
     .then(data => {
         showToaster('Item replaced in cart!');
         updateCartIcon(data.cartCount);  // Update the cart icon
@@ -275,7 +296,12 @@ function addToCart(item, date) {
         })
     })
     .then(response => {
-        if (response.status === 409) {
+        if (response.status === 401) {
+            // Redirect to login page if user is not authorized
+            window.location.href = "/login";
+            throw new Error("Unauthorized access. Redirecting to login...");
+          }
+       else if (response.status === 409) {
             // Duplicate found, show the popup
             return response.json().then(data => {
                 showDuplicatePopup(item, date, data.duplicateItemId);
@@ -296,7 +322,14 @@ function addToCart(item, date) {
 // Fetch the current cart item count and update the cart icon
 function fetchCartItemCount() {
     fetch('/api/cart-count')  // Assuming you have an API to get the cart item count
-    .then(response => response.json())
+    .then((response) => {
+        if (response.status === 401) {
+          // Redirect to login page if user is not authorized
+          window.location.href = "/login";
+          throw new Error("Unauthorized access. Redirecting to login...");
+        }
+        return response.json();
+      })
     .then(data => {
         updateCartIcon(data.cartCount);  // Update the cart icon with the number of items
     })
@@ -363,7 +396,14 @@ function setupSearch() {
     const selectedView = daySelector.value;
   
     fetch(`/api/menu?dining_hall=${diningHall}&day_of_week=week`)
-      .then(response => response.json())
+    .then((response) => {
+        if (response.status === 401) {
+          // Redirect to login page if user is not authorized
+          window.location.href = "/login";
+          throw new Error("Unauthorized access. Redirecting to login...");
+        }
+        return response.json();
+      })
       .then(menuItems => {
         const filteredItems = menuItems.filter(item =>
           item.item_name.toLowerCase().includes(searchTerm) ||

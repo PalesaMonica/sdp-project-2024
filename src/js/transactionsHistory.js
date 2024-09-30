@@ -1,7 +1,14 @@
 document.addEventListener('DOMContentLoaded', () => {
     function fetchTransactions(filter = 'all') {
         fetch(`/api/transactions?filter=${filter}`)
-            .then(response => response.json())
+        .then((response) => {
+            if (response.status === 401) {
+              // Redirect to login page if user is not authorized
+              window.location.href = "/login";
+              throw new Error("Unauthorized access. Redirecting to login...");
+            }
+            return response.json();
+          })
             .then(data => {
                 const transactionList = document.getElementById('transaction-list');
                 transactionList.innerHTML = data.transactions.map(transaction => `

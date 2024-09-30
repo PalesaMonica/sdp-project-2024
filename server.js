@@ -162,6 +162,12 @@ app.get(
     res.redirect("/userDashboard");
   }
 );
+function ensureAuthenticated(req, res, next) {
+  if (req.isAuthenticated()) {
+      return next();
+  }
+  res.status(401).json({ message: 'Please log in to access this resource.' });
+}
 
 // Route to serve the signup page
 app.get("/signup", (req, res) => {
@@ -304,18 +310,38 @@ app.post("/login", (req, res) => {
           return res.status(400).json({ msg: "Invalid email or password" });
         }
 
-        req.login(user, (err) => {
-          if (err) {
-            console.error("Error during login:", err);
-            return res
-              .status(500)
-              .json({ msg: "Server Error: Unable to log in" });
-          }
+        // Check if the user has a meal plan
+        connection.query(
+          "SELECT * FROM meal_credits WHERE user_id = ?",
+          [user.id],
+          (err, mealPlanResults) => {
+            if (err) {
+              console.error("Database query error:", err);
+              return res.status(500).json({ msg: "Server Error: Meal plan query failed" });
+            }
 
-          // Check the role of the user and redirect accordingly
-          const redirectUrl = user.role === 'staff' ? '/meal-management.html' : '/userDashboard.html';
-          return res.status(200).json({ msg: "Login successful, redirecting...", redirectUrl });
-        });
+            let redirectUrl;
+            if (mealPlanResults.length === 0) {
+              // No meal plan found, redirect to plan selection
+              redirectUrl = '/planSelection/index.html';
+            } else {
+              // Meal plan exists, redirect to the appropriate dashboard
+              redirectUrl = user.role === 'staff' ? '/meal-management.html' : '/userDashboard.html';
+            }
+
+            // Perform login
+            req.login(user, (err) => {
+              if (err) {
+                console.error("Error during login:", err);
+                return res
+                  .status(500)
+                  .json({ msg: "Server Error: Unable to log in" });
+              }
+
+              return res.status(200).json({ msg: "Login successful, redirecting...", redirectUrl });
+            });
+          }
+        );
       }
     );
   } catch (err) {
@@ -328,7 +354,7 @@ app.post("/login", (req, res) => {
 
 // app.use(authenticateUser);
 
-app.get("/userDashboard", (req, res) => {
+app.get("/userDashboard",ensureAuthenticated, (req, res) => {
   if (req.isAuthenticated()) {
     const username =
       req.user.displayName || req.user.username || "{{username}}";
@@ -364,7 +390,7 @@ app.post("/logout", (req, res) => {
   res.status(200).json({ msg: "Logout successful", redirectUrl: '/login' });
 });
 
-app.post('/saveDietPreference', (req, res) => {
+app.post('/saveDietPreference',ensureAuthenticated, (req, res) => {
   const { dietPlan } = req.body;
   const user_id = req.user.id;
   const email = req.user.email;
@@ -392,6 +418,16 @@ app.get('/get-username', (req, res) => {
     res.status(401).json({ error: "User not authenticated" });
   }
 });
+
+app.get('/get-userid', (req, res) => {
+  if (req.isAuthenticated()) {
+      // Send the user data (like userId) to the client
+      res.json({ userId: req.user.id });
+  } else {
+      res.status(401).json({ message: 'Unauthorized' });
+  }
+});
+
 
 //Get Dietary preference
 app.get('/get-dietary_preference', (req, res) => {
@@ -456,7 +492,7 @@ app.get('/dining-halls', async (req, res) => {
 });
 
 // Route to get a dining hall by ID with images
-app.get('/dining-halls/:id', async (req, res) => {
+app.get('/dining-halls/:id',ensureAuthenticated ,async (req, res) => {
   const { id } = req.params;
   try {
     // Fetch dining hall info
@@ -481,7 +517,7 @@ app.get('/dining-halls/:id', async (req, res) => {
   }
 });
 
-app.get('/api/dining-halls/:id', async (req, res) => {
+app.get('/api/dining-halls/:id',ensureAuthenticated ,async (req, res) => {
   const diningHallId = req.params.id;
   try {
     const [diningHall] = await pool.query('SELECT name FROM dining_halls WHERE id = ?', [diningHallId]);
@@ -496,7 +532,7 @@ app.get('/api/dining-halls/:id', async (req, res) => {
 });
 
 
-app.post('/api/reservations', async (req, res) => {
+app.post('/api/reservations',ensureAuthenticated, async (req, res) => {
   const { diningHallId, username, date, meals, specialRequest } = req.body;
 
   // Validate required fields
@@ -532,7 +568,7 @@ app.post('/api/reservations', async (req, res) => {
   }
 });
 
-app.get('/api/meal-prices', async (req, res) => {
+app.get('/api/meal-prices', ensureAuthenticated,async (req, res) => {
   try {
       const prices = await Reservation.getMealPrices();
       res.json(prices);
@@ -544,7 +580,7 @@ app.get('/api/meal-prices', async (req, res) => {
       });
   }
 });
-app.post('/api/update-price', async (req, res) => {
+app.post('/api/update-price', ensureAuthenticated,async (req, res) => {
   const { id, price } = req.body;
   if (typeof id !== 'number' || typeof price !== 'number') {
       return res.status(400).json({ error: 'Invalid input' });
@@ -563,7 +599,7 @@ app.post('/api/update-price', async (req, res) => {
 });
 
 // Route to get all reservations for user
-app.get('/api/reservations', (req, res) => {
+app.get('/api/reservations', ensureAuthenticated,(req, res) => {
   const userId = req.user.id;
   const { fromDate, toDate } = req.query;
 
@@ -586,7 +622,7 @@ app.get('/api/reservations', (req, res) => {
 });
 
 // Route to get a specific reservation by ID
-app.get('/api/reservations/:reservationId', (req, res) => {
+app.get('/api/reservations/:reservationId',ensureAuthenticated, (req, res) => {
   const reservationId = req.params.reservationId;
 
   // Query to fetch the reservation details by ID
@@ -613,14 +649,9 @@ app.get('/api/reservations/:reservationId', (req, res) => {
 });
 
 // Route to post a new reservation
-app.post('/api/confirm-reservation', (req, res) => {
-  const userId = req.user?.id;
-  const username = req.user?.username;
-
-  if (!userId || !username) {
-      console.error('User not authenticated');
-      return res.status(401).json({ error: 'User not authenticated' });
-  }
+app.post('/api/confirm-reservation',ensureAuthenticated, (req, res) => {
+  const userId = req.user.id;  
+  const username = req.user.username;
 
   const queryCart = `
       SELECT ci.id, ci.date, ci.meal_type, ci.dining_hall_id
@@ -795,7 +826,7 @@ app.post('/api/confirm-reservation', (req, res) => {
   }
 });
 
-app.put('/api/replace-reservation/:id', (req, res) => {
+app.put('/api/replace-reservation/:id',ensureAuthenticated, (req, res) => {
   const userId = req.user.id;
   const username = req.user.username;
   const existingReservationId = req.params.id;
@@ -951,7 +982,7 @@ app.put('/api/replace-reservation/:id', (req, res) => {
   });
 });
 
-app.get('/api/cart-item/:id', (req, res) => {
+app.get('/api/cart-item/:id',ensureAuthenticated, (req, res) => {
   const cartItemId = req.params.id;
   
   const getCartItemQuery = `
@@ -974,7 +1005,7 @@ app.get('/api/cart-item/:id', (req, res) => {
 
 
 // Route to cancel a reservation
-app.delete('/api/reservations/:id', (req, res) => {
+app.delete('/api/reservations/:id',ensureAuthenticated, (req, res) => {
   const reservationId = req.params.id;
 
   // First, query to get the reservation details by ID (user_id, date, meal_type)
@@ -1061,7 +1092,7 @@ app.delete('/api/reservations/:id', (req, res) => {
 });
 
 
-app.get('/api/transactions', (req, res) => {
+app.get('/api/transactions',ensureAuthenticated, (req, res) => {
   const query = 'SELECT * FROM transactions WHERE user_id = ?';
   const userId = req.user.id;
 
@@ -1076,7 +1107,7 @@ app.get('/api/transactions', (req, res) => {
   });
 });
 
-app.get('/api/transactions/recent', (req, res) => {
+app.get('/api/transactions/recent',ensureAuthenticated, (req, res) => {
   const query = 'SELECT * FROM transactions WHERE user_id = ? ORDER BY date DESC LIMIT 4'; // adjust query as needed
   const userId = req.user.id;
 
@@ -1091,7 +1122,7 @@ app.get('/api/transactions/recent', (req, res) => {
   });
 });
 
-app.get('/api/credits/remaining', (req, res) => {
+app.get('/api/credits/remaining',ensureAuthenticated, (req, res) => {
   const userId = req.user.id; 
   
   const query = 'SELECT remaining_credits FROM meal_credits WHERE user_id = ?';
@@ -1116,7 +1147,7 @@ app.get('/api/credits/remaining', (req, res) => {
 // Feedback route to get reviews with optional rating filter
 
 // Post a review
-app.post('/feedback', (req, res) => {
+app.post('/feedback', ensureAuthenticated,(req, res) => {
   const { review_text, rating, dining_hall, review_type } = req.body;
 
   // SQL query to insert feedback into the feedback table
@@ -1136,7 +1167,7 @@ app.post('/feedback', (req, res) => {
 });
 
 
-app.get('/feedback', (req, res) => {
+app.get('/feedback',ensureAuthenticated, (req, res) => {
   const rating = req.query.rating;
   let sql = 'SELECT * FROM feedback';
   const queryParams = [];
@@ -1160,7 +1191,7 @@ app.get('/feedback', (req, res) => {
 });
 
 //Meal Management
-app.get('/api/current-menu', async (req, res) => {
+app.get('/api/current-menu',ensureAuthenticated, async (req, res) => {
   try {
       const [rows] = await pool.query('SELECT * FROM menu');
       res.json(rows);
@@ -1180,7 +1211,7 @@ app.get('/api/available-meals', async (req, res) => {
   }
 });
 
-app.post('/api/add-to-menu', async (req, res) => {
+app.post('/api/add-to-menu',ensureAuthenticated, async (req, res) => {
   const { mealId } = req.body;
   try {
       await pool.query('INSERT INTO menu (meal_id) VALUES (?)', [mealId]);
@@ -1202,7 +1233,7 @@ app.delete('/api/remove-from-menu/:id', async (req, res) => {
   }
 });
 
-app.post('/api/add-new-meal', async (req, res) => {
+app.post('/api/add-new-meal', ensureAuthenticated,async (req, res) => {
   const { name, ingredients, diet_type, image_url, meal_type } = req.body;
   try {
       await pool.query(
@@ -1217,7 +1248,7 @@ app.post('/api/add-new-meal', async (req, res) => {
 });
 
 // Define a route to fetch menu items based on dining hall and day
-app.get('/api/menu', (req, res) => {
+app.get('/api/menu',ensureAuthenticated, (req, res) => {
   const { dining_hall, day_of_week } = req.query;
 
   let query;
@@ -1243,7 +1274,7 @@ app.get('/api/menu', (req, res) => {
 });
 
 // Add item to cart
-app.post('/api/add-to-cart', (req, res) => {
+app.post('/api/add-to-cart',ensureAuthenticated, (req, res) => {
   const { item, date } = req.body;
   const userId = req.user.id;  // Assuming you have user authentication
 
@@ -1289,7 +1320,7 @@ app.post('/api/add-to-cart', (req, res) => {
   });
 });
 
-app.put('/api/cart-items/:id', (req, res) => {
+app.put('/api/cart-items/:id',ensureAuthenticated, (req, res) => {
   const { item, date } = req.body;
   const userId = req.user.id;  // Assuming you have user authentication
   const itemId = req.params.id;  // The ID of the existing cart item to replace
@@ -1319,7 +1350,7 @@ app.put('/api/cart-items/:id', (req, res) => {
 });
 
 // Get cart items
-app.get('/api/cart-items', (req, res) => {
+app.get('/api/cart-items', ensureAuthenticated,(req, res) => {
   const userId = req.user.id;  // Assuming user authentication
 
   const query = `
@@ -1341,7 +1372,7 @@ app.get('/api/cart-items', (req, res) => {
 });
 
 // Route to get cart item count
-app.get('/api/cart-count', (req, res) => {
+app.get('/api/cart-count',ensureAuthenticated, (req, res) => {
   const userId = req.user.id;
 
   const query = `
@@ -1361,7 +1392,7 @@ app.get('/api/cart-count', (req, res) => {
 });
 
 // Remove item from cart
-app.delete('/api/remove-from-cart/:id', (req, res) => {
+app.delete('/api/remove-from-cart/:id', ensureAuthenticated,(req, res) => {
   const itemId = req.params.id;
   const userId = req.user.id; // Assuming you have user authentication in place
 
@@ -1466,7 +1497,7 @@ app.get('/get-useremail', (req, res) => {
   }
 });
 
-app.get("/user-profile", (req, res) => {
+app.get("/user-profile",ensureAuthenticated, (req, res) => {
   // Assuming user ID is stored in req.user after authentication
   const userId = req.user.id; // Adjust as necessary
 
@@ -1486,7 +1517,7 @@ app.get("/user-profile", (req, res) => {
   });
 });
 
-app.post("/change-password", async (req, res) => {
+app.post("/change-password",ensureAuthenticated, async (req, res) => {
   const { oldPassword, newPassword, confirmPassword } = req.body;
 
   // Validate input fields
@@ -1553,7 +1584,7 @@ app.post("/change-password", async (req, res) => {
   }
 });
 
-app.get('/notifications', (req, res) => {
+app.get('/notifications', ensureAuthenticated,(req, res) => {
   const userId = req.user.id; // Access the user ID from the request
 
   const query = `
@@ -1584,7 +1615,7 @@ app.get('/notifications', (req, res) => {
   });
 });
 
-app.post('/notifications', (req, res) => {
+app.post('/notifications',ensureAuthenticated, (req, res) => {
   const { title, message, dining_hall } = req.body;
 
   if (!title || !message || !dining_hall) {
@@ -1642,7 +1673,7 @@ app.post('/notifications', (req, res) => {
 });
 
 // Endpoint to mark a notification as read
-app.post('/notifications/:id/read', (req, res) => {
+app.post('/notifications/:id/read',ensureAuthenticated, (req, res) => {
   const notificationId = req.params.id;
   const userId = req.user.id;
 
@@ -1665,7 +1696,7 @@ app.post('/notifications/:id/read', (req, res) => {
 
 
 // route to fetch meal credits and recent transactions
-app.get('/api/meal-credits', async (req, res) => {
+app.get('/api/meal-credits',ensureAuthenticated, async (req, res) => {
   const userId = req.user.id; // Get user ID from session
   try {
     // Fetch user's meal credits
@@ -1684,7 +1715,7 @@ app.get('/api/meal-credits', async (req, res) => {
   }
 });
 
-app.post('/api/meal-credits/add', async (req, res) => {
+app.post('/api/meal-credits/add', ensureAuthenticated,async (req, res) => {
   const userId = req.user.id; // Get user ID from session
   const { amount } = req.body; // Amount to add
   try {
@@ -1696,7 +1727,7 @@ app.post('/api/meal-credits/add', async (req, res) => {
   }
 });
 
-app.post('/api/meal-credits/deduct', async (req, res) => {
+app.post('/api/meal-credits/deduct',ensureAuthenticated, async (req, res) => {
   const userId = req.user.id; // Get user ID from session
   const { amount } = req.body; // Amount to deduct
   try {
@@ -1709,13 +1740,10 @@ app.post('/api/meal-credits/deduct', async (req, res) => {
 });
 
 // Route to handle meal plan selection
-app.post("/selectPlan", (req, res) => {
-   //Check if the user is authenticated
-  if (!req.isAuthenticated()) {
-    return res.status(401).json({ msg: "Unauthorized: Please log in." });
-  }
 
-  const userId = req.user.id; // Get the user ID from the session
+
+app.post("/selectPlan", ensureAuthenticated, (req, res) => {
+  const userId = req.user.id; // Get the user ID from Passport.js session
   const selectedPlan = req.body.plan; // Get the selected plan from the request body
 
   let planName;
@@ -1746,6 +1774,7 @@ app.post("/selectPlan", (req, res) => {
     }
   );
 });
+
 
 
 // Removed the mark-as-read endpoint

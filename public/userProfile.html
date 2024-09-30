@@ -310,7 +310,12 @@
             // Fetch the user's username
             fetch('/get-username')
                 .then(response => {
-                    if (!response.ok) {
+                    if (response.status === 401) {
+                // Redirect to login page if user is not authorized
+                window.location.href = "/login";
+                throw new Error("Unauthorized access. Redirecting to login...");
+              }
+                   else if (!response.ok) {
                         throw new Error('Network response was not ok');
                     }
                     return response.json();
@@ -327,7 +332,12 @@
             // Fetch the user's role
             fetch('/get-userrole')
                 .then(response => {
-                    if (!response.ok) {
+                    if (response.status === 401) {
+                // Redirect to login page if user is not authorized
+                window.location.href = "/login";
+                throw new Error("Unauthorized access. Redirecting to login...");
+              }
+                    else if (!response.ok) {
                         throw new Error('Network response was not ok');
                     }
                     return response.json();
@@ -343,7 +353,12 @@
             // Fetch the user's email
             fetch('/get-useremail')
                 .then(response => {
-                    if (!response.ok) {
+                    if (response.status === 401) {
+                // Redirect to login page if user is not authorized
+                window.location.href = "/login";
+                throw new Error("Unauthorized access. Redirecting to login...");
+              }
+                   else if (!response.ok) {
                         throw new Error('Network response was not ok');
                     }
                     return response.json();
@@ -418,8 +433,12 @@
                   'Authorization': `Bearer ${yourToken}` // Include token if necessary
                 }
               });
-          
-              if (!response.ok) {
+              if (response.status === 401) {
+                // Redirect to login page if user is not authorized
+                window.location.href = "/login";
+                throw new Error("Unauthorized access. Redirecting to login...");
+              }
+             else  if (!response.ok) {
                 throw new Error('Failed to fetch user profile');
               }
           
