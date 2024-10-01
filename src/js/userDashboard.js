@@ -52,4 +52,23 @@ function navigate(page) {
   alert(`Navigating to ${page} page`);
 }
 
+function logout() {
+  fetch('/logout', {
+    method: 'POST',
+    credentials: 'same-origin',  // Ensures the session cookie is sent
+  })
+  .then(response => response.json())
+  .then(data => {
+    if (data.message === 'Logout successful') {
+      window.location.href = data.redirectUrl;  // Redirect to login page
+    } else {
+      console.error('Logout failed:', data.message);
+    }
+  })
+  .catch(err => {
+    console.error('Error during logout:', err);
+  });
+}
+
+
 module.exports = { navigate };

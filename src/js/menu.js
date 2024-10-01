@@ -446,7 +446,7 @@ displayMenu();
 setupSearch();
 
 function backToDash() {
-    window.location.href = 'userDashboard.html';
+    window.location.href = 'userDashboard';
   }
 
 //reload the page
