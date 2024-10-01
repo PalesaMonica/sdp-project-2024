@@ -113,7 +113,12 @@
       try {
         // Fetch the dining hall information from your backend API
         const response = await fetch(`/api/dining-halls/${diningHallId}`);
-        if (!response.ok) {
+        if (response.status === 401) {
+                // Redirect to login page if user is not authorized
+                window.location.href = "/login";
+                throw new Error("Unauthorized access. Redirecting to login...");
+              }
+       else  if (!response.ok) {
           throw new Error('Failed to fetch dining hall details.');
         }
         const diningHall = await response.json();

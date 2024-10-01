@@ -26,7 +26,12 @@ document.addEventListener('DOMContentLoaded', function () {
         })
         
         .then(response => {
-            if (!response.ok) {
+            if (response.status === 401) {
+                // Redirect to login page if user is not authorized
+                window.location.href = "/login";
+                throw new Error("Unauthorized access. Redirecting to login...");
+              }
+           else if (!response.ok) {
                 throw new Error('Network response was not ok');
             }
             return response.json(); // Parse the JSON response
@@ -44,3 +49,8 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
 });
+
+
+function goBack() {
+    window.location.href = '../../userDashboard.html'; // Replace with the actual page you want to go back to
+}

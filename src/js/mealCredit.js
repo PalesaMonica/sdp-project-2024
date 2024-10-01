@@ -6,7 +6,14 @@ const diningHalls = {
 
 function fetchCredits() {
     fetch('/api/credits/remaining')
-        .then(response => response.json())
+    .then((response) => {
+        if (response.status === 401) {
+          // Redirect to login page if user is not authorized
+          window.location.href = "/login";
+          throw new Error("Unauthorized access. Redirecting to login...");
+        }
+        return response.json();
+      })
         .then(data => {
             const creditsElement = document.getElementById('credits-amount');
             creditsElement.innerText = `R${data.redits.toFixed(2)}`;
@@ -19,7 +26,14 @@ function fetchCredits() {
 
 function fetchCredits() {
     fetch('/api/credits/remaining')
-        .then(response => response.json())
+    .then((response) => {
+        if (response.status === 401) {
+          // Redirect to login page if user is not authorized
+          window.location.href = "/login";
+          throw new Error("Unauthorized access. Redirecting to login...");
+        }
+        return response.json();
+      })
         .then(data => {
             const creditsElement = document.getElementById('credits-amount');
 
@@ -39,7 +53,14 @@ function fetchCredits() {
 // Fetch and display recent transactions
 function fetchRecentTransactions() {
     fetch('/api/transactions/recent')
-        .then(response => response.json())
+    .then((response) => {
+        if (response.status === 401) {
+          // Redirect to login page if user is not authorized
+          window.location.href = "/login";
+          throw new Error("Unauthorized access. Redirecting to login...");
+        }
+        return response.json();
+      })
         .then(transactions => renderRecentTransactions(transactions))
         .catch(error => {
             console.error('Error fetching transactions:', error);

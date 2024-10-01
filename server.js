@@ -185,6 +185,12 @@ app.get(
     );
   }
 );
+function ensureAuthenticated(req, res, next) {
+  if (req.isAuthenticated()) {
+      return next();
+  }
+  res.status(401).json({ message: 'Please log in to access this resource.' });
+}
 
 
 // Route to serve the signup page
@@ -328,13 +334,16 @@ app.post("/login", (req, res) => {
           return res.status(400).json({ msg: "Invalid email or password" });
         }
 
-        req.login(user, (err) => {
-          if (err) {
-            console.error("Error during login:", err);
-            return res
-              .status(500)
-              .json({ msg: "Server Error: Unable to log in" });
-          }
+        // Check if the user has a meal plan
+        connection.query(
+          "SELECT * FROM meal_credits WHERE user_id = ?",
+          [user.id],
+          (err, mealPlanResults) => {
+            if (err) {
+              console.error("Database query error:", err);
+              return res.status(500).json({ msg: "Server Error: Meal plan query failed" });
+            }
+
 
           // Now we handle meal plan redirection logic for student users
           if (user.role === 'student') {
@@ -379,12 +388,14 @@ app.post("/login", (req, res) => {
               if (err) {
                 console.error("Session save error:", err);
                 return res.status(500).json({ msg: "Server Error: Could not save session" });
+
               }
 
               return res.status(200).json({ msg: "Login successful, redirecting...", redirectUrl });
             });
           }
         });
+
       }
     );
   } catch (err) {
@@ -397,7 +408,7 @@ app.post("/login", (req, res) => {
 
 // app.use(authenticateUser);
 
-app.get("/userDashboard", (req, res) => {
+app.get("/userDashboard",ensureAuthenticated, (req, res) => {
   if (req.isAuthenticated()) {
     const username =
       req.user.displayName || req.user.username || "{{username}}";
@@ -433,7 +444,7 @@ app.post("/logout", (req, res) => {
   res.status(200).json({ msg: "Logout successful", redirectUrl: '/login' });
 });
 
-app.post('/saveDietPreference', (req, res) => {
+app.post('/saveDietPreference',ensureAuthenticated, (req, res) => {
   const { dietPlan } = req.body;
   const user_id = req.user.id;
   const email = req.user.email;
@@ -461,6 +472,16 @@ app.get('/get-username', (req, res) => {
     res.status(401).json({ error: "User not authenticated" });
   }
 });
+
+app.get('/get-userid', (req, res) => {
+  if (req.isAuthenticated()) {
+      // Send the user data (like userId) to the client
+      res.json({ userId: req.user.id });
+  } else {
+      res.status(401).json({ message: 'Unauthorized' });
+  }
+});
+
 
 //Get Dietary preference
 app.get('/get-dietary_preference', (req, res) => {
@@ -525,7 +546,7 @@ app.get('/dining-halls', async (req, res) => {
 });
 
 // Route to get a dining hall by ID with images
-app.get('/dining-halls/:id', async (req, res) => {
+app.get('/dining-halls/:id',ensureAuthenticated ,async (req, res) => {
   const { id } = req.params;
   try {
     // Fetch dining hall info
@@ -550,7 +571,7 @@ app.get('/dining-halls/:id', async (req, res) => {
   }
 });
 
-app.get('/api/dining-halls/:id', async (req, res) => {
+app.get('/api/dining-halls/:id',ensureAuthenticated ,async (req, res) => {
   const diningHallId = req.params.id;
   try {
     const [diningHall] = await pool.query('SELECT name FROM dining_halls WHERE id = ?', [diningHallId]);
@@ -565,7 +586,7 @@ app.get('/api/dining-halls/:id', async (req, res) => {
 });
 
 
-app.post('/api/reservations', async (req, res) => {
+app.post('/api/reservations',ensureAuthenticated, async (req, res) => {
   const { diningHallId, username, date, meals, specialRequest } = req.body;
 
   // Validate required fields
@@ -601,7 +622,7 @@ app.post('/api/reservations', async (req, res) => {
   }
 });
 
-app.get('/api/meal-prices', async (req, res) => {
+app.get('/api/meal-prices', ensureAuthenticated,async (req, res) => {
   try {
       const prices = await Reservation.getMealPrices();
       res.json(prices);
@@ -613,7 +634,7 @@ app.get('/api/meal-prices', async (req, res) => {
       });
   }
 });
-app.post('/api/update-price', async (req, res) => {
+app.post('/api/update-price', ensureAuthenticated,async (req, res) => {
   const { id, price } = req.body;
   if (typeof id !== 'number' || typeof price !== 'number') {
       return res.status(400).json({ error: 'Invalid input' });
@@ -632,7 +653,7 @@ app.post('/api/update-price', async (req, res) => {
 });
 
 // Route to get all reservations for user
-app.get('/api/reservations', (req, res) => {
+app.get('/api/reservations', ensureAuthenticated,(req, res) => {
   const userId = req.user.id;
   const { fromDate, toDate } = req.query;
 
@@ -655,7 +676,7 @@ app.get('/api/reservations', (req, res) => {
 });
 
 // Route to get a specific reservation by ID
-app.get('/api/reservations/:reservationId', (req, res) => {
+app.get('/api/reservations/:reservationId',ensureAuthenticated, (req, res) => {
   const reservationId = req.params.reservationId;
 
   // Query to fetch the reservation details by ID
@@ -682,7 +703,7 @@ app.get('/api/reservations/:reservationId', (req, res) => {
 });
 
 // Route to post a new reservation
-app.post('/api/confirm-reservation', (req, res) => {
+app.post('/api/confirm-reservation',ensureAuthenticated, (req, res) => {
   const userId = req.user.id;  
   const username = req.user.username;
 
@@ -692,7 +713,6 @@ app.post('/api/confirm-reservation', (req, res) => {
       WHERE ci.user_id = ?
   `;
 
-  // Fetch all cart items for the user
   connection.query(queryCart, [userId], (err, cartItems) => {
       if (err) {
           console.error('Error fetching cart items:', err);
@@ -703,7 +723,6 @@ app.post('/api/confirm-reservation', (req, res) => {
           return res.status(400).json({ error: 'Cart is empty' });
       }
 
-      // Begin transaction to ensure atomicity
       connection.beginTransaction(err => {
           if (err) {
               console.error('Error starting transaction:', err);
@@ -712,7 +731,7 @@ app.post('/api/confirm-reservation', (req, res) => {
 
           const checkDuplicateQuery = `
               SELECT * FROM reservations
-              WHERE user_id = ? AND meal_type = ? AND date = ? AND status != 'cancelled'
+              WHERE user_id = ? AND meal_type = ? AND date = ? AND status = 'confirmed'
           `;
 
           const insertReservation = `
@@ -721,6 +740,7 @@ app.post('/api/confirm-reservation', (req, res) => {
               VALUES (?, ?, ?, ?, ?, ?, ?, 'confirmed')
           `;
 
+          let duplicateFound = false;
           cartItems.forEach((item, index) => {
               let startTime, endTime;
               switch (item.meal_type) {
@@ -737,12 +757,10 @@ app.post('/api/confirm-reservation', (req, res) => {
                       endTime = '19:00:00';
                       break;
                   default:
-                      console.error('Unknown meal type');
-                      return;
+                      return res.status(400).json({ error: 'Unknown meal type' });
               }
 
-              const utcDate = new Date(item.date);
-              const localDate = new Date(utcDate.getTime() + (2 * 60 * 60 * 1000));
+              const localDate = new Date(new Date(item.date).getTime() + (2 * 60 * 60 * 1000));
 
               connection.query(checkDuplicateQuery, [userId, item.meal_type, localDate.toISOString().split('T')[0]], (err, results) => {
                   if (err) {
@@ -753,17 +771,10 @@ app.post('/api/confirm-reservation', (req, res) => {
                   }
 
                   if (results.length > 0) {
-                      // Duplicate found, but status is not 'cancelled'
-                      if (index === cartItems.length - 1) {
-                          connection.commit(err => {
-                              if (err) {
-                                  return connection.rollback(() => {
-                                      console.error('Transaction commit failed:', err);
-                                      return res.status(500).json({ error: 'Failed to commit transaction' });
-                                  });
-                              }
-
-                              return res.status(409).json({
+                      if (!duplicateFound) {
+                          duplicateFound = true;
+                          return connection.rollback(() => {
+                              res.status(409).json({
                                   error: 'Duplicate reservation found',
                                   duplicateReservation: {
                                       id: results[0].id,
@@ -775,7 +786,6 @@ app.post('/api/confirm-reservation', (req, res) => {
                           });
                       }
                   } else {
-                      // No duplicate, insert the new reservation
                       connection.query(insertReservation, [
                           item.dining_hall_id,
                           userId,
@@ -792,8 +802,7 @@ app.post('/api/confirm-reservation', (req, res) => {
                               });
                           }
 
-                          // If this is the last item, commit the transaction
-                          if (index === cartItems.length - 1) {
+                          if (index === cartItems.length - 1 && !duplicateFound) {
                               connection.commit(err => {
                                   if (err) {
                                       return connection.rollback(() => {
@@ -802,7 +811,6 @@ app.post('/api/confirm-reservation', (req, res) => {
                                       });
                                   }
 
-                                  // Clear the cart after successful reservation
                                   const clearCartQuery = `DELETE FROM cart_items WHERE user_id = ?`;
                                   connection.query(clearCartQuery, [userId], (err) => {
                                       if (err) {
@@ -810,7 +818,6 @@ app.post('/api/confirm-reservation', (req, res) => {
                                           return res.status(500).json({ error: 'Failed to clear cart' });
                                       }
 
-                                      // Send a success response with a redirect URL
                                       res.status(201).json({ message: 'Reservation confirmed and cart cleared', redirectUrl: `/reservations.html?id=${result.insertId}` });
                                   });
                               });
@@ -821,9 +828,59 @@ app.post('/api/confirm-reservation', (req, res) => {
           });
       });
   });
+
+  function handleResponse(res, connection, duplicateReservations, failedInserts) {
+    if (duplicateReservations.length > 0 || failedInserts.length > 0) {
+      connection.rollback(() => {
+        let errorMessage = '';
+        if (duplicateReservations.length > 0) {
+          errorMessage += 'Duplicate reservations found. ';
+        }
+        if (failedInserts.length > 0) {
+          errorMessage += 'Some reservations failed to insert. ';
+        }
+        return res.status(409).json({
+          success: false,
+          error: errorMessage.trim(),
+          duplicateReservations,
+          failedInserts
+        });
+      });
+    } else {
+      connection.commit(err => {
+        if (err) {
+          return connection.rollback(() => {
+            console.error('Transaction commit failed:', err);
+            return res.status(500).json({
+              success: false,
+              error: 'Failed to commit transaction'
+            });
+          });
+        }
+
+        // Clear the cart after successful reservation
+        const clearCartQuery = `DELETE FROM cart_items WHERE user_id = ?`;
+        connection.query(clearCartQuery, [userId], (err) => {
+          if (err) {
+            console.error('Error clearing cart:', err);
+            return res.status(500).json({
+              success: false,
+              error: 'Failed to clear cart'
+            });
+          }
+
+          // Send a success response
+          res.status(201).json({
+            success: true,
+            message: 'Reservations confirmed and cart cleared'
+          });
+        });
+      });
+    }
+  }
 });
 
-app.put('/api/replace-reservation/:id', (req, res) => {
+app.put('/api/replace-reservation/:id',ensureAuthenticated, (req, res) => {
   const userId = req.user.id;
   const username = req.user.username;
   const existingReservationId = req.params.id;
@@ -883,7 +940,7 @@ app.put('/api/replace-reservation/:id', (req, res) => {
         // 3. Check for conflicts
         const checkConflicts = `
           SELECT * FROM reservations
-          WHERE user_id = ? AND date = ? AND meal_type = ? AND id != ?
+          WHERE user_id = ? AND date = ? AND meal_type = ? AND id != ? AND status = 'confirmed'
         `;
 
         connection.query(checkConflicts, [userId, cartItem.date, cartItem.meal_type, existingReservationId], (err, conflicts) => {
@@ -979,7 +1036,7 @@ app.put('/api/replace-reservation/:id', (req, res) => {
   });
 });
 
-app.get('/api/cart-item/:id', (req, res) => {
+app.get('/api/cart-item/:id',ensureAuthenticated, (req, res) => {
   const cartItemId = req.params.id;
   
   const getCartItemQuery = `
@@ -1002,28 +1059,94 @@ app.get('/api/cart-item/:id', (req, res) => {
 
 
 // Route to cancel a reservation
-app.delete('/api/reservations/:id', (req, res) => {
+app.delete('/api/reservations/:id',ensureAuthenticated, (req, res) => {
   const reservationId = req.params.id;
 
-  const query = 'UPDATE reservations SET status = ? WHERE id = ?';
+  // First, query to get the reservation details by ID (user_id, date, meal_type)
+  const getReservationQuery = `
+    SELECT user_id, date, meal_type 
+    FROM reservations 
+    WHERE id = ?
+  `;
 
-  connection.query(query, ['cancelled', reservationId], (error, results) => {
+  connection.query(getReservationQuery, [reservationId], (error, results) => {
     if (error) {
-      console.error('Error updating reservation status:', error);
+      console.error('Error retrieving reservation:', error);
       res.status(500).json({ error: 'Internal server error' });
       return;
     }
 
-    if (results.affectedRows === 0) {
+    if (results.length === 0) {
       res.status(404).json({ error: 'Reservation not found' });
       return;
     }
 
-    res.status(200).json({ message: 'Reservation cancelled successfully' });
+    const { user_id, date, meal_type } = results[0];
+
+    // Check if there is already a "cancelled" reservation with the same user_id, date, and meal_type
+    const checkCancelledQuery = `
+      SELECT id 
+      FROM reservations 
+      WHERE user_id = ? AND date = ? AND meal_type = ? AND status = 'cancelled'
+    `;
+
+    connection.query(checkCancelledQuery, [user_id, date, meal_type], (error, cancelledResults) => {
+      if (error) {
+        console.error('Error checking for cancelled reservation:', error);
+        res.status(500).json({ error: 'Internal server error' });
+        return;
+      }
+
+      // If a cancelled reservation is found, delete it
+      if (cancelledResults.length > 0) {
+        const deleteCancelledQuery = `DELETE FROM reservations WHERE id = ?`;
+        connection.query(deleteCancelledQuery, [cancelledResults[0].id], (error, deleteResults) => {
+          if (error) {
+            console.error('Error deleting cancelled reservation:', error);
+            res.status(500).json({ error: 'Internal server error' });
+            return;
+          }
+
+          console.log('Cancelled reservation deleted successfully');
+        });
+      }
+
+      // Now check if a "confirmed" reservation exists and change it to "cancelled"
+      const checkConfirmedQuery = `
+        SELECT id 
+        FROM reservations 
+        WHERE user_id = ? AND date = ? AND meal_type = ? AND status = 'confirmed'
+      `;
+
+      connection.query(checkConfirmedQuery, [user_id, date, meal_type], (error, confirmedResults) => {
+        if (error) {
+          console.error('Error checking for confirmed reservation:', error);
+          res.status(500).json({ error: 'Internal server error' });
+          return;
+        }
+
+        // If a confirmed reservation is found, update it to "cancelled"
+        if (confirmedResults.length > 0) {
+          const updateConfirmedQuery = `UPDATE reservations SET status = 'cancelled' WHERE id = ?`;
+          connection.query(updateConfirmedQuery, [confirmedResults[0].id], (error, updateResults) => {
+            if (error) {
+              console.error('Error updating confirmed reservation:', error);
+              res.status(500).json({ error: 'Internal server error' });
+              return;
+            }
+
+            res.status(200).json({ message: 'Reservation status updated to cancelled successfully' });
+          });
+        } else {
+          res.status(404).json({ error: 'No confirmed reservation found' });
+        }
+      });
+    });
   });
 });
 
-app.get('/api/transactions', (req, res) => {
+
+app.get('/api/transactions',ensureAuthenticated, (req, res) => {
   const query = 'SELECT * FROM transactions WHERE user_id = ?';
   const userId = req.user.id;
 
@@ -1038,7 +1161,7 @@ app.get('/api/transactions', (req, res) => {
   });
 });
 
-app.get('/api/transactions/recent', (req, res) => {
+app.get('/api/transactions/recent',ensureAuthenticated, (req, res) => {
   const query = 'SELECT * FROM transactions WHERE user_id = ? ORDER BY date DESC LIMIT 4'; // adjust query as needed
   const userId = req.user.id;
 
@@ -1053,7 +1176,7 @@ app.get('/api/transactions/recent', (req, res) => {
   });
 });
 
-app.get('/api/credits/remaining', (req, res) => {
+app.get('/api/credits/remaining',ensureAuthenticated, (req, res) => {
   const userId = req.user.id; 
   
   const query = 'SELECT remaining_credits FROM meal_credits WHERE user_id = ?';
@@ -1078,7 +1201,7 @@ app.get('/api/credits/remaining', (req, res) => {
 // Feedback route to get reviews with optional rating filter
 
 // Post a review
-app.post('/feedback', (req, res) => {
+app.post('/feedback', ensureAuthenticated,(req, res) => {
   const { review_text, rating, dining_hall, review_type } = req.body;
 
   // SQL query to insert feedback into the feedback table
@@ -1098,7 +1221,7 @@ app.post('/feedback', (req, res) => {
 });
 
 
-app.get('/feedback', (req, res) => {
+app.get('/feedback',ensureAuthenticated, (req, res) => {
   const rating = req.query.rating;
   let sql = 'SELECT * FROM feedback';
   const queryParams = [];
@@ -1122,7 +1245,7 @@ app.get('/feedback', (req, res) => {
 });
 
 //Meal Management
-app.get('/api/current-menu', async (req, res) => {
+app.get('/api/current-menu',ensureAuthenticated, async (req, res) => {
   try {
       const [rows] = await pool.query('SELECT * FROM menu');
       res.json(rows);
@@ -1142,7 +1265,7 @@ app.get('/api/available-meals', async (req, res) => {
   }
 });
 
-app.post('/api/add-to-menu', async (req, res) => {
+app.post('/api/add-to-menu',ensureAuthenticated, async (req, res) => {
   const { mealId } = req.body;
   try {
       await pool.query('INSERT INTO menu (meal_id) VALUES (?)', [mealId]);
@@ -1164,7 +1287,7 @@ app.delete('/api/remove-from-menu/:id', async (req, res) => {
   }
 });
 
-app.post('/api/add-new-meal', async (req, res) => {
+app.post('/api/add-new-meal', ensureAuthenticated,async (req, res) => {
   const { name, ingredients, diet_type, image_url, meal_type } = req.body;
   try {
       await pool.query(
@@ -1179,7 +1302,7 @@ app.post('/api/add-new-meal', async (req, res) => {
 });
 
 // Define a route to fetch menu items based on dining hall and day
-app.get('/api/menu', (req, res) => {
+app.get('/api/menu',ensureAuthenticated, (req, res) => {
   const { dining_hall, day_of_week } = req.query;
 
   let query;
@@ -1205,7 +1328,7 @@ app.get('/api/menu', (req, res) => {
 });
 
 // Add item to cart
-app.post('/api/add-to-cart', (req, res) => {
+app.post('/api/add-to-cart',ensureAuthenticated, (req, res) => {
   const { item, date } = req.body;
   const userId = req.user.id;  // Assuming you have user authentication
 
@@ -1251,7 +1374,7 @@ app.post('/api/add-to-cart', (req, res) => {
   });
 });
 
-app.put('/api/cart-items/:id', (req, res) => {
+app.put('/api/cart-items/:id',ensureAuthenticated, (req, res) => {
   const { item, date } = req.body;
   const userId = req.user.id;  // Assuming you have user authentication
   const itemId = req.params.id;  // The ID of the existing cart item to replace
@@ -1281,7 +1404,7 @@ app.put('/api/cart-items/:id', (req, res) => {
 });
 
 // Get cart items
-app.get('/api/cart-items', (req, res) => {
+app.get('/api/cart-items', ensureAuthenticated,(req, res) => {
   const userId = req.user.id;  // Assuming user authentication
 
   const query = `
@@ -1303,7 +1426,7 @@ app.get('/api/cart-items', (req, res) => {
 });
 
 // Route to get cart item count
-app.get('/api/cart-count', (req, res) => {
+app.get('/api/cart-count',ensureAuthenticated, (req, res) => {
   const userId = req.user.id;
 
   const query = `
@@ -1323,7 +1446,7 @@ app.get('/api/cart-count', (req, res) => {
 });
 
 // Remove item from cart
-app.delete('/api/remove-from-cart/:id', (req, res) => {
+app.delete('/api/remove-from-cart/:id', ensureAuthenticated,(req, res) => {
   const itemId = req.params.id;
   const userId = req.user.id; // Assuming you have user authentication in place
 
@@ -1428,7 +1551,7 @@ app.get('/get-useremail', (req, res) => {
   }
 });
 
-app.get("/user-profile", (req, res) => {
+app.get("/user-profile",ensureAuthenticated, (req, res) => {
   // Assuming user ID is stored in req.user after authentication
   const userId = req.user.id; // Adjust as necessary
 
@@ -1448,7 +1571,7 @@ app.get("/user-profile", (req, res) => {
   });
 });
 
-app.post("/change-password", async (req, res) => {
+app.post("/change-password",ensureAuthenticated, async (req, res) => {
   const { oldPassword, newPassword, confirmPassword } = req.body;
 
   // Validate input fields
@@ -1515,7 +1638,7 @@ app.post("/change-password", async (req, res) => {
   }
 });
 
-app.get('/notifications', (req, res) => {
+app.get('/notifications', ensureAuthenticated,(req, res) => {
   const userId = req.user.id; // Access the user ID from the request
 
   const query = `
@@ -1546,7 +1669,7 @@ app.get('/notifications', (req, res) => {
   });
 });
 
-app.post('/notifications', (req, res) => {
+app.post('/notifications',ensureAuthenticated, (req, res) => {
   const { title, message, dining_hall } = req.body;
 
   if (!title || !message || !dining_hall) {
@@ -1604,7 +1727,7 @@ app.post('/notifications', (req, res) => {
 });
 
 // Endpoint to mark a notification as read
-app.post('/notifications/:id/read', (req, res) => {
+app.post('/notifications/:id/read',ensureAuthenticated, (req, res) => {
   const notificationId = req.params.id;
   const userId = req.user.id;
 
@@ -1627,7 +1750,7 @@ app.post('/notifications/:id/read', (req, res) => {
 
 
 // route to fetch meal credits and recent transactions
-app.get('/api/meal-credits', async (req, res) => {
+app.get('/api/meal-credits',ensureAuthenticated, async (req, res) => {
   const userId = req.user.id; // Get user ID from session
   try {
     // Fetch user's meal credits
@@ -1646,7 +1769,7 @@ app.get('/api/meal-credits', async (req, res) => {
   }
 });
 
-app.post('/api/meal-credits/add', async (req, res) => {
+app.post('/api/meal-credits/add', ensureAuthenticated,async (req, res) => {
   const userId = req.user.id; // Get user ID from session
   const { amount } = req.body; // Amount to add
   try {
@@ -1658,7 +1781,7 @@ app.post('/api/meal-credits/add', async (req, res) => {
   }
 });
 
-app.post('/api/meal-credits/deduct', async (req, res) => {
+app.post('/api/meal-credits/deduct',ensureAuthenticated, async (req, res) => {
   const userId = req.user.id; // Get user ID from session
   const { amount } = req.body; // Amount to deduct
   try {
@@ -1671,9 +1794,11 @@ app.post('/api/meal-credits/deduct', async (req, res) => {
 });
 
 // Route to handle meal plan selection
-app.post("/selectPlan", (req, res) => {
-  const { selectedPlan } = req.body;
-  const user_id = req.user.id;
+
+app.post("/selectPlan", ensureAuthenticated, (req, res) => {
+  const userId = req.user.id; // Get the user ID from Passport.js session
+  const selectedPlan = req.body.plan; // Get the selected plan from the request body
+
 
   const query = `
     INSERT INTO meal_credits (user_id, plan_name, total_credits, used_credits)
@@ -1702,6 +1827,7 @@ app.get('/get-meal-plan', (req, res) => {
   if (req.isAuthenticated()) {
     const user_id = req.user.id;
 
+
     connection.query(
       "SELECT plan_name FROM meal_credits WHERE user_id = ?",
       [user_id],
@@ -1720,6 +1846,7 @@ app.get('/get-meal-plan', (req, res) => {
     res.status(401).json({ error: "User not authenticated" });
   }
 });
+
 // Removed the mark-as-read endpoint
 
 

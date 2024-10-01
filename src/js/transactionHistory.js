@@ -6,7 +6,14 @@ const diningHalls = {
 
 function fetchTransactions(period) {
     fetch('/api/transactions')
-        .then(response => response.json())
+    .then((response) => {
+        if (response.status === 401) {
+          // Redirect to login page if user is not authorized
+          window.location.href = "/login";
+          throw new Error("Unauthorized access. Redirecting to login...");
+        }
+        return response.json();
+      })
         .then(transactions => renderTransactions(transactions, period))
         .catch(error => console.error('Error fetching transactions:', error));
 }

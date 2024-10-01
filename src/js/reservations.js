@@ -32,7 +32,12 @@ document.addEventListener('DOMContentLoaded', function() {
                 method: 'DELETE',
             })
             .then(response => {
-                if (!response.ok) {
+                if (response.status === 401) {
+                    // Redirect to login page if user is not authorized
+                    window.location.href = "/login";
+                    throw new Error("Unauthorized access. Redirecting to login...");
+                  }
+                else if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }
                 return response.json();
@@ -71,7 +76,12 @@ function fetchReservations() {
   
     fetch(`/api/reservations?fromDate=${todayISO}&toDate=${next7DaysISO}`)
       .then(response => {
-        if (!response.ok) {
+        if (response.status === 401) {
+            // Redirect to login page if user is not authorized
+            window.location.href = "/login";
+            throw new Error("Unauthorized access. Redirecting to login...");
+          }
+        else if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
         return response.json();
@@ -144,20 +154,26 @@ function displayReservations(reservations) {
     }
 
     const groupedReservations = groupReservationsByDay(reservations);
+    
+    // Sort dates chronologically
+    const sortedDates = Object.keys(groupedReservations).sort((a, b) => 
+        new Date(a) - new Date(b)
+    );
 
-    for (const [date, dateReservations] of Object.entries(groupedReservations)) {
+    // Display reservations using sorted dates
+    sortedDates.forEach(date => {
         const groupElement = document.createElement('div');
         groupElement.className = 'reservation-group';
 
         groupElement.innerHTML = `<h2>${formatDate(date)}</h2>`;
 
-        dateReservations.forEach(reservation => {
+        groupedReservations[date].forEach(reservation => {
             const reservationElement = createReservationElement(reservation);
             groupElement.appendChild(reservationElement);
         });
 
         reservationsList.appendChild(groupElement);
-    }
+    });
 }
 
 function groupReservationsByDay(reservations) {
@@ -206,7 +222,12 @@ function viewReservationDetails(reservationId) {
 
     fetch(`/api/reservations/${reservationId}`)
         .then(response => {
-            if (!response.ok) {
+            if (response.status === 401) {
+                // Redirect to login page if user is not authorized
+                window.location.href = "/login";
+                throw new Error("Unauthorized access. Redirecting to login...");
+              }
+            else if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
             return response.json();
@@ -282,14 +303,20 @@ function deleteReservation(reservationId) {
             method: 'DELETE',
         })
         .then(response => {
-            if (!response.ok) {
+            if (response.status === 401) {
+                // Redirect to login page if user is not authorized
+                window.location.href = "/login";
+                throw new Error("Unauthorized access. Redirecting to login...");
+              }
+          else  if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
             return response.json();
         })
         .then(data => {
             console.log('Reservation cancelled:', data);
-            document.getElementById('reservation-modal').style.display = 'none';
+            //alert('Reservation cancelled successfully.');  
+            document.getElementById('reservation-modal').style.display = 'none'; // Hide modal
             fetchReservations(); // Refresh the reservations list
         })
         .catch(error => {
@@ -298,6 +325,7 @@ function deleteReservation(reservationId) {
         });
     }
 }
+
 
 
 function formatDate(dateString) {
