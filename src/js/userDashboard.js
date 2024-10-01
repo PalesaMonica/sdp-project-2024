@@ -52,4 +52,28 @@ function navigate(page) {
   alert(`Navigating to ${page} page`);
 }
 
+function logout() {
+  // Send a POST request to the /logout endpoint
+  fetch('/logout', {
+    method: 'POST',
+    credentials: 'same-origin', // Include cookies in the request
+    headers: {
+      'Content-Type': 'application/json',
+    }
+  })
+  .then(response => response.json())
+  .then(data => {
+    if (data.msg === "Logout successful") {
+      // Redirect the user to the login page
+      window.location.href = data.redirectUrl;
+    } else {
+      // Handle any errors or unsuccessful logout
+      alert("Logout failed. Please try again.");
+    }
+  })
+  .catch(error => {
+    console.error("Error during logout:", error);
+  });
+}
+
 module.exports = { navigate };

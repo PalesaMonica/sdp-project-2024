@@ -189,6 +189,7 @@ function ensureAuthenticated(req, res, next) {
   if (req.isAuthenticated()) {
       return next();
   }
+
   res.status(401).json({ message: 'Please log in to access this resource.' });
 }
 
@@ -511,7 +512,7 @@ app.get('/get-dietary_preference', (req, res) => {
 
 // Route to get all dining halls
 // Route to get all dining halls with one main image and additional images
-app.get('/dining-halls', async (req, res) => {
+app.get('/dining-halls',ensureAuthenticated, async (req, res) => {
   try {
     // Fetch all dining halls
     const [diningHalls] = await pool.query('SELECT * FROM dining_halls');
@@ -1795,10 +1796,9 @@ app.post('/api/meal-credits/deduct',ensureAuthenticated, async (req, res) => {
 
 // Route to handle meal plan selection
 
-app.post("/selectPlan", ensureAuthenticated, (req, res) => {
-  const userId = req.user.id; // Get the user ID from Passport.js session
-  const selectedPlan = req.body.plan; // Get the selected plan from the request body
-
+app.post("/selectPlan", (req, res) => {
+  const { selectedPlan } = req.body;
+  const user_id = req.user.id;
 
   const query = `
     INSERT INTO meal_credits (user_id, plan_name, total_credits, used_credits)
