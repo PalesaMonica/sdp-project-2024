@@ -159,9 +159,33 @@ app.get(
   "/auth/google/callback",
   passport.authenticate("google", { failureRedirect: "/" }),
   (req, res) => {
-    res.redirect("/userDashboard");
+    const user = req.user;
+
+    // Check if the student has selected a meal plan
+    connection.query(
+      "SELECT * FROM meal_credits WHERE user_id = ?",
+      [user.id],
+      (err, mealPlanResults) => {
+        if (err) {
+          console.error("Database query error:", err);
+          return res.redirect("/errorPage"); // Handle the error case
+        }
+
+        let redirectUrl;
+        if (mealPlanResults.length === 0) {
+          // No meal plan found, redirect to plan selection
+          redirectUrl = '/planSelection/index.html';
+        } else {
+          // Meal plan exists, redirect to the user dashboard
+          redirectUrl = '/userDashboard.html';
+        }
+
+        return res.redirect(redirectUrl);
+      }
+    );
   }
 );
+
 
 // Route to serve the signup page
 app.get("/signup", (req, res) => {
@@ -312,9 +336,54 @@ app.post("/login", (req, res) => {
               .json({ msg: "Server Error: Unable to log in" });
           }
 
-          // Check the role of the user and redirect accordingly
-          const redirectUrl = user.role === 'staff' ? '/meal-management.html' : '/userDashboard.html';
-          return res.status(200).json({ msg: "Login successful, redirecting...", redirectUrl });
+          // Now we handle meal plan redirection logic for student users
+          if (user.role === 'student') {
+            connection.query(
+              "SELECT * FROM meal_credits WHERE user_id = ?",
+              [user.id],
+              (err, mealPlanResults) => {
+                if (err) {
+                  console.error("Database query error:", err);
+                  return res.status(500).json({ msg: "Server Error: Meal plan query failed" });
+                }
+
+                //console.log("Meal plan results:", mealPlanResults);
+
+                let redirectUrl;
+                if (mealPlanResults.length === 0) {
+                  // No meal plan found, redirect to plan selection
+                  redirectUrl = '/planSelection/index.html';
+                } else {
+                  // Meal plan exists, redirect to the user dashboard
+                  redirectUrl = '/userDashboard.html';
+                }
+
+                // Save session and redirect
+                req.session.save((err) => {
+                  if (err) {
+                    console.error("Session save error:", err);
+                    return res.status(500).json({ msg: "Server Error: Could not save session" });
+                  }
+
+                  // Session saved successfully, proceed with the redirect
+                  return res.status(200).json({ msg: "Login successful, redirecting...", redirectUrl });
+                });
+              }
+            );
+          } else {
+            // If the user is not a student, redirect to staff dashboard
+            const redirectUrl = '/meal-management.html';
+
+            // Save session and redirect for non-student users
+            req.session.save((err) => {
+              if (err) {
+                console.error("Session save error:", err);
+                return res.status(500).json({ msg: "Server Error: Could not save session" });
+              }
+
+              return res.status(200).json({ msg: "Login successful, redirecting...", redirectUrl });
+            });
+          }
         });
       }
     );
@@ -1603,44 +1672,54 @@ app.post('/api/meal-credits/deduct', async (req, res) => {
 
 // Route to handle meal plan selection
 app.post("/selectPlan", (req, res) => {
-   //Check if the user is authenticated
-  if (!req.isAuthenticated()) {
-    return res.status(401).json({ msg: "Unauthorized: Please log in." });
-  }
+  const { selectedPlan } = req.body;
+  const user_id = req.user.id;
 
-  const userId = req.user.id; // Get the user ID from the session
-  const selectedPlan = req.body.plan; // Get the selected plan from the request body
+  const query = `
+    INSERT INTO meal_credits (user_id, plan_name, total_credits, used_credits)
+    VALUES (?, ?, ?, 0)
+    ON DUPLICATE KEY UPDATE plan_name = VALUES(plan_name), total_credits = VALUES(total_credits)
+  `;
 
-  let planName;
-  let totalCredits;
-
-  // Determine plan details based on the selected plan
+  // Define the credits based on the selected plan
+  let total_credits = 0;
   if (selectedPlan === 'thrice-daily') {
-    planName = 'Thrice-Daily Plan';
-    totalCredits = 35000; // 3 meals per day for 365 days
+    total_credits = 35000;
   } else if (selectedPlan === 'twice-daily') {
-    planName = 'Twice-Daily Plan';
-    totalCredits = 25000; // 2 meals per day for 365 days
-  } else {
-    return res.status(400).json({ msg: "Invalid meal plan selected." });
+    total_credits = 25000;
   }
 
-  // Insert or update meal credits for the user
-  connection.query(
-    "INSERT INTO meal_credits (user_id, plan_name, total_credits, used_credits) VALUES (?, ?, ?, 0) ON DUPLICATE KEY UPDATE plan_name = ?, total_credits = ?, used_credits = 0",
-    [userId, planName, totalCredits, planName, totalCredits],
-    (err, result) => {
-      if (err) {
-        console.error("Database error:", err);
-        return res.status(500).json({ msg: "Server Error: Unable to update meal credits." });
-      }
-
-      return res.status(200).json({ msg: "Meal plan selected successfully.", plan: planName });
+  connection.query(query, [user_id, selectedPlan, total_credits, total_credits], (err, result) => {
+    if (err) {
+      console.error('Database error:', err);
+      return res.status(500).json({ msg: 'Error saving meal plan' });
     }
-  );
+    res.status(200).json({ msg: 'Meal plan saved or updated' });
+  });
 });
 
+app.get('/get-meal-plan', (req, res) => {
+  if (req.isAuthenticated()) {
+    const user_id = req.user.id;
 
+    connection.query(
+      "SELECT plan_name FROM meal_credits WHERE user_id = ?",
+      [user_id],
+      (err, result) => {
+        if (err) {
+          return res.status(500).json({ msg: 'Error retrieving meal plan' });
+        }
+        if (result.length > 0) {
+          res.status(200).json({ plan_name: result[0].plan_name });
+        } else {
+          res.status(404).json({ msg: 'No meal plan found' });
+        }
+      }
+    );
+  } else {
+    res.status(401).json({ error: "User not authenticated" });
+  }
+});
 // Removed the mark-as-read endpoint
 
 
