@@ -5,8 +5,6 @@ const fs = require("fs");
 const jwt = require('jsonwebtoken');
 const bodyParser = require("body-parser");
 const session = require("express-session");
-const Reservation = require("./src/reservation/reservation");
-const pool = require("./src/reservation/db-connection");
 const passport = require("passport");
 const cors = require('cors');
 const bcrypt = require("bcryptjs"); // For password hashing
@@ -139,6 +137,24 @@ passport.deserializeUser((user, done) => {
   done(null, user);
 });
 
+const publicPath = path.join(__dirname, 'public');
+
+// Middleware to remove .html extension
+app.use((req, res, next) => {
+  if (req.path.indexOf('.') === -1) {
+    const file = `${publicPath}${req.path}.html`;
+    fs.access(file, fs.constants.F_OK, (err) => {
+      if (!err) {
+        res.sendFile(file);
+      } else {
+        next();
+      }
+    });
+  } else {
+    next();
+  }
+});
+
 // Serve static files from the "public" directory
 app.use(express.static(path.join(__dirname, "public")));
 
@@ -174,10 +190,10 @@ app.get(
         let redirectUrl;
         if (mealPlanResults.length === 0) {
           // No meal plan found, redirect to plan selection
-          redirectUrl = '/planSelection/index.html';
+          redirectUrl = '/planSelection/index';
         } else {
           // Meal plan exists, redirect to the user dashboard
-          redirectUrl = '/userDashboard.html';
+          redirectUrl = '/userDashboard';
         }
 
         return res.redirect(redirectUrl);
@@ -185,6 +201,7 @@ app.get(
     );
   }
 );
+
 function ensureAuthenticated(req, res, next) {
   if (req.isAuthenticated()) {
       return next();
@@ -192,7 +209,6 @@ function ensureAuthenticated(req, res, next) {
 
   res.status(401).json({ message: 'Please log in to access this resource.' });
 }
-
 
 // Route to serve the signup page
 app.get("/signup", (req, res) => {
@@ -241,7 +257,7 @@ app.post("/signup", async (req, res) => {
                 .json({ msg: "Server Error: Unable to insert user" });
             }
 
-            const redirectUrl = '/login.html';
+            const redirectUrl = '/login';
             return res
               .status(200)
               .json({ msg: "Signup successful, redirecting...", redirectUrl });
@@ -293,7 +309,7 @@ app.post("/staffSignup", async (req, res) => {
             }
 
             // On successful signup, redirect the user to the login page
-            const redirectUrl = '/login.html';
+            const redirectUrl = '/login';
             return res
               .status(200)
               .json({ msg: "Signup successful, redirecting...", redirectUrl });
@@ -362,10 +378,10 @@ app.post("/login", (req, res) => {
                 let redirectUrl;
                 if (mealPlanResults.length === 0) {
                   // No meal plan found, redirect to plan selection
-                  redirectUrl = '/planSelection/index.html';
+                  redirectUrl = '/planSelection/index';
                 } else {
                   // Meal plan exists, redirect to the user dashboard
-                  redirectUrl = '/userDashboard.html';
+                  redirectUrl = '/userDashboard';
                 }
 
                 // Save session and redirect
@@ -382,7 +398,7 @@ app.post("/login", (req, res) => {
             );
           } else {
             // If the user is not a student, redirect to staff dashboard
-            const redirectUrl = '/meal-management.html';
+            const redirectUrl = '/meal-management';
 
             // Save session and redirect for non-student users
             req.session.save((err) => {
@@ -406,8 +422,6 @@ app.post("/login", (req, res) => {
     });
   }
 });
-
-// app.use(authenticateUser);
 
 app.get("/userDashboard",ensureAuthenticated, (req, res) => {
   if (req.isAuthenticated()) {
@@ -439,10 +453,14 @@ app.get("/userDashboard",ensureAuthenticated, (req, res) => {
 });
 
 app.post("/logout", (req, res) => {
-  // Clear the JWT cookie
-  res.clearCookie('token');
-  // Redirect the user to the login page
-  res.status(200).json({ msg: "Logout successful", redirectUrl: '/login' });
+  req.logout(function(err) {
+    if (err) {
+      return res.status(500).json({ message: 'Error logging out' });
+    }
+    req.session.destroy(() => {
+      res.status(200).json({ message: 'Logout successful', redirectUrl: '/login' });
+    });
+  });
 });
 
 app.post('/saveDietPreference',ensureAuthenticated, (req, res) => {
@@ -623,36 +641,6 @@ app.post('/api/reservations',ensureAuthenticated, async (req, res) => {
   }
 });
 
-app.get('/api/meal-prices', ensureAuthenticated,async (req, res) => {
-  try {
-      const prices = await Reservation.getMealPrices();
-      res.json(prices);
-  } catch (err) {
-      res.status(500).json({
-          error: 'Failed to fetch meal prices',
-          message: err.message,
-          stack: err.stack
-      });
-  }
-});
-app.post('/api/update-price', ensureAuthenticated,async (req, res) => {
-  const { id, price } = req.body;
-  if (typeof id !== 'number' || typeof price !== 'number') {
-      return res.status(400).json({ error: 'Invalid input' });
-  }
-
-  try {
-      await Reservation.updateMealPrice(id, price);
-      res.status(200).json({ message: 'Price updated successfully' });
-  } catch (err) {
-      res.status(500).json({
-          error: 'Failed to update meal price',
-          message: err.message,
-          stack: err.stack
-      });
-  }
-});
-
 // Route to get all reservations for user
 app.get('/api/reservations', ensureAuthenticated,(req, res) => {
   const userId = req.user.id;
@@ -819,7 +807,7 @@ app.post('/api/confirm-reservation',ensureAuthenticated, (req, res) => {
                                           return res.status(500).json({ error: 'Failed to clear cart' });
                                       }
 
-                                      res.status(201).json({ message: 'Reservation confirmed and cart cleared', redirectUrl: `/reservations.html?id=${result.insertId}` });
+                                      res.status(201).json({ message: 'Reservation confirmed and cart cleared', redirectUrl: `/reservations?id=${result.insertId}` });
                                   });
                               });
                           }
@@ -1749,50 +1737,6 @@ app.post('/notifications/:id/read',ensureAuthenticated, (req, res) => {
   });
 });
 
-
-// route to fetch meal credits and recent transactions
-app.get('/api/meal-credits',ensureAuthenticated, async (req, res) => {
-  const userId = req.user.id; // Get user ID from session
-  try {
-    // Fetch user's meal credits
-    const availableCredits = await Reservation.getUserCredits(userId);
-
-    // Fetch recent transactions (add this method in your Reservation.js)
-    const transactions = await Reservation.getRecentTransactions(userId); // Function to fetch recent transactions
-
-    res.status(200).json({
-      remaining_credits: availableCredits,
-      transactions: transactions
-    });
-  } catch (error) {
-    console.error('Error fetching meal credits:', error);
-    res.status(500).json({ message: 'Error fetching meal credits', error: error.message });
-  }
-});
-
-app.post('/api/meal-credits/add', ensureAuthenticated,async (req, res) => {
-  const userId = req.user.id; // Get user ID from session
-  const { amount } = req.body; // Amount to add
-  try {
-    await Reservation.addCredits(userId, amount); // Function to add meal credits
-    res.status(200).json({ message: 'Meal credits added successfully' });
-  } catch (error) {
-    console.error('Error adding meal credits:', error);
-    res.status(500).json({ message: 'Error adding meal credits', error: error.message });
-  }
-});
-
-app.post('/api/meal-credits/deduct',ensureAuthenticated, async (req, res) => {
-  const userId = req.user.id; // Get user ID from session
-  const { amount } = req.body; // Amount to deduct
-  try {
-    await Reservation.deductCredits(userId, amount); // Deduct meal credits
-    res.status(200).json({ message: 'Meal credits deducted successfully' });
-  } catch (error) {
-    console.error('Error deducting meal credits:', error);
-    res.status(500).json({ message: 'Error deducting meal credits', error: error.message });
-  }
-});
 
 // Route to handle meal plan selection
 
