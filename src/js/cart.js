@@ -180,7 +180,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     if (data && data.message) {
                         showToast('Reservation confirmed successfully!');
                         setTimeout(() => {
-                            window.location.href = '/reservations';
+                            window.location.href = '/reservations.html';
                         }, 1500); // Redirect after 1.5 seconds so the user can see the toast
                     }
                 })

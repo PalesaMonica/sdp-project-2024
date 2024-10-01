@@ -26,6 +26,7 @@
     "fs": "^0.0.1-security",
     "http": "^0.0.1-security",
     "jsonwebtoken": "^9.0.2",
+    "module": "^1.2.5",
     "mysql": "^2.18.1",
     "mysql2": "^3.11.3",
     "node-fetch": "^2.7.0",

@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Campus Crave</title>
+    <link rel="stylesheet" href="css/JubileeDH.css" />
+  </head>
+  <body>
+    <div class="everything">
+      <button
+        class="back-button"
+        onclick="window.location.href='diningHalls.html'"
+      >
+        Back
+      </button>
+
+      <header class="main-header">
+        <div class="logo">
+          <img src="images/option-21.svg" alt="CampusCrave" />
+          <h1>Campus<span class="highlight">Crave</span></h1>
+        </div>
+      </header>
+      <div class="text" id="dining-hall-name">
+        <h2>Jubilee <span style="color: #e55d3b">Dining Hall</span></h2>
+      </div>
+      <div class="container">
+        <img
+          id="main-image"
+          class="image1"
+          src=""
+          alt="Dining Hall Main Image"
+        />
+
+        <div class="image-container" id="additional-images">
+          <!-- Additional images will be dynamically inserted here -->
+        </div>
+        <div class="quote" id="quote">
+          <!-- Quote or description will be dynamically inserted here -->
+        </div>
+        <div class="button-container">
+          <div id="reserve-button" class="reserve">
+            <span>Reserve</span>
+          </div>
+          <div id="directions-button" class="directions">
+            <span>Directions</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      function loadDiningHall(id) {
+        fetch(`/dining-halls/${id}`)
+        .then((response) => {
+            if (response.status === 401) {
+              // Redirect to login page if user is not authorized
+              window.location.href = "/login";
+              throw new Error("Unauthorized access. Redirecting to login...");
+            }
+            return response.json();
+          })
+          .then((data) => {
+            const diningHallName = data.diningHall.name;
+            const images = data.images; // Array of image URLs
+
+            // Ensure there are images available
+            if (images.length === 0) {
+              console.error("No images available for this dining hall.");
+              return;
+            }
+
+            // Set the main image as the first one
+            const mainImage = images[0];
+            document.getElementById("main-image").src = mainImage;
+            document.getElementById(
+              "main-image"
+            ).alt = `${diningHallName} Main Image`;
+
+            // Remove the main image from the array of additional images
+            const additionalImages = images.slice(1);
+
+            // Add the additional images (excluding the main image)
+            const additionalImagesContainer =
+              document.getElementById("additional-images");
+            additionalImagesContainer.innerHTML = additionalImages
+              .map(
+                (url) =>
+                  `<img src="${url}" alt="Additional Image" class="additional-image" />`
+              )
+              .join("");
+
+            // Example quote (you can customize or fetch dynamically)
+            document.getElementById("quote").innerText =
+              "“A serene and modern dining experience”";
+
+            // Add event listeners for buttons
+            document
+              .getElementById("reserve-button")
+              .addEventListener("click", () => {
+                window.location.href = "reservationform.html";
+              });
+
+            document
+              .getElementById("directions-button")
+              .addEventListener("click", () => {
+                window.location.href = `/directions?diningHallId=${id}`;
+              });
+          })
+          .catch((error) => console.error("Error:", error));
+      }
+
+      // Example usage: load dining hall with ID 1
+      loadDiningHall(3);
+    </script>
+  </body>
+</html>

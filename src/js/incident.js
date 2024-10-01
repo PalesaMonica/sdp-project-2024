@@ -52,5 +52,5 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
 function goBack() {
-    window.location.href = '../../userDashboard'; // Replace with the actual page you want to go back to
+    window.location.href = '../../userDashboard.html'; // Replace with the actual page you want to go back to
 }

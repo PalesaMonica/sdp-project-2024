@@ -52,5 +52,5 @@ function autoRefreshPage() {
 }
 
 function goBack() {
-    window.location.href = '../../meal-management'; // Replace with the actual page you want to go back to
+    window.location.href = '../../meal-management.html'; // Replace with the actual page you want to go back to
 }

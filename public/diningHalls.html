@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Campus Crave</title>
+    <link rel="stylesheet" href="css/diningHalls.css" />
+  </head>
+  <body>
+    <button class="back-button" onclick="window.location.href='userDashboard.html'">
+      Back
+    </button>
+
+    <header class="main-header">
+      <div class="logo">
+        <img src="images/option-21.svg" alt="CampusCrave" onclick="window.location.href='userDashboard.html'" />
+        <span class="logo-text" onclick="window.location.href='userDashboard.html'" >Campus<span class="crave" onclick="window.location.href='userDashboard.html'">Crave</span></span>
+      </div>
+    </header>
+
+    <section class="intro-section">
+      <h2>Reserve your meal!</h2>
+      <p class="subheader">Available Dining Halls</p>
+    </section>
+
+    <div class="image-container" id="dining-halls-container">
+      <!-- Images and dining hall names will be dynamically inserted here -->
+    </div>
+
+    <script>
+      // Fetch dining halls data from the backend
+      fetch('/dining-halls')
+      .then((response) => {
+            if (response.status === 401) {
+              // Redirect to login page if user is not authorized
+              window.location.href = "/login";
+              throw new Error("Unauthorized access. Redirecting to login...");
+            }
+            return response.json();
+          })
+        .then(data => {
+          const container = document.getElementById('dining-halls-container');
+          data.forEach(hall => {
+            // Create a new div element to hold the image and name
+            const hallDiv = document.createElement('div');
+            hallDiv.className = 'dining-hall';
+
+            // Create a new image element for each dining hall
+            const img = document.createElement('img');
+            img.src = hall.image_url; // Use the image URL from the database
+            img.alt = hall.name; // Dining hall name as alt text
+            img.onclick = () => window.location.href = `reservations.html?diningHallId=${hall.id}&diningHallName=${encodeURIComponent(hall.name)}`;
+
+            // Create a new p element for the dining hall name
+            const name = document.createElement('p');
+            name.textContent = hall.name; // Set the dining hall name
+
+            // Append the image and name to the div
+            hallDiv.appendChild(img);
+            hallDiv.appendChild(name);
+
+            // Append the div to the container
+            container.appendChild(hallDiv);
+          });
+        })
+        .catch(error => {
+          console.error('Error fetching dining halls:', error);
+        });
+    </script>
+  </body>
+</html>
