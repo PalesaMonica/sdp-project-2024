@@ -9,7 +9,7 @@ function selectPlan(plan) {
       if (data.msg) {
         document.getElementById('message').textContent = data.msg;
         setTimeout(() => {
-          window.location.href = 'userDashboard.html';  // Redirect after confirming
+          window.location.href = '/userDashboard.html';  // Redirect after confirming
         }, 2000);
       }
     })

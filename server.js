@@ -130,14 +130,18 @@ passport.use(
 );
 
 // Serialize user information into the session
-passport.serializeUser((user, done) => {
-  done(null, user);
+passport.serializeUser(function(user, done) {
+  done(null, user.id); // Store user ID in session
 });
 
-// Deserialize user information from the session
-passport.deserializeUser((user, done) => {
-  done(null, user);
+// Deserialize user information into the session
+passport.deserializeUser(function(id, done) {
+  connection.query('SELECT * FROM users WHERE id = ?', [id], function(err, results) {
+    if (err) return done(err);
+    done(null, results[0]); // Retrieve full user object from DB using ID
+  });
 });
+
 
 // Serve static files from the "public" directory
 app.use(express.static(path.join(__dirname, "public")));
@@ -185,6 +189,33 @@ app.get(
     );
   }
 );
+
+const LocalStrategy = require('passport-local').Strategy;
+
+passport.use(new LocalStrategy(
+  { usernameField: 'email', passwordField: 'password' }, 
+  function(email, password, done) {
+    connection.query('SELECT * FROM users WHERE email = ?', [email], (err, results) => {
+      if (err) { return done(err); }
+      if (results.length === 0) { 
+        return done(null, false, { message: 'Incorrect email.' }); 
+      }
+
+      const user = results[0];
+
+      bcrypt.compare(password, user.password, function(err, isMatch) {
+        if (err) return done(err);
+        if (isMatch) {
+          return done(null, user); // Password matches, log in user
+        } else {
+          return done(null, false, { message: 'Incorrect password.' });
+        }
+      });
+    });
+  }
+));
+
+
 function ensureAuthenticated(req, res, next) {
   if (req.isAuthenticated()) {
       return next();
@@ -309,101 +340,49 @@ app.post("/staffSignup", async (req, res) => {
 });
 
 // Handle the login form submission
-app.post("/login", (req, res) => {
-  const { email, password } = req.body;
+app.post('/login', (req, res, next) => {
+  passport.authenticate('local', (err, user, info) => {
+    if (err) {
+      return res.status(500).json({ msg: 'Server Error: Authentication failed' });
+    }
+    if (!user) {
+      // console.log('Info:', info);
+      return res.status(400).json({ msg: 'Invalid email or password' });
+    }
 
-  try {
-    connection.query(
-      "SELECT * FROM users WHERE email = ?",
-      [email],
-      async (err, results) => {
-        if (err) {
-          console.error("Database query error:", err);
-          return res
-            .status(500)
-            .json({ msg: "Server Error: Database query failed" });
-        }
+    // Log the user in and establish session
+    req.logIn(user, (err) => {
+      if (err) {
+        return res.status(500).json({ msg: 'Server Error: Could not log in user' });
+      }
 
-        if (results.length === 0) {
-          return res.status(400).json({ msg: "Invalid email or password" });
-        }
-
-        const user = results[0];
-        const isMatch = await bcrypt.compare(password, user.password);
-        if (!isMatch) {
-          return res.status(400).json({ msg: "Invalid email or password" });
-        }
-
-        // Check if the user has a meal plan
-        connection.query(
-          "SELECT * FROM meal_credits WHERE user_id = ?",
-          [user.id],
-          (err, mealPlanResults) => {
+      // Now handle redirection based on the user's role
+      const redirectAfterLogin = () => {
+        // If user is a student
+        if (user.role === 'student') {
+          connection.query('SELECT * FROM meal_credits WHERE user_id = ?', [user.id], (err, mealPlanResults) => {
             if (err) {
-              console.error("Database query error:", err);
-              return res.status(500).json({ msg: "Server Error: Meal plan query failed" });
+              return res.status(500).json({ msg: 'Server Error: Meal plan query failed' });
             }
 
+            const redirectUrl = mealPlanResults.length === 0 ? '/planSelection/index.html' : '/userDashboard.html';
+            return res.status(200).json({ msg: 'Login successful, redirecting...', redirectUrl });
+          });
+        } else {
+          // Non-student users
+          return res.status(200).json({ msg: 'Login successful, redirecting...', redirectUrl: '/meal-management.html' });
+        }
+      };
 
-          // Now we handle meal plan redirection logic for student users
-          if (user.role === 'student') {
-            connection.query(
-              "SELECT * FROM meal_credits WHERE user_id = ?",
-              [user.id],
-              (err, mealPlanResults) => {
-                if (err) {
-                  console.error("Database query error:", err);
-                  return res.status(500).json({ msg: "Server Error: Meal plan query failed" });
-                }
-
-                //console.log("Meal plan results:", mealPlanResults);
-
-                let redirectUrl;
-                if (mealPlanResults.length === 0) {
-                  // No meal plan found, redirect to plan selection
-                  redirectUrl = '/planSelection/index.html';
-                } else {
-                  // Meal plan exists, redirect to the user dashboard
-                  redirectUrl = '/userDashboard.html';
-                }
-
-                // Save session and redirect
-                req.session.save((err) => {
-                  if (err) {
-                    console.error("Session save error:", err);
-                    return res.status(500).json({ msg: "Server Error: Could not save session" });
-                  }
-
-                  // Session saved successfully, proceed with the redirect
-                  return res.status(200).json({ msg: "Login successful, redirecting...", redirectUrl });
-                });
-              }
-            );
-          } else {
-            // If the user is not a student, redirect to staff dashboard
-            const redirectUrl = '/meal-management.html';
-
-            // Save session and redirect for non-student users
-            req.session.save((err) => {
-              if (err) {
-                console.error("Session save error:", err);
-                return res.status(500).json({ msg: "Server Error: Could not save session" });
-
-              }
-
-              return res.status(200).json({ msg: "Login successful, redirecting...", redirectUrl });
-            });
-          }
-        });
-
-      }
-    );
-  } catch (err) {
-    console.error("Unexpected error:", err);
-    res.status(500).json({
-      msg: `Server Error: Unexpected error occurred - ${err.message}`,
+      // Save the session and redirect after
+      req.session.save((err) => {
+        if (err) {
+          return res.status(500).json({ msg: 'Server Error: Could not save session' });
+        }
+        redirectAfterLogin();
+      });
     });
-  }
+  })(req, res, next);
 });
 
 // app.use(authenticateUser);
@@ -438,10 +417,14 @@ app.get("/userDashboard",ensureAuthenticated, (req, res) => {
 });
 
 app.post("/logout", (req, res) => {
-  // Clear the JWT cookie
-  res.clearCookie('token');
-  // Redirect the user to the login page
-  res.status(200).json({ msg: "Logout successful", redirectUrl: '/login' });
+  req.logout(function(err) {
+    if (err) {
+      return res.status(500).json({ message: 'Error logging out' });
+    }
+    req.session.destroy(() => {
+      res.status(200).json({ message: 'Logout successful', redirectUrl: '/login' });
+    });
+  });
 });
 
 app.post('/saveDietPreference',ensureAuthenticated, (req, res) => {
@@ -1795,10 +1778,14 @@ app.post('/api/meal-credits/deduct',ensureAuthenticated, async (req, res) => {
 
 // Route to handle meal plan selection
 
-app.post("/selectPlan", ensureAuthenticated, (req, res) => {
-  const userId = req.user.id; // Get the user ID from Passport.js session
-  const selectedPlan = req.body.plan; // Get the selected plan from the request body
-
+app.post("/selectPlan", (req, res) => {
+  if (!req.isAuthenticated()) {
+    return res.status(401).json({ msg: 'Unauthorized' }); // Ensure user is authenticated
+  }
+  
+  const { selectedPlan } = req.body;
+  const user_id = req.user.id;
+  console.log(user_id, selectedPlan);
 
   const query = `
     INSERT INTO meal_credits (user_id, plan_name, total_credits, used_credits)
@@ -1806,7 +1793,6 @@ app.post("/selectPlan", ensureAuthenticated, (req, res) => {
     ON DUPLICATE KEY UPDATE plan_name = VALUES(plan_name), total_credits = VALUES(total_credits)
   `;
 
-  // Define the credits based on the selected plan
   let total_credits = 0;
   if (selectedPlan === 'thrice-daily') {
     total_credits = 35000;
@@ -1824,27 +1810,27 @@ app.post("/selectPlan", ensureAuthenticated, (req, res) => {
 });
 
 app.get('/get-meal-plan', (req, res) => {
-  if (req.isAuthenticated()) {
-    const user_id = req.user.id;
-
-
-    connection.query(
-      "SELECT plan_name FROM meal_credits WHERE user_id = ?",
-      [user_id],
-      (err, result) => {
-        if (err) {
-          return res.status(500).json({ msg: 'Error retrieving meal plan' });
-        }
-        if (result.length > 0) {
-          res.status(200).json({ plan_name: result[0].plan_name });
-        } else {
-          res.status(404).json({ msg: 'No meal plan found' });
-        }
-      }
-    );
-  } else {
-    res.status(401).json({ error: "User not authenticated" });
+  if (!req.isAuthenticated()) {
+    return res.status(401).json({ error: 'User not authenticated' });
   }
+
+  const user_id = req.user.id;
+  console.log('Authenticated user ID:', user_id);  // Add this logging to check user
+
+  connection.query(
+    "SELECT plan_name FROM meal_credits WHERE user_id = ?",
+    [user_id],
+    (err, result) => {
+      if (err) {
+        return res.status(500).json({ msg: 'Error retrieving meal plan' });
+      }
+      if (result.length > 0) {
+        res.status(200).json({ plan_name: result[0].plan_name });
+      } else {
+        res.status(404).json({ msg: 'No meal plan found' });
+      }
+    }
+  );
 });
 
 // Removed the mark-as-read endpoint
