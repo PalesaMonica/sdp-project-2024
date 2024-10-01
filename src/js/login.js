@@ -26,5 +26,5 @@ async function handleLogin(event) {
     }
   }
   
- // module.exports = { handleLogin };
+module.exports = { handleLogin };
   
