@@ -5,13 +5,28 @@ let notifications = [];
 const socket = io(); // Assumes Socket.IO client is included in the HTML
 
 // Function to fetch existing admin notifications from the server
+let userCreatedAt; // Store user's account creation date
+
+// Function to fetch the user's account creation date
+function fetchUserCreatedAt() {
+    return fetch('/user/account') // Assuming this endpoint returns user details
+        .then(response => response.json())
+        .then(user => {
+            userCreatedAt = new Date(user.created_at); // Save the user's creation date
+            return userCreatedAt;
+        })
+        .catch(error => {
+            console.error('Error fetching user account creation date:', error);
+        });
+}
+
+// Function to fetch existing admin notifications from the server
 function fetchAdminNotifications() {
     return fetch('/notifications', {
         method: 'GET',
     })
     .then(response => {
         if (response.status === 401) {
-            // Redirect the user to the login page
             window.location.href = '/login';
         } else {
             return response.json();
@@ -19,22 +34,25 @@ function fetchAdminNotifications() {
     })
     .then(data => {
         console.log("Fetched admin notifications:", data);
-        // Correctly map the unread status based on `is_read` value from the server
-        return data.map(notification => ({
-            id: notification.id,
-            type: 'admin',
-            title: notification.title,
-            content: notification.message,
-            unread: notification.is_read === 0 || notification.is_read === false, // Correctly mark as unread if is_read is false or 0
-            timestamp: new Date(notification.created_at).toLocaleString(),
-            icon: '../images/info.png' // Ensure correct relative path for admin icon
-        }));
+        // Filter notifications that are after the user's account creation date
+        return data
+            .filter(notification => new Date(notification.created_at) > userCreatedAt)
+            .map(notification => ({
+                id: notification.id,
+                type: 'admin',
+                title: notification.title,
+                content: notification.message,
+                unread: notification.is_read === 0 || notification.is_read === false,
+                timestamp: new Date(notification.created_at).toLocaleString(),
+                icon: '../images/info.png'
+            }));
     })
     .catch(error => {
         console.error('Error fetching admin notifications:', error);
         return []; // Return an empty array if fetch fails
     });
 }
+
 
 function loadReadStates() {
     const readStates = JSON.parse(localStorage.getItem('readStates')) || {};
@@ -142,40 +160,34 @@ function goBack() {
 
 // Initialize the notifications on page load
 window.onload = () => {
-    fetchAdminNotifications() // Fetch admin notifications only
-    .then(adminNotifications => {
-        notifications = [...adminNotifications];
+    fetchUserCreatedAt() // First, fetch the user's account creation date
+    .then(() => {
+        fetchAdminNotifications() // Then, fetch admin notifications only
+        .then(adminNotifications => {
+            notifications = [...adminNotifications];
 
-        loadReadStates(); // Load read states from local storage
-        displayNotifications();
-        updateUnreadCount();
+            loadReadStates(); // Load read states from local storage
+            displayNotifications();
+            updateUnreadCount();
+        });
     });
 
-    // Listen for new notifications in real-time
+    // Real-time notifications (assuming they come after the user's account creation)
     socket.on('newNotification', (newNotification) => {
-        console.log('Received new notification:', newNotification);
-        notifications.push({
-            id: newNotification.id,
-            type: 'admin',
-            title: newNotification.title,
-            content: newNotification.message,
-            unread: true, // New notifications are unread
-            timestamp: new Date(newNotification.created_at).toLocaleString(),
-            icon: '../images/info.png'
-        });
-
-        displayNotifications();
-        updateUnreadCount();
-    });
-
-    // Add event listener to reset count when notification bar is clicked
-    const notificationBar = document.getElementById('notification-link');
-    if (notificationBar) {
-        notificationBar.addEventListener('click', () => {
-            notifications.forEach(notification => {
-                notification.unread = false; // Reset unread status
+        if (new Date(newNotification.created_at) > userCreatedAt) {
+            console.log('Received new notification:', newNotification);
+            notifications.push({
+                id: newNotification.id,
+                type: 'admin',
+                title: newNotification.title,
+                content: newNotification.message,
+                unread: true,
+                timestamp: new Date(newNotification.created_at).toLocaleString(),
+                icon: '../images/info.png'
             });
-            updateUnreadCount(); // Update the count in the notification bar
-        });
-    }
+
+            displayNotifications();
+            updateUnreadCount();
+        }
+    });
 };

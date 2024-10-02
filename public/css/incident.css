@@ -1,5 +1,4 @@
- /* General styling for the container */
- body, html {
+body, html {
     margin: 0;
     padding: 0;
     height: 100%;
@@ -12,6 +11,24 @@
     justify-content: center;
     align-items: center;
     height: 100vh;
+    padding: 20px; /* Adds some padding around the edges of the page */
+}
+
+/* Ensure the form inside .header2 is centered */
+.header2 {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh; /* Makes it take the full height of the viewport */
+    width: 100%;
+    max-width: 400px;
+    padding: 20px;
+    background: #1A2238;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    margin: 0 auto;
+    flex-direction: column; /* Centers content vertically */
+    text-align: center; /* Centers text and form elements */
 }
 
 .form {
@@ -21,6 +38,8 @@
     background: #1A2238;
     border-radius: 10px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    text-align: center; /* Centering form elements */
+    margin: 0 auto; /* Center horizontally if needed */
 }
 
 /* Heading for the notification form */
@@ -29,12 +48,12 @@
     font-size: 24px;
     font-weight: 400;
     margin-bottom: 20px;
-    text-align: center;
 }
 
 /* Input container styling */
 .input-container {
     margin-bottom: 20px;
+    text-align: left; /* Aligns labels and inputs properly */
 }
 
 .label {
@@ -42,16 +61,6 @@
     font-size: 24px;
     font-weight: 400;
     margin-bottom: 10px;
-}
-
-/* Input field styling */
-.input-field, .select-field {
-    width: 100%;
-    height: 39px;
-    padding: 5px;
-    border-radius: 10px;
-    border: none;
-    background: #F6F9FF;
 }
 
 .textarea-field {
@@ -63,9 +72,19 @@
     background: #F6F9FF;
 }
 
+/* Input field styling */
+.input-field, .select-field {
+    width: 100%; /* Full width input fields */
+    height: 39px;
+    padding: 5px;
+    border-radius: 10px;
+    border: none;
+    background: #F6F9FF;
+}
+
 /* Send button styling */
 .send-btn {
-    width: 50%;
+    width: 100%; /* Full width button */
     height: 37px;
     background: #FF6A3D;
     border-radius: 5px;
@@ -94,9 +113,30 @@
     position: sticky; /* Makes the header stick at the top */
     top: 0; /* Keeps the header at the top */
     z-index: 100; /* Ensures the header stays above other content */
-    background-color: #1A2238; /* Keeps the background intact */
+    background-color: var(--background-color); /* Keeps the background intact */
     padding: 10px; /* Padding around the header */
     margin-bottom: 20px; /* Space below the header */
+  }
+.logo {
+    display: flex; /* This ensures the image and text are aligned horizontally */
+    align-items: center; /* Aligns the logo text and image vertically */
+}
+
+.logo-image {
+    width: 40px;
+    height: 40px;
+    margin-right: 10px; /* Space between the logo image and text */
+}
+
+.logo-text {
+    font-size: 30px; /* Logo font size */
+    font-weight: bold; /* Logo font weight */
+    display: inline-block;
+    color: #FF6A3D; /* Color of the "Campus" part */
+}
+
+.crave {
+    color: white; /* Color of the "Crave" part */
 }
 
 .back-button {
@@ -112,19 +152,6 @@
     margin-right: 10px;
 }
 
-.logo {
-    display: flex;
-    align-items: center;
-  }
-
-.logo-text {
-    font-size: 30px; /* Logo font size */
-    font-weight: bold; /* Logo font weight */
-    display: inline-block; /* Prevent wrapping */
-  }
-  .crave {
-    color: var(--primary-color);
-  }
 .image-upload {
     padding: 5px;
     border-radius: 10px;

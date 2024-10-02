@@ -4,7 +4,14 @@ function selectPlan(plan) {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ selectedPlan: plan })
     })
-    .then(response => response.json())
+    .then((response) => {
+      if (response.status === 401) {
+        // Redirect to login page if user is not authorized
+        window.location.href = "/login";
+        throw new Error("Unauthorized access. Redirecting to login...");
+      }
+      return response.json();
+    })
     .then(data => {
       if (data.msg) {
         document.getElementById('message').textContent = data.msg;
@@ -18,7 +25,14 @@ function selectPlan(plan) {
   
   document.addEventListener('DOMContentLoaded', () => {
     fetch('/get-meal-plan')
-      .then(response => response.json())
+    .then((response) => {
+      if (response.status === 401) {
+        // Redirect to login page if user is not authorized
+        window.location.href = "/login";
+        throw new Error("Unauthorized access. Redirecting to login...");
+      }
+      return response.json();
+    })
       .then(data => {
         if (data.plan_name) {
           document.getElementById('message').textContent = `You have selected the ${data.plan_name} plan.`;

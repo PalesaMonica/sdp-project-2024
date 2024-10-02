@@ -474,6 +474,21 @@ app.get('/get-userid', (req, res) => {
   }
 });
 
+app.get('/user/account', (req, res) => {
+  // Check if the user is authenticated
+  if (!req.isAuthenticated()) {
+      return res.status(401).json({ error: 'Unauthorized access. Please log in.' });
+  }
+
+  const user = {
+      id: req.user.id,
+      email: req.user.email,
+      created_at: req.user.created_at // Make sure the created_at field exists in the user data
+  };
+
+  // Respond with the user's data
+  res.json(user);
+});
 
 //Get Dietary preference
 app.get('/get-dietary_preference', (req, res) => {
@@ -1840,6 +1855,34 @@ app.get('/get-meal-plan', (req, res) => {
       }
     }
   );
+});
+
+
+//infrastructure booking api connection
+const infrastructureApiKey = process.env.INFRASTRUCTURE_API_KEY;
+
+app.get('/api/dining/bookings', ensureAuthenticated,async (req, res) => {
+  try {
+    const infrastructureApiUrl = 'https://wits-infrastructure-management.web.app/'; // Replace with actual API URL
+
+    // Fetch bookings from the Infrastructure System API, passing the API key
+    const response = await axios.get(infrastructureApiUrl, {
+      headers: {
+        'Authorization': `Bearer ${infrastructureApiKey}` // Include API key in the request headers
+      }
+    });
+
+    const bookings = response.data;
+
+    // Filter for dining hall bookings
+    const diningHallBookings = bookings.filter(booking => booking.venueType === 'Dining hall');
+
+    // Send the filtered dining hall bookings to the frontend
+    res.json(diningHallBookings);
+  } catch (error) {
+    console.error('Error fetching dining hall bookings:', error);
+    res.status(500).json({ message: 'Failed to fetch dining hall bookings' });
+  }
 });
 
 // Removed the mark-as-read endpoint

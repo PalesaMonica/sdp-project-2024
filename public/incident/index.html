@@ -8,20 +8,20 @@
     <link rel="stylesheet" href="../css/incident.css">
 </head>
 <body>
-
-    <div class="header">
-        <button class="back-button" onclick="goBack()">
-            <img src="../images/option-21.svg" class="back-button-image" alt="Back">
-        </button>
+    <header class="header">
         <div class="logo">
-            <span class="logo-text"  >Campus<span class="crave">Crave</span></span>
+            <button class="back-button" onclick="goBack()">
+                <img src="../images/Option 2 1.png" alt="Back Button" class="back-button-image"> <!-- Back button image -->
+            </button>
+          <span class="logo-text"  >Campus<span class="crave">Crave</span></span>
         </div>
-    </div>
+      </header>
 
-    <form id="incidentReportForm">
+    <div  class="header2"> <form id="incidentReportForm">
         <div class="input-container">
             <label for="incidentType" class="label">Type of Incident</label>
             <select id="incidentType" class="input-field" required>
+                <option value="" disabled selected>Select incident type</option>
                 <option value="fire">Fire</option>
                 <option value="medical">Medical</option>
                 <option value="natural">Natural</option>
@@ -53,7 +53,9 @@
     </form>
 
     <div id="successMessage" style="display: none;" class="success-message">Incident reported successfully!</div>
+</div>
 
+   
     <script src="../../src/js/incident.js"></script> <!-- Make sure this path is correct -->
 </body>
 </html>
