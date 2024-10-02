@@ -12,6 +12,20 @@ html, body {
     background-color: #1a1e2e; /* Ensure the same background as the login container */
     box-sizing: border-box;
 }
+.forgot-password {
+    text-align: center;
+    margin-top: 10px;
+}
+
+.forgot-link {
+    color: #F4DB7D;
+    text-decoration: none;
+}
+
+.forgot-link:hover {
+    text-decoration: underline;
+}
+
 
 
 /* Overall login container */
