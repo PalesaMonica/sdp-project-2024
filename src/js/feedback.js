@@ -54,6 +54,17 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 });
 
+// Open the review modal
+function openReviewModal() {
+    document.getElementById('review-modal').style.display = 'flex';
+}
+
+// Close the review modal
+function closeReviewModal() {
+    document.getElementById('review-modal').style.display = 'none';
+}
+
+// Fetch and display reviews
 function fetchReviews() {
     const ratingFilter = document.getElementById('review_filter').value;
     let url = '/feedback';
@@ -71,6 +82,7 @@ function fetchReviews() {
             const reviewElement = document.createElement('div');
             reviewElement.innerHTML = `
                 <h3>Rating: ${review.rating}</h3>
+                <p><strong>Dining Hall:</strong> ${review.dining_hall}</p>
                 <p>${review.review_text}</p>
                 <small>Posted on: ${new Date(review.created_at).toLocaleString()}</small>
             `;
