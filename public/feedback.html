@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="css/feedback.css" />
 </head>
 <body>
+    <!-- Header Section -->
     <header class="header">
         <div class="logo">
             <button class="back-button" onclick="goBack()">
@@ -15,11 +16,12 @@
             </button>
             <span class="logo-text">Campus<span class="crave">Crave</span></span>
         </div>
-    
         <nav class="nav-links">
             <button class="see-reviews-btn" onclick="openReviewModal()">See Reviews</button>
         </nav>
     </header>
+
+    <!-- Feedback Screen Section -->
     <div class="feedback-screen">
         <div class="div">
             <!-- Main Heading -->
@@ -29,7 +31,7 @@
 
             <!-- Feedback Form -->
             <div class="feedback-form-wrapper">
-                <form id="feedback-form">
+                <form id="feedback-form" onsubmit="handleSubmit(event)">
                     <!-- Dining Hall Dropdown -->
                     <label for="dining_hall" class="labels">Dining Hall:</label>
                     <select id="dining_hall" name="dining_hall" required>
@@ -94,7 +96,6 @@
             <div id="reviews"></div>
         </div>
     </div>
-
     <script src="/src/js/feedback.js"></script>
 </body>
 </html>
