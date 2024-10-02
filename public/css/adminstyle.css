@@ -1,10 +1,66 @@
-/* General styling for the container */
-body, html {
+:root {
+    --primary-color: #ff6a3d;
+    --background-color: #1a1e2e;
+    --text-color: #ffffff;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: var(--background-color);
+    color: var(--text-color);
     margin: 0;
     padding: 0;
-    height: 100%;
-    font-family: 'Jaldi', sans-serif;
-    background-color: #1A2238;
+    box-sizing: border-box;
+    transition: margin-left 0.3s;
+}
+
+.header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    background-color: var(--background-color);
+    z-index: 100;
+    padding: 10px 20px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.header-content {
+    display: flex;
+    align-items: center;
+    max-width: 1200px;
+
+}
+
+.navbar-toggle {
+    background: none;
+    border: none;
+    color: var(--text-color);
+    font-size: 24px;
+    cursor: pointer;
+    padding: 0;
+    margin-right: 15px;
+    width: auto;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+}
+
+.logo img {
+    width: 40px;
+    height: 40px;
+    margin-right: 10px;
+}
+
+.logo-text {
+    font-size: 24px;
+    font-weight: bold;
+}
+
+.crave {
+    color: var(--primary-color);
 }
 
 .container {
@@ -14,18 +70,44 @@ body, html {
     height: 100vh;
 }
 
+.sidenav {
+    height: 100%;
+    width: 0;
+    position: fixed;
+    top: 60px;
+    left: 0;
+    background-color: rgba(255, 255, 255, 0.1);
+    overflow-x: hidden;
+    transition: 0.3s;
+    z-index: 99;
+}
+
+.sidenav a {
+    padding: 15px 30px;
+    text-decoration: none;
+    font-size: 18px;
+    color: white;
+    display: block;
+    transition: background-color 0.2s ease;
+    white-space: nowrap;
+}
+
+.sidenav a:hover {
+    background-color: var(--primary-color);
+}
+
 .form {
     width: 100%;
     max-width: 400px;
     padding: 20px;
-    background: #1A2238;
+    background: var(--background-color);
     border-radius: 10px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
 /* Heading for the notification form */
 .heading {
-    color: #FF6A3D;
+    color: var(--primary-color );
     font-size: 24px;
     font-weight: 400;
     margin-bottom: 20px;
@@ -87,41 +169,3 @@ body, html {
     text-align: center;
 }
 
-.header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    position: sticky; /* Makes the header stick at the top */
-    top: 0; /* Keeps the header at the top */
-    z-index: 100; /* Ensures the header stays above other content */
-    background-color: var(--background-color); /* Keeps the background intact */
-    padding: 10px; /* Padding around the header */
-    margin-bottom: 20px; /* Space below the header */
-  }
-
-  .back-button {
-    background: none;
-    border: none;
-    cursor: pointer;
-    margin-right:5px; /* Space between the back button and logo */
-}
-
-.back-button-image {
-    width: 40px;
-    height: 40px;
-    margin-right: 10px;
-}
-.logo {
-    display: flex;
-    align-items: center;
-  }
-  
-  .logo-text {
-    font-size: 30px; /* Logo font size */
-    font-weight: bold; /* Logo font weight */
-    display: inline-block;
-    color: #FF6A3D; /* Prevent wrapping */
-  }
-  .crave {
-    color: white;
-  }

@@ -1,43 +1,46 @@
-body, html {
+:root {
+    --primary-color: #ff6a3d;
+    --background-color: #1a1e2e;
+    --text-color: #ffffff;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: var(--background-color);
+    color: var(--text-color);
     margin: 0;
     padding: 0;
-    height: 100%;
-    font-family: 'Jaldi', sans-serif;
-    background-color: #1A2238;
-}
-.container {
-    display: flex;
-    
-    align-items: center;
-    flex-direction: column; /* Ensures content is stacked vertically */
-    height: 100vh;
-    padding: 20px; /* Adding padding for better spacing */
+    box-sizing: border-box;
+    transition: margin-left 0.3s;
 }
 
 .header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    position: sticky;
+    position: fixed;
     top: 0;
+    left: 0;
+    right: 0;
+    background-color: var(--background-color);
     z-index: 100;
-    background-color: #1A2238; /* Changed to match background */
-    padding: 10px;
-    width: 100%; /* Ensures header spans the full width */
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2); /* Adds slight shadow for better visibility */
+    padding: 10px 20px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
 }
 
-.back-button {
+.header-content {
+    display: flex;
+    align-items: center;
+    max-width: 1200px;
+
+}
+
+.navbar-toggle {
     background: none;
     border: none;
+    color: var(--text-color);
+    font-size: 24px;
     cursor: pointer;
-    margin-right: 5px;
-}
-
-.back-button-image {
-    width: 40px;
-    height: 40px;
-    margin-right: 10px;
+    padding: 0;
+    margin-right: 15px;
+    width: auto;
 }
 
 .logo {
@@ -45,14 +48,54 @@ body, html {
     align-items: center;
 }
 
+.logo img {
+    width: 40px;
+    height: 40px;
+    margin-right: 10px;
+}
+
 .logo-text {
-    font-size: 30px;
+    font-size: 24px;
     font-weight: bold;
-    color: #FF6A3D;
 }
 
 .crave {
+    color: var(--primary-color);
+}
+
+.container {
+    display: flex;
+    margin-top: 2%;
+    align-items: center;
+    flex-direction: column; /* Ensures content is stacked vertically */
+    height: 100vh;
+    padding: 20px; /* Adding padding for better spacing */
+}
+
+.sidenav {
+    height: 100%;
+    width: 0;
+    position: fixed;
+    top: 60px;
+    left: 0;
+    background-color: rgba(255, 255, 255, 0.1);
+    overflow-x: hidden;
+    transition: 0.3s;
+    z-index: 99;
+}
+
+.sidenav a {
+    padding: 15px 30px;
+    text-decoration: none;
+    font-size: 18px;
     color: white;
+    display: block;
+    transition: background-color 0.2s ease;
+    white-space: nowrap;
+}
+
+.sidenav a:hover {
+    background-color: var(--primary-color);
 }
 
 /* Booking list styling */

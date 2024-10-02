@@ -368,7 +368,7 @@ app.post('/login', (req, res, next) => {
           });
         } else {
           // Non-student users
-          return res.status(200).json({ msg: 'Login successful, redirecting...', redirectUrl: '/meal-management.html' });
+          return res.status(200).json({ msg: 'Login successful, redirecting...', redirectUrl: '/staffDashboard.html' });
         }
       };
 
@@ -518,7 +518,7 @@ app.get('/get-dietary_preference', (req, res) => {
 
 // Route to get all dining halls
 // Route to get all dining halls with one main image and additional images
-app.get('/dining-halls', async (req, res) => {
+app.get('/dining-hall', async (req, res) => {
   try {
     // Fetch all dining halls
     const [diningHalls] = await pool.query('SELECT * FROM dining_halls');
@@ -1252,61 +1252,287 @@ app.get('/feedback',ensureAuthenticated, (req, res) => {
 });
 
 //Meal Management
-app.get('/api/current-menu',ensureAuthenticated, async (req, res) => {
-  try {
-      const [rows] = await pool.query('SELECT * FROM menu');
-      res.json(rows);
-  } catch (error) {
-      console.error(error);
-      res.status(500).json({ error: 'Internal server error' });
-  }
+
+// Get all dining halls
+app.get('/api/dining-halls', ensureAuthenticated, (req, res) => {
+  connection.query('SELECT * FROM dining_halls', (error, results) => {
+    if (error) {
+      console.error('Error fetching dining halls:', error);
+      return res.status(500).json({ error: 'Internal server error' });
+    }
+    res.json(results);
+  });
 });
 
-app.get('/api/available-meals', async (req, res) => {
-  try {
-      const [rows] = await pool.query('SELECT * FROM meals');
-      res.json(rows);
-  } catch (error) {
-      console.error(error);
-      res.status(500).json({ error: 'Internal server error' });
-  }
+// Get weekly menu for a specific dining hall and day
+app.get('/api/weekly-menu/:diningHallId/:day', ensureAuthenticated, (req, res) => {
+  const { diningHallId, day } = req.params;
+  connection.query(
+    'SELECT * FROM weekly_menu WHERE dining_hall_id = ? AND day_of_week = ?',
+    [diningHallId, day],
+    (error, results) => {
+      if (error) {
+        console.error('Error fetching weekly menu:', error);
+        return res.status(500).json({ error: 'Internal server error' });
+      }
+      res.json(results);
+    }
+  );
 });
 
-app.post('/api/add-to-menu',ensureAuthenticated, async (req, res) => {
-  const { mealId } = req.body;
-  try {
-      await pool.query('INSERT INTO menu (meal_id) VALUES (?)', [mealId]);
-      res.json({ success: true });
-  } catch (error) {
-      console.error(error);
-      res.status(500).json({ error: 'Internal server error' });
-  }
+// Get all menu items
+app.get('/api/menu-items', ensureAuthenticated, (req, res) => {
+  connection.query('SELECT * FROM menu_item', (error, results) => {
+    if (error) {
+      console.error('Error fetching menu items:', error);
+      return res.status(500).json({ error: 'Internal server error' });
+    }
+    res.json(results);
+  });
 });
 
-app.delete('/api/remove-from-menu/:id', async (req, res) => {
-  const { id } = req.params;
-  try {
-      await pool.query('DELETE FROM menu WHERE id = ?', [id]);
-      res.json({ success: true });
-  } catch (error) {
-      console.error(error);
-      res.status(500).json({ error: 'Internal server error' });
-  }
+// Add a new menu item
+app.post('/api/add-menu-item', ensureAuthenticated, (req, res) => {
+  const { item_name, ingredients, diet_type, meal_type, image_url } = req.body;
+  connection.query(
+    'INSERT INTO menu_item (item_name, ingredients, diet_type, meal_type, image_url) VALUES (?, ?, ?, ?, ?)',
+    [item_name, ingredients, diet_type, meal_type, image_url],
+    (error) => {
+      if (error) {
+        console.error('Error adding menu item:', error);
+        return res.status(500).json({ error: 'Internal server error' });
+      }
+      res.json({ message: 'Menu item added successfully' });
+    }
+  );
 });
 
-app.post('/api/add-new-meal', ensureAuthenticated,async (req, res) => {
-  const { name, ingredients, diet_type, image_url, meal_type } = req.body;
-  try {
-      await pool.query(
-          'INSERT INTO meals (name, ingredients, diet_type, image_url, meal_type) VALUES (?, ?, ?, ?, ?)',
-          [name, ingredients, diet_type, image_url, meal_type]
-      );
-      res.json({ success: true });
-  } catch (error) {
-      console.error(error);
-      res.status(500).json({ error: 'Internal server error' });
-  }
+// Get all menu options
+app.get('/api/menu-options', ensureAuthenticated, (req, res) => {
+  connection.query('SELECT * FROM menu_option_tracker', (error, trackerResults) => {
+    if (error) {
+      console.error('Error fetching menu options:', error);
+      return res.status(500).json({ error: 'Internal server error' });
+    }
+
+    const options = [];
+    let completedQueries = 0;
+
+    const lastOptionNumber = trackerResults[0].last_option_number;
+
+    if (lastOptionNumber === 0) {
+      return res.json(options);
+    }
+
+    for (let i = 1; i <= lastOptionNumber; i++) {
+      connection.query(`SELECT * FROM menu_option_${i}`, (error, menuItems) => {
+        if (error) {
+          console.error(`Error fetching menu option ${i}:`, error);
+          completedQueries++;
+        } else {
+          const optionItems = menuItems.map(item => ({
+            id: item.id,
+            itemName: item.item_name,
+            ingredients: item.ingredients,
+            dietType: item.diet_type,
+            imageUrl: item.image_url,
+            mealType: item.meal_type
+          }));
+
+          options.push({ id: i, items: optionItems });
+          completedQueries++;
+        }
+        
+        if (completedQueries === lastOptionNumber) {
+          res.json(options);
+        }
+      });
+    }
+  });
 });
+
+// Create a new menu option
+app.post('/api/create-menu-option', ensureAuthenticated, (req, res) => {
+  const { itemIds } = req.body;
+  if (!itemIds || itemIds.length < 8) {
+    return res.status(400).json({ error: 'At least 8 items are required' });
+  }
+
+  connection.beginTransaction((err) => {
+    if (err) {
+      console.error('Error starting transaction:', err);
+      return res.status(500).json({ error: 'Internal server error' });
+    }
+
+    // Get the next option number
+    connection.query('SELECT last_option_number FROM menu_option_tracker', (err, trackerRows) => {
+      if (err) {
+        return connection.rollback(() => {
+          console.error('Error getting last option number:', err);
+          res.status(500).json({ error: 'Internal server error' });
+        });
+      }
+
+      const newOptionNumber = trackerRows[0].last_option_number + 1;
+
+      // Create new menu option table
+      connection.query(`CREATE TABLE menu_option_${newOptionNumber} LIKE menu_item`, (err) => {
+        if (err) {
+          return connection.rollback(() => {
+            console.error('Error creating menu option table:', err);
+            res.status(500).json({ error: 'Internal server error' });
+          });
+        }
+
+        // Get menu items
+        connection.query('SELECT * FROM menu_item WHERE id IN (?)', [itemIds], (err, menuItems) => {
+          if (err) {
+            return connection.rollback(() => {
+              console.error('Error fetching menu items:', err);
+              res.status(500).json({ error: 'Internal server error' });
+            });
+          }
+
+          let insertedItems = 0;
+          menuItems.forEach((item) => {
+            connection.query(
+              `INSERT INTO menu_option_${newOptionNumber} 
+              (item_name, ingredients, diet_type, image_url, meal_type)
+              VALUES (?, ?, ?, ?, ?)`,
+              [item.item_name, item.ingredients, item.diet_type, item.image_url, item.meal_type],
+              (err) => {
+                if (err) {
+                  return connection.rollback(() => {
+                    console.error('Error inserting menu item:', err);
+                    res.status(500).json({ error: 'Internal server error' });
+                  });
+                }
+                
+                insertedItems++;
+                if (insertedItems === menuItems.length) {
+                  // Update tracker
+                  connection.query(
+                    'UPDATE menu_option_tracker SET last_option_number = ?',
+                    [newOptionNumber],
+                    (err) => {
+                      if (err) {
+                        return connection.rollback(() => {
+                          console.error('Error updating tracker:', err);
+                          res.status(500).json({ error: 'Internal server error' });
+                        });
+                      }
+
+                      connection.commit((err) => {
+                        if (err) {
+                          return connection.rollback(() => {
+                            console.error('Error committing transaction:', err);
+                            res.status(500).json({ error: 'Internal server error' });
+                          });
+                        }
+                        res.json({ message: 'Menu option created successfully', optionNumber: newOptionNumber });
+                      });
+                    }
+                  );
+                }
+              }
+            );
+          });
+        });
+      });
+    });
+  });
+});
+
+// Add menu option to weekly menu
+app.post('/api/add-menu-option', ensureAuthenticated, (req, res) => {
+  const { menuOptionId, diningHallId, day } = req.body;
+  
+  connection.beginTransaction((err) => {
+    if (err) {
+      console.error('Error starting transaction:', err);
+      return res.status(500).json({ error: 'Internal server error' });
+    }
+
+    // First, get the meal type
+    connection.query(
+      `SELECT meal_type FROM menu_option_${menuOptionId} LIMIT 1`,
+      (err, optionItems) => {
+        if (err) {
+          return connection.rollback(() => {
+            console.error('Error getting meal type:', err);
+            res.status(500).json({ error: 'Internal server error' });
+          });
+        }
+
+        const mealType = optionItems[0].meal_type;
+
+        // Remove existing items
+        connection.query(
+          'DELETE FROM weekly_menu WHERE dining_hall_id = ? AND day_of_week = ? AND meal_type = ?',
+          [diningHallId, day, mealType],
+          (err) => {
+            if (err) {
+              return connection.rollback(() => {
+                console.error('Error removing existing menu items:', err);
+                res.status(500).json({ error: 'Internal server error' });
+              });
+            }
+
+            // Add new items
+            connection.query(`
+              INSERT INTO weekly_menu 
+              (item_name, ingredients, meal_type, dining_hall_id, diet_type, image_url, day_of_week)
+              SELECT 
+                item_name, 
+                ingredients, 
+                meal_type, 
+                ?, 
+                diet_type, 
+                image_url, 
+                ?
+              FROM menu_option_${menuOptionId}
+            `, [diningHallId, day], (err) => {
+              if (err) {
+                return connection.rollback(() => {
+                  console.error('Error adding new menu items:', err);
+                  res.status(500).json({ error: 'Internal server error' });
+                });
+              }
+
+              connection.commit((err) => {
+                if (err) {
+                  return connection.rollback(() => {
+                    console.error('Error committing transaction:', err);
+                    res.status(500).json({ error: 'Internal server error' });
+                  });
+                }
+                res.json({ message: 'Menu option added to weekly menu successfully' });
+              });
+            });
+          }
+        );
+      }
+    );
+  });
+});
+
+// Remove item from weekly menu
+app.delete('/api/remove-menu-item', ensureAuthenticated, (req, res) => {
+  const { itemId, diningHallId, day } = req.body;
+  connection.query(
+    'DELETE FROM weekly_menu WHERE id = ? AND dining_hall_id = ? AND day_of_week = ?',
+    [itemId, diningHallId, day],
+    (error) => {
+      if (error) {
+        console.error('Error removing menu item:', error);
+        return res.status(500).json({ error: 'Internal server error' });
+      }
+      res.json({ message: 'Menu item removed successfully' });
+    }
+  );
+});
+///////////
+
 
 // Define a route to fetch menu items based on dining hall and day
 app.get('/api/menu',ensureAuthenticated, (req, res) => {

@@ -62,6 +62,38 @@ async function mockFetch(url, options) {
     };
 }
 
+function toggleNav() {
+    const sidenav = document.getElementById("sidenav");
+    const container = document.querySelector(".container");
+    if (sidenav.style.width === "250px") {
+        sidenav.style.width = "0";
+        document.body.style.marginLeft = "0";
+        container.style.marginLeft = "auto";
+    } else {
+        sidenav.style.width = "250px";
+        document.body.style.marginLeft = "250px";
+        container.style.marginLeft = "auto";
+    }
+}
+
+
+function logout() {
+    fetch('/logout', {
+        method: 'POST',
+        credentials: 'same-origin',  // Ensures the session cookie is sent
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.message === 'Logout successful') {
+        window.location.href = data.redirectUrl;  // Redirect to login page
+        } else {
+        console.error('Logout failed:', data.message);
+        }
+    })
+    .catch(err => {
+        console.error('Error during logout:', err);
+    });
+}
 // Mock the fetch function for testing
 window.fetch = mockFetch;
 
@@ -71,5 +103,5 @@ fetchDiningHallBookings().then(data => {
 });
 
 function goBack() {
-    window.location.href = '../../meal-management.html'; // Replace with the actual page you want to go back to
+    window.location.href = '../../staffDashboard.html'; // Replace with the actual page you want to go back to
 }
