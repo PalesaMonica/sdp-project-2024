@@ -59,7 +59,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 });
 
-function fetchReviews() {
+/*function fetchReviews() {
     const ratingFilter = document.getElementById('review_filter').value;
     let url = '/feedback';
     
@@ -92,4 +92,55 @@ function fetchReviews() {
     .catch(error => {
         console.error('Error fetching reviews:', error);
     });
+}*/
+// Open the review modal
+function openReviewModal() {
+    document.getElementById('review-modal').style.display = 'flex';
 }
+
+// Close the review modal
+function closeReviewModal() {
+    document.getElementById('review-modal').style.display = 'none';
+}
+
+// Fetch and display reviews
+function fetchReviews() {
+    const ratingFilter = document.getElementById('review_filter').value;
+    let url = '/feedback';
+    
+    if (ratingFilter !== 'all') {
+        url += `?rating=${ratingFilter}`;
+    }
+
+    fetch(url)
+    .then(response => response.json())
+    .then(data => {
+        const reviewsDiv = document.getElementById('reviews');
+        reviewsDiv.innerHTML = ''; // Clear previous reviews
+        data.forEach(review => {
+            const reviewElement = document.createElement('div');
+            reviewElement.innerHTML = `
+                <h3>Rating: ${review.rating}</h3>
+                <p>${review.review_text}</p>
+                <small>Posted on: ${new Date(review.created_at).toLocaleString()}</small>
+            `;
+            reviewsDiv.appendChild(reviewElement);
+        });
+    })
+    .catch(error => {
+        console.error('Error fetching reviews:', error);
+    });
+}
+
+// Close the modal if clicked outside
+window.onclick = function(event) {
+    const modal = document.getElementById('review-modal');
+    if (event.target === modal) {
+        closeReviewModal();
+    }
+}
+
+function goBack() {
+    window.location.href = '../../userDashboard.html'; // Replace with the actual page you want to go back to
+}
+

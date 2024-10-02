@@ -8,19 +8,23 @@
     <link rel="stylesheet" href="css/feedback.css" />
 </head>
 <body>
+    <header class="header">
+        <div class="logo">
+            <button class="back-button" onclick="goBack()">
+                <img src="../images/Option 2 1.png" alt="Back Button" class="back-button-image">
+            </button>
+            <span class="logo-text">Campus<span class="crave">Crave</span></span>
+        </div>
+    
+        <nav class="nav-links">
+            <button class="see-reviews-btn" onclick="openReviewModal()">See Reviews</button>
+        </nav>
+    </header>
     <div class="feedback-screen">
         <div class="div">
             <!-- Main Heading -->
             <div class="group-2">
                 <p class="text-wrapper-3">Your feedback matters to us!</p>
-                <img class="image" src="images/logo.png" />
-            </div>
-
-            <!-- Rating Text -->
-            <div class="main-rating-w-text">
-                <div class="overlap-group">
-                    <p class="text-wrapper">How would you like to describe your experience with CampusCrave?</p>
-                </div>
             </div>
 
             <!-- Feedback Form -->
@@ -63,8 +67,16 @@
                 </form>
                 <div id="confirmation-message"></div>
             </div>
+        </div>
+    </div>
 
-            <!-- Review Filter and Display Section -->
+    <!-- Modal for Reviews -->
+    <div id="review-modal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeReviewModal()">&times;</span>
+            <h2>Filter Reviews</h2>
+
+            <!-- Review Filter -->
             <div class="dropdown-section">
                 <label for="review_filter" class="dropdown-label">Select Review Rating:</label>
                 <select id="review_filter">
@@ -78,9 +90,11 @@
                 <button onclick="fetchReviews()">See Reviews</button>
             </div>
 
+            <!-- Reviews Display Section -->
             <div id="reviews"></div>
         </div>
     </div>
+
     <script src="/src/js/feedback.js"></script>
 </body>
 </html>
