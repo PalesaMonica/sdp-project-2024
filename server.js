@@ -215,14 +215,12 @@ passport.use(new LocalStrategy(
   }
 ));
 
-
 function ensureAuthenticated(req, res, next) {
   if (req.isAuthenticated()) {
       return next();
   }
   res.status(401).json({ message: 'Please log in to access this resource.' });
 }
-
 
 // Route to serve the signup page
 app.get("/signup", (req, res) => {
@@ -385,7 +383,18 @@ app.post('/login', (req, res, next) => {
   })(req, res, next);
 });
 
-// app.use(authenticateUser);
+// Dynamic route for other HTML files
+/*app.get('/:page', ensureAuthenticated, (req, res) => {
+  const page = req.params.page;
+  const filePath = path.join(__dirname, 'public', `${page}.html`);
+  
+  // Serve the file if it exists
+  res.sendFile(filePath, (err) => {
+    if (err) {
+      res.status(404).send('Page not found');
+    }
+  });
+});*/
 
 app.get("/userDashboard",ensureAuthenticated, (req, res) => {
   if (req.isAuthenticated()) {
