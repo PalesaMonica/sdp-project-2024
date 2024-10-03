@@ -28,6 +28,15 @@
 
     <div class="container">
         <h1 id="name">Dining Hall Bookings</h1>
+
+        <label for="diningHallSelect" class="styled-label">Select Dining Hall:</label>
+
+        <select id="diningHallSelect" class="styled-select" onchange="fetchBookings()">
+            <option value="" disabled selected>Select a dining hall</option>
+            <option value="Main Dining Hall">Main Dining Hall</option>
+            <option value="Jubilee Dining Hall">Jubilee Dining Hall</option>
+            <option value="Convocation Dining Hall">Convocation Dining Hall</option>
+        </select>
         
         <ul class="booking-list" id="booking-list">
             <!-- Booking items will be dynamically inserted here -->

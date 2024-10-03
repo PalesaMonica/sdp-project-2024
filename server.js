@@ -12,7 +12,7 @@ const GoogleStrategy = require("passport-google-oauth20").Strategy;
 const compression = require('compression'); // Added compression middleware
 const http = require('http');
 require("dotenv").config();
-
+const axios=require('axios');
 
 // Initialize the Express app
 const app = express();
@@ -1913,12 +1913,13 @@ app.get('/api/get-map-key', (req, res) => {
 //infrastructure booking api connection
 const infrastructureApiKey = process.env.INFRASTRUCTURE_API_KEY;
 
-app.get('/api/dining/bookings', ensureAuthenticated,async (req, res) => {
+app.get('/api/dining/bookings', ensureAuthenticated, async (req, res) => {
   try {
     const infrastructureApiUrl = 'https://wits-infrastructure-management.web.app/'; // Replace with actual API URL
+    const venueID = req.query.venueID || 'defaultVenueId'; // Replace 'defaultVenueId' with an actual ID or fetch dynamically
 
-    // Fetch bookings from the Infrastructure System API, passing the API key
-    const response = await axios.get(infrastructureApiUrl, {
+    // Fetch bookings from the Infrastructure System API, passing the API key and venueId
+    const response = await axios.get(`${infrastructureApiUrl}/api/bookings/findByField?venueID=${venueID}`, {
       headers: {
         'Authorization': `Bearer ${infrastructureApiKey}` // Include API key in the request headers
       }
@@ -1926,17 +1927,13 @@ app.get('/api/dining/bookings', ensureAuthenticated,async (req, res) => {
 
     const bookings = response.data;
 
-    // Filter for dining hall bookings
-    const diningHallBookings = bookings.filter(booking => booking.venueType === 'Dining hall');
-
     // Send the filtered dining hall bookings to the frontend
-    res.json(diningHallBookings);
+    res.json(bookings);
   } catch (error) {
     console.error('Error fetching dining hall bookings:', error);
     res.status(500).json({ message: 'Failed to fetch dining hall bookings' });
   }
 });
-
 
 io.on('connection', (socket) => {
   console.log('A user connected');

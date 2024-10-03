@@ -171,3 +171,54 @@ body {
     letter-spacing: 2px; /* Adds spacing between letters */
     font-weight: bold; /* Make the text bold */
 }
+/* Dropdown container styling */
+.styled-select {
+    background-color: #1A2238; /* Dark background */
+    color: #FFFFFF; /* White text */
+    border: 1px solid var(--primary-color); /* Border matching the primary color */
+    border-radius: 8px;
+    padding: 10px;
+    width: 100%;
+    max-width: 400px; /* Limit the width of the dropdown */
+    appearance: none; /* Hides default arrow */
+    font-size: 16px; /* Larger font for readability */
+    outline: none; /* Remove the default outline */
+    margin-bottom: 20px; /* Adds spacing below the dropdown */
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+/* Style for the dropdown arrow (pseudo-element) */
+.styled-select::after {
+    content: '▼'; /* Custom arrow symbol */
+    color: white;
+    font-size: 12px;
+    position: absolute;
+    right: 10px;
+    top: 15px;
+    pointer-events: none; /* Prevents clicks on the arrow */
+}
+
+/* When hovering or focusing on the dropdown */
+.styled-select:hover, .styled-select:focus {
+    background-color: #2E3B5C; /* Darker background on hover */
+    border-color: #FF6A3D; /* Change the border color on hover */
+}
+
+/* Option styling (Note: browsers may limit option styling support) */
+.styled-select option {
+    background-color: #1A2238; /* Dark background for options */
+    color: white; /* Text color */
+    padding: 10px;
+}
+
+.styled-select option:hover {
+    background-color: #FF6A3D; /* Change background on hover */
+    color: white; /* Change text color on hover */
+}
+.styled-label {
+    font-size: 2em; /* Roughly equivalent to h2 */
+    font-weight: bold;
+    color: white; /* Matches the rest of the text */
+    margin-bottom: 10px; /* Optional: Adds spacing below the label */
+}
