@@ -1900,6 +1900,16 @@ app.get('/get-meal-plan', (req, res) => {
   );
 });
 
+// Route to serve the Google Maps API key
+app.get('/api/get-map-key', (req, res) => {
+  const apiKey = process.env.GOOGLE_MAPS_API_KEY;
+  if (apiKey) {
+    res.json({ apiKey });
+  } else {
+    res.status(500).json({ error: 'API key not set in the environment' });
+  }
+});
+
 //infrastructure booking api connection
 const infrastructureApiKey = process.env.INFRASTRUCTURE_API_KEY;
 
@@ -1926,8 +1936,6 @@ app.get('/api/dining/bookings', ensureAuthenticated,async (req, res) => {
     res.status(500).json({ message: 'Failed to fetch dining hall bookings' });
   }
 });
-
-// Removed the mark-as-read endpoint
 
 
 io.on('connection', (socket) => {

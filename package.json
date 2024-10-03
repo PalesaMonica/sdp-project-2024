@@ -4,7 +4,7 @@
   "description": "Click on the badge to view coverage on coveralls\r [![Coverage Status](https://coveralls.io/repos/github/PalesaMonica/sdp-project-2024/badge.svg?branch=main)](https://coveralls.io/github/PalesaMonica/sdp-project-2024?branch=main)",
   "main": "server.js",
   "scripts": {
-    "test": "jest --coverage",
+    "test": "jest --watchAll --verbose --coverage",
     "start": "node server.js",
     "build": "echo 'No build step required'",
     "coverage": "nyc jest",
