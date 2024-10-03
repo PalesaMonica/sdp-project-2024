@@ -5,8 +5,6 @@ const fs = require("fs");
 const jwt = require('jsonwebtoken');
 const bodyParser = require("body-parser");
 const session = require("express-session");
-const Reservation = require("./src/reservation/reservation");
-const pool = require("./src/reservation/db-connection");
 const passport = require("passport");
 const cors = require('cors');
 const bcrypt = require("bcryptjs"); // For password hashing
@@ -521,150 +519,6 @@ app.get('/get-dietary_preference', (req, res) => {
   }
 });
 
-
-// Route to get all dining halls
-// Route to get all dining halls with one main image and additional images
-app.get('/dining-hall', async (req, res) => {
-  try {
-    // Fetch all dining halls
-    const [diningHalls] = await pool.query('SELECT * FROM dining_halls');
-    
-    // Fetch images for each dining hall
-    const [images] = await pool.query('SELECT dining_hall_id, image_url FROM images');
-    
-    // Create a map of dining hall images
-    const imageMap = {};
-    images.forEach(image => {
-      if (!imageMap[image.dining_hall_id]) {
-        imageMap[image.dining_hall_id] = [];
-      }
-      imageMap[image.dining_hall_id].push(image.image_url);
-    });
-
-    // Attach images to the dining halls
-    const diningHallsWithImages = diningHalls.map(diningHall => {
-      const hallImages = imageMap[diningHall.id] || [];
-      return {
-        ...diningHall,
-        mainImage: hallImages[0] || null,  // First image is the main image
-        additionalImages: hallImages.slice(1)  // Remaining images
-      };
-    });
-
-    res.status(200).json(diningHallsWithImages);
-  } catch (error) {
-    console.error('Error in /dining-halls route:', error);
-    res.status(500).json({ message: 'Error fetching dining halls', error: error.message });
-  }
-});
-
-// Route to get a dining hall by ID with images
-app.get('/dining-halls/:id',ensureAuthenticated ,async (req, res) => {
-  const { id } = req.params;
-  try {
-    // Fetch dining hall info
-    const [diningHall] = await pool.query('SELECT * FROM dining_halls WHERE id = ?', [id]);
-
-    // Check if the dining hall exists
-    if (diningHall.length === 0) {
-      return res.status(404).json({ message: 'Dining hall not found' });
-    }
-
-    // Fetch associated images from the images table
-    const [images] = await pool.query('SELECT image_url FROM images WHERE dining_hall_id = ?', [id]);
-
-    // Respond with the dining hall and associated images
-    res.status(200).json({
-      diningHall: diningHall[0],
-      images: images.map(image => image.image_url), // Map to just the image URLs
-    });
-  } catch (error) {
-    console.error('Error in /dining-halls/:id route:', error);
-    res.status(500).json({ message: 'Error fetching dining hall', error: error.message });
-  }
-});
-
-app.get('/api/dining-halls/:id',ensureAuthenticated ,async (req, res) => {
-  const diningHallId = req.params.id;
-  try {
-    const [diningHall] = await pool.query('SELECT name FROM dining_halls WHERE id = ?', [diningHallId]);
-    if (diningHall.length === 0) {
-      return res.status(404).json({ message: 'Dining hall not found' });
-    }
-    res.json({ name: diningHall[0].name });
-  } catch (error) {
-    console.error('Error fetching dining hall:', error);
-    res.status(500).json({ message: 'Internal server error' });
-  }
-});
-
-
-app.post('/api/reservations',ensureAuthenticated, async (req, res) => {
-  const { diningHallId, username, date, meals, specialRequest } = req.body;
-
-  // Validate required fields
-  if (!username || !date || !meals) {
-    return res.status(400).json({ message: 'Missing required fields: username, date, and meals are required.' });
-  }
-
-  try {
-    const queries = [];
-    const values = [];
-
-    // Insert each selected meal type and its associated times into the reservations table
-    for (const [mealType, time] of Object.entries(meals)) {
-      if (time) {
-        queries.push(`
-          INSERT INTO reservations 
-          (dining_hall_id, username, date, meal_type, start_time, end_time, special_requests) 
-          VALUES (?, ?, ?, ?, ?, ?, ?)
-        `);
-        values.push([diningHallId, username, date, mealType, time.startTime, time.endTime, specialRequest]);
-      }
-    }
-
-    // Execute all queries sequentially
-    for (let i = 0; i < queries.length; i++) {
-      await pool.query(queries[i], values[i]);
-    }
-
-    res.status(201).json({ message: 'Reservation created successfully' });
-  } catch (error) {
-    console.error('Error creating reservation:', error);
-    res.status(500).json({ message: 'Error creating reservation', error: error.message });
-  }
-});
-
-app.get('/api/meal-prices', ensureAuthenticated,async (req, res) => {
-  try {
-      const prices = await Reservation.getMealPrices();
-      res.json(prices);
-  } catch (err) {
-      res.status(500).json({
-          error: 'Failed to fetch meal prices',
-          message: err.message,
-          stack: err.stack
-      });
-  }
-});
-app.post('/api/update-price', ensureAuthenticated,async (req, res) => {
-  const { id, price } = req.body;
-  if (typeof id !== 'number' || typeof price !== 'number') {
-      return res.status(400).json({ error: 'Invalid input' });
-  }
-
-  try {
-      await Reservation.updateMealPrice(id, price);
-      res.status(200).json({ message: 'Price updated successfully' });
-  } catch (err) {
-      res.status(500).json({
-          error: 'Failed to update meal price',
-          message: err.message,
-          stack: err.stack
-      });
-  }
-});
-
 // Route to get all reservations for user
 app.get('/api/reservations', ensureAuthenticated,(req, res) => {
   const userId = req.user.id;
@@ -1070,7 +924,6 @@ app.get('/api/cart-item/:id',ensureAuthenticated, (req, res) => {
   });
 });
 
-
 // Route to cancel a reservation
 app.delete('/api/reservations/:id',ensureAuthenticated, (req, res) => {
   const reservationId = req.params.id;
@@ -1158,7 +1011,6 @@ app.delete('/api/reservations/:id',ensureAuthenticated, (req, res) => {
   });
 });
 
-
 app.get('/api/transactions',ensureAuthenticated, (req, res) => {
   const query = 'SELECT * FROM transactions WHERE user_id = ?';
   const userId = req.user.id;
@@ -1210,9 +1062,6 @@ app.get('/api/credits/remaining',ensureAuthenticated, (req, res) => {
 });
 
 //feedback routing
-
-// Feedback route to get reviews with optional rating filter
-
 // Post a review
 app.post('/feedback', ensureAuthenticated,(req, res) => {
   const { review_text, rating, dining_hall, review_type } = req.body;
@@ -1232,7 +1081,6 @@ app.post('/feedback', ensureAuthenticated,(req, res) => {
       res.send('Feedback submitted successfully!');
   });
 });
-
 
 app.get('/feedback',ensureAuthenticated, (req, res) => {
   const rating = req.query.rating;
@@ -1780,7 +1628,6 @@ app.get('/get-userrole', (req, res) => {
   }
 });
 
-
 app.get('/get-useremail', (req, res) => {
   if (req.isAuthenticated()) {
     const email = req.user.email; // Get the email from the user session
@@ -1987,53 +1834,7 @@ app.post('/notifications/:id/read',ensureAuthenticated, (req, res) => {
   });
 });
 
-
-// route to fetch meal credits and recent transactions
-app.get('/api/meal-credits',ensureAuthenticated, async (req, res) => {
-  const userId = req.user.id; // Get user ID from session
-  try {
-    // Fetch user's meal credits
-    const availableCredits = await Reservation.getUserCredits(userId);
-
-    // Fetch recent transactions (add this method in your Reservation.js)
-    const transactions = await Reservation.getRecentTransactions(userId); // Function to fetch recent transactions
-
-    res.status(200).json({
-      remaining_credits: availableCredits,
-      transactions: transactions
-    });
-  } catch (error) {
-    console.error('Error fetching meal credits:', error);
-    res.status(500).json({ message: 'Error fetching meal credits', error: error.message });
-  }
-});
-
-app.post('/api/meal-credits/add', ensureAuthenticated,async (req, res) => {
-  const userId = req.user.id; // Get user ID from session
-  const { amount } = req.body; // Amount to add
-  try {
-    await Reservation.addCredits(userId, amount); // Function to add meal credits
-    res.status(200).json({ message: 'Meal credits added successfully' });
-  } catch (error) {
-    console.error('Error adding meal credits:', error);
-    res.status(500).json({ message: 'Error adding meal credits', error: error.message });
-  }
-});
-
-app.post('/api/meal-credits/deduct',ensureAuthenticated, async (req, res) => {
-  const userId = req.user.id; // Get user ID from session
-  const { amount } = req.body; // Amount to deduct
-  try {
-    await Reservation.deductCredits(userId, amount); // Deduct meal credits
-    res.status(200).json({ message: 'Meal credits deducted successfully' });
-  } catch (error) {
-    console.error('Error deducting meal credits:', error);
-    res.status(500).json({ message: 'Error deducting meal credits', error: error.message });
-  }
-});
-
 // Route to handle meal plan selection
-
 app.post("/selectPlan", (req, res) => {
   if (!req.isAuthenticated()) {
     return res.status(401).json({ msg: 'Unauthorized' }); // Ensure user is authenticated
@@ -2128,7 +1929,6 @@ io.on('connection', (socket) => {
     console.log('User disconnected');
   });
 });
-
 
 
 // Start the server
