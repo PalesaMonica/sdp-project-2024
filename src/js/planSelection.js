@@ -1,37 +1,45 @@
-// Assuming userId is retrieved from the session or local storage after login
-const userId = sessionStorage.getItem('userId'); // Adjust this line based on how you're storing user ID
-
-if (!userId) {
-    // Handle case where user is not logged in
-    alert("You must be logged in to select a meal plan.");
-    window.location.href = '/public/login.html'; // Redirect to login page if not logged in
-}
-
 function selectPlan(plan) {
-    // Prepare the data to be sent to the server
-    const data = {
-        userId: userId,
-        plan: plan
-    };
-
-    fetch('/select-plan', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(data)
+    fetch('/selectPlan', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ selectedPlan: plan })
     })
-    .then(response => response.json())
+    .then((response) => {
+      if (response.status === 401) {
+        // Redirect to login page if user is not authorized
+        window.location.href = "/login";
+        throw new Error("Unauthorized access. Redirecting to login...");
+      }
+      return response.json();
+    })
     .then(data => {
-        const messageDiv = document.getElementById('message');
-        if (data.success) {
-            messageDiv.innerText = `You have successfully selected the ${plan === 'thrice-daily' ? 'Thrice-Daily' : 'Twice-Daily'} Plan.`;
-        } else {
-            messageDiv.innerText = 'Error selecting plan. Please try again.';
-        }
+      if (data.msg) {
+        document.getElementById('message').textContent = data.msg;
+        setTimeout(() => {
+          window.location.href = '/userDashboard.html';  // Redirect after confirming
+        }, 2000);
+      }
     })
-    .catch(error => {
-        console.error('Error:', error);
-        document.getElementById('message').innerText = 'There was an error processing your request.';
-    });
-}
+    .catch(error => console.error('Error:', error));
+  }
+  
+  document.addEventListener('DOMContentLoaded', () => {
+    fetch('/get-meal-plan')
+    .then((response) => {
+      if (response.status === 401) {
+        // Redirect to login page if user is not authorized
+        window.location.href = "/login";
+        throw new Error("Unauthorized access. Redirecting to login...");
+      }
+      return response.json();
+    })
+      .then(data => {
+        if (data.plan_name) {
+          document.getElementById('message').textContent = `You have selected the ${data.plan_name} plan.`;
+        } else {
+          document.getElementById('message').textContent = 'No plan selected.';
+        }
+      })
+      .catch(error => console.error('Error fetching meal plan:', error));
+  });
+  

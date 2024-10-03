@@ -1,0 +1,60 @@
+<link rel="stylesheet" href="/css/header.css" />
+
+<!-- header.html -->
+<header class="header">
+  <div class="header-content">
+      <button class="navbar-toggle" onclick="toggleNav()">☰</button>
+      <div class="logo">
+          <img src="/images/option-21.svg" alt="CampusCrave Logo" onclick="window.location.href='/userDashboard.html'">
+          <span class="logo-text" onclick="window.location.href='/userDashboard.html'">Campus<span class="crave">Crave</span></span>
+      </div>
+      <div class="cart-icon">
+          <span id="cart-count">0</span>
+          <img src="/images/cart-icon.svg" alt="Cart" onclick="window.location.href='/cart.html'">
+      </div>
+  </div>
+</header>
+
+  
+  <nav id="sidenav" class="sidenav">
+    <a href="/userDashboard.html">Home</a>
+    <a href="/Notification" id="notification-link">Notification <span id="unread-count" class="unread-count">0</span></a>
+    <a href="/incident" id="incident-link">Report Incident</a>
+    <a href="/userProfile.html">Manage Account</a>
+    <a onclick="logout()">Logout</a>
+  </nav>
+  
+  <script>
+  function toggleNav() {
+    const sidenav = document.getElementById("sidenav");
+    const container = document.querySelector(".container");
+    if (sidenav.style.width === "250px") {
+        sidenav.style.width = "0";
+        document.body.style.marginLeft = "0";
+        container.style.marginLeft = "auto";
+    } else {
+        sidenav.style.width = "250px";
+        document.body.style.marginLeft = "250px";
+        container.style.marginLeft = "auto";
+    }
+  }
+  
+  function logout() {
+    fetch('/logout', {
+      method: 'POST',
+      credentials: 'same-origin',  // Ensures the session cookie is sent
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.message === 'Logout successful') {
+        window.location.href = data.redirectUrl;  // Redirect to login page
+      } else {
+        console.error('Logout failed:', data.message);
+      }
+    })
+    .catch(err => {
+      console.error('Error during logout:', err);
+    });
+  }
+  </script>
+  

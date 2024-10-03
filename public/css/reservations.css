@@ -10,8 +10,20 @@ body {
     padding: 20px;
     background-color: var(--background-color);
     color: var(--text-color);
+    margin-top: 4%;
 }
 
+body {
+    visibility: hidden; /* Hide body initially */
+    opacity: 0;
+    transition: opacity 0.3s ease-in; /* Smooth transition */
+  }
+  
+  body.loaded {
+    visibility: visible;
+    opacity: 1;
+  }
+  
 .container {
     max-width: 1200px;
     margin: 0 auto;
@@ -241,4 +253,10 @@ body {
 
 #No-btn:hover {
     background-color: #e60000;
+}
+
+@media (max-width: 660px) {
+    body{
+        margin-top: 10%;
+    }
 }

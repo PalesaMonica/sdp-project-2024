@@ -5,15 +5,18 @@
 }
 
 body {
-    margin: 0;
-    padding: 0;
     background-color: var(--background-color);
     display: flex;
     flex-direction: column;
-    justify-content: center;
+    justify-content: space-around;
     align-items: center;
-    height: 100vh;
+    height: 80vh;
     font-family: Arial, sans-serif;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
 }
 
 /* Header styling */
@@ -48,9 +51,6 @@ body {
 }
 
 .menu-button {
-    position: fixed;
-    top: 3%;
-    right: 10%;
     background-color: var(--primary-color);
     color: white;
     border: none;
@@ -60,6 +60,8 @@ body {
     font-weight: bold;
     cursor: pointer;
     transition: background-color 0.3s ease;
+    margin-left: auto; /* Push button to the right */
+
 }
 
 .menu-button:hover {
@@ -93,7 +95,7 @@ body {
     border-radius: 8px;
     border: 1px solid rgba(0, 0, 0, 0.1);
     justify-items: center;
-    margin-top: 40px; 
+    margin-top: 10px; 
 }
 
 /* Box styling */

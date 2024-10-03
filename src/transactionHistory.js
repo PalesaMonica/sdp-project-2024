@@ -1,1 +1,0 @@
-const pool = require('./db-connection'); // Make sure your database connection file is correctly imported

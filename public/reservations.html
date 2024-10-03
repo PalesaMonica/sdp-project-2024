@@ -7,18 +7,11 @@
     <link rel="stylesheet" href="css/reservations.css">
 </head>
 <body>
-    <div class="container">
-        <header class="header">
-            <div class="logo" onclick="window.location.href='userDashboard.html'">
-                <img src="images/option-21.svg" alt="CampusCrave Logo">
-                <span class="logo-text">Campus<span class="crave">Crave</span></span>
-            </div>
-            <div class = "menu">
-                <button class="menu-button" onclick="window.location.href='menu.html'">Menu</button>
-            </div>
-        </header>
-    
+
         <main class="reservations-container">
+            <div class = "menu">
+                <button class="menu-button" onclick="window.location.href='menu.html'">Go To Menu</button>
+            </div>
             <h1>Your Reservations</h1>
             <div id="reservations-list"></div>
         </main>
@@ -45,5 +38,6 @@
 
     <script src="../src/js/reservations.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/qrious@4.0.2/dist/qrious.min.js"></script>
+    <script src="../src/js/headerLoader.js"></script>
 </body>
 </html>

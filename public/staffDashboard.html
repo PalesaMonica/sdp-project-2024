@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Campus Crave Management</title>
+    <link rel="stylesheet" href="/css/staffDashboard.css">
+</head>
+<body>
+    <header class="header">
+        <div class="header-content">
+            <button class="navbar-toggle" onclick="toggleNav()">☰</button>
+            <div class="logo">
+                <img src="images/option-21.svg" alt="CampusCrave Logo">
+                <span class="logo-text">Campus<span class="crave">Crave</span> Management</span>
+            </div>
+        </div>
+    </header>
+
+    <nav id="sidenav" class="sidenav">
+        <a href="staffDashboard.html">Home</a>
+        <a href="bookings">Dining Hall Bookings</a>
+        <a href="adminNotification">Create Notification</a>
+        <a href="#" onclick="logout()">Logout</a>
+    </nav>
+
+    <div class="container">
+        <div class="tab-container">
+            <div class="tab-buttons">
+                <button class="tab-button active" data-tab="weekly-menu">Weekly Menu</button>
+                <button class="tab-button" data-tab="menu-options">Menu Options</button>
+                <button class="tab-button" data-tab="new-item">Add New Item</button>
+                <button class="tab-button" data-tab="new-menu-option">Create Menu Option</button>
+            </div>
+
+            <div id="weekly-menu" class="tab-content active">
+                <div class="dining-selector">
+                    <h2>Select Dining Hall</h2>
+                    <select id="dining-hall-select"></select>
+                </div>
+
+                <div class="day-selector">
+                    <h2>Select Day</h2>
+                    <select id="day-select">
+                        <option value="Monday">Monday</option>
+                        <option value="Tuesday">Tuesday</option>
+                        <option value="Wednesday">Wednesday</option>
+                        <option value="Thursday">Thursday</option>
+                        <option value="Friday">Friday</option>
+                        <option value="Saturday">Saturday</option>
+                        <option value="Sunday">Sunday</option>
+                    </select>
+                </div>
+
+                <div class="menu-display">
+                    <h2>Current Menu</h2>
+                    <div class="meal-type-tabs">
+                        <button class="meal-tab active" data-meal="breakfast">Breakfast</button>
+                        <button class="meal-tab" data-meal="lunch">Lunch</button>
+                        <button class="meal-tab" data-meal="dinner">Dinner</button>
+                    </div>
+                    <div id="current-menu"></div>
+                </div>
+            </div>
+
+            <div id="menu-options" class="tab-content">
+                <h2>Menu Options</h2>
+                <select id="menu-option-select">
+                    <option value="">Select option</option>
+                </select>
+                <div id="menu-details"></div>
+                <h3>Add Menu Option to Weekly Menu</h3>
+                <select id="add-option-dining-hall"></select>
+                <select id="add-option-day">
+                    <option value="Monday">Monday</option>
+                    <option value="Tuesday">Tuesday</option>
+                    <option value="Wednesday">Wednesday</option>
+                    <option value="Thursday">Thursday</option>
+                    <option value="Friday">Friday</option>
+                    <option value="Saturday">Saturday</option>
+                    <option value="Sunday">Sunday</option>
+                </select>
+                <button id="add-menu-option">Add Menu Option to Day</button>
+            </div>
+
+            <div id="new-item" class="tab-content">
+                <h2>Add New Menu Item</h2>
+                <input type="text" id="new-item-name" placeholder="Item Name">
+                <textarea id="new-item-ingredients" placeholder="Ingredients"></textarea>
+                <select id="new-item-diet-type">
+                    <option value="">Select Diet Suitability</option>
+                    <option value="none">No Diet Plan</option>
+                    <option value="vegetarian,gluten-free,halal,none">All Diet Plans</option>
+                    <option value="vegetarian">Vegetarian</option>
+                    <option value="vegetarian,halal">Vegetarian & Halal</option>
+                    <option value="vegetarian,gluten-free">Vegetarian & Gluten-Free</option>
+                    <option value="gluten-free">Gluten-Free</option>
+                    <option value="gluten-free,halal">Gluten-Free & Halal</option>
+                    <option value="halal">Halal</option>
+                </select>
+                <select id="new-item-meal-type">
+                    <option value="">Select Meal Type</option>
+                    <option value="breakfast">Breakfast</option>
+                    <option value="lunch">Lunch</option>
+                    <option value="lunch,dinner">Lunch and Dinner</option>
+                    <option value="dinner">Dinner</option>
+                    <option value="breakfast,lunch,dinner">All</option>
+                </select>
+                <input type="text" id="new-item-image-url" placeholder="Image URL">
+                <button id="add-new-item">Add New Item</button>
+            </div>
+
+            <div id="new-menu-option" class="tab-content">
+                <h2>Create New Menu Option</h2>
+                <div id="menu-items-pool"></div>
+                <p>Selected items: <span id="selected-items-count">0</span>/8 (mininum)</p>
+                <button id="create-menu-option" disabled>Create Menu Option</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="../src/js/staffDashboard.js"></script>
+</body>
+</html>
+    

@@ -7,49 +7,45 @@
     <link rel="stylesheet" href="css/dietary_plan.css">
 </head>
 <body>
-    <div class="header">
-        <div class="logo" onclick="window.location.href='userDashboard.html'">
-            <img src="images/option-21.svg" alt="CampusCrave Logo" onclick="window.location.href='userDashboard.html'">
-            <span class="logo-text" onclick="window.location.href='userDashboard.html'" >Campus<span class="crave" onclick="window.location.href='userDashboard.html'">Crave</span></span>
+
+    <button class="menu-button"onclick="window.location.href='menu.html'">Go To Menu</button>
+    <div class="container">
+        
+        <div class="greeting">
+            <span>Hi </span><span id="hello" style="color: #FF6A3D;">Bhebhe!</span>
         </div>
-        <div class = "menu">
-            <button class="menu-button" onclick="window.location.href='menu.html'">Menu</button>
+    
+        <div class="current-plan">
+            Your current dietary plan is: <span id="current-diet-plan" style="color: #FF6A3D;"></span>
         </div>
-    </div>
-
-    <div class="greeting">
-        <span>Hi </span><span id="hello" style="color: #FF6A3D;">Bhebhe!</span>
-    </div>
-
-    <div class="current-plan">
-        Your current dietary plan is: <span id="current-diet-plan" style="color: #FF6A3D;"></span>
-    </div>
-
-    <div class="instruction">
-        <span>Select a </span><span style="color: #FF6A3D;">dietary preference</span><span> from the options </span><span style="color: #FF6A3D;">below</span>
-    </div>
-
-    <div class="box-container">
-        <div class="box" onclick="handleBoxClick('vegetarian')">
-            <img src="images/icons8-vegetarian-64 1.png" alt="Vegetarian Option" />
-            <div class="label">Vegetarian</div>
+    
+        <div class="instruction">
+            <span>Select a </span><span style="color: #FF6A3D;">dietary preference</span><span> from the options </span><span style="color: #FF6A3D;">below</span>
         </div>
-
-        <div class="box" onclick="handleBoxClick('gluten-free')">
-            <img src="images/icons8-gluten-free-50 1.png" alt="Gluten-Free Option" />
-            <div class="label">Gluten-Free</div>
-        </div>
-
-        <div class="box" onclick="handleBoxClick('halal')">
-            <img src="images/icons8-halal-50 1.png" alt="Halal Option" />
-            <div class="label">Halal</div>
-        </div>
-
-        <div class="box" onclick="handleBoxClick('none')">
-            <img src="images/icons8-unavailable-50 1.png" alt="None Option" />
-            <div class="label">None</div>
+    
+        <div class="box-container">
+            <div class="box" onclick="handleBoxClick('vegetarian')">
+                <img src="images/icons8-vegetarian-64 1.png" alt="Vegetarian Option" />
+                <div class="label">Vegetarian</div>
+            </div>
+    
+            <div class="box" onclick="handleBoxClick('gluten-free')">
+                <img src="images/icons8-gluten-free-50 1.png" alt="Gluten-Free Option" />
+                <div class="label">Gluten-Free</div>
+            </div>
+    
+            <div class="box" onclick="handleBoxClick('halal')">
+                <img src="images/icons8-halal-50 1.png" alt="Halal Option" />
+                <div class="label">Halal</div>
+            </div>
+    
+            <div class="box" onclick="handleBoxClick('none')">
+                <img src="images/icons8-unavailable-50 1.png" alt="None Option" />
+                <div class="label">None</div>
+            </div>
         </div>
     </div>
+
 
     <!-- Modal for confirmation -->
     <div id="confirmation-modal" class="modal">
@@ -71,6 +67,7 @@
     <div id="toaster" class="toaster">Dietary plan confirmed!</div>
 
     <script src="../src/js/dietary_plan.js"></script>
+    <script src="../src/js/headerLoader.js"></script>
 
 </body>
 </html>

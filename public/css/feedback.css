@@ -1,7 +1,27 @@
-body{
-    margin: 0;
-    padding: 0;
+:root {
+    --primary-color: #ff6a3d;
+    --background-color: #1a1e2e;
+    --text-color: #ffffff;
 }
+
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 20px;
+    background-color: var(--background-color);
+    color: var(--text-color);
+    margin-top: 4%;
+}
+body {
+    visibility: hidden; /* Hide body initially */
+    opacity: 0;
+    transition: opacity 0.3s ease-in; /* Smooth transition */
+  }
+  
+  body.loaded {
+    visibility: visible;
+    opacity: 1;
+  }
 
 .feedback-screen {
     background-color: #1a1e2e;
@@ -24,7 +44,7 @@ body{
 
 .feedback-screen .group-2 {
     text-align: center;
-    margin-bottom: 20px;
+    margin-bottom: 10px;
 }
 
 .feedback-screen .text-wrapper-3 {
@@ -42,7 +62,7 @@ body{
 
 .feedback-screen .main-rating-w-text {
     text-align: center;
-    margin-bottom: 20px;
+    margin-bottom: 10px;
 }
 
 .feedback-screen .text-wrapper {
@@ -57,7 +77,7 @@ body{
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 15px;
+    gap: 5px;
     width: 100%;
     box-sizing: border-box;
 }
@@ -76,7 +96,7 @@ body{
 }
 
 .feedback-screen .feedback-form-wrapper {
-    margin-bottom: 20px;
+    margin-bottom: 10px;
 }
 
 .feedback-form-wrapper textarea {
@@ -99,7 +119,7 @@ body{
 }
 
 .feedback-screen .submit-button {
-    margin-top: 20px;
+    margin-top: 5px;
     text-align: center;
 }
 
@@ -116,7 +136,7 @@ body{
 }
 
 .feedback-screen .dropdown-section {
-    margin-top: 20px;
+    margin-top: 5px;
     text-align: center;
 }
 
@@ -126,7 +146,7 @@ body{
     color: white;
 }
 
-.labels{
+.labels {
     color: white;
 }
 
@@ -151,7 +171,7 @@ body{
     font-size: 16px;
     border: none;
     border-radius: 5px;
-    margin-top: 10px;
+    margin-top: 5px;
     cursor: pointer;
 }
 
@@ -165,7 +185,7 @@ body{
 }
 
 #confirmation-message {
-    margin-top: 20px;
+    margin-top: 5px;
     text-align: center;
     font-family: "Inter-SemiBold", Helvetica;
     color: #f4db7d;
@@ -187,7 +207,7 @@ body{
 }
 
 .group-2 {
-    margin-top: 30px;
+    margin-top: 10px;
     text-align: center;
 }
 
@@ -218,3 +238,98 @@ body{
 .star.selected {
     color: #ff6a3d;
 }
+
+/* Modal Styles */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.5);
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-content {
+    background-color: #1a1e2e;
+    margin: 5% auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%;
+    max-width: 600px;
+    border-radius: 10px;
+    color: white;
+}
+
+.modal-content h2 {
+    text-align: center;
+    color: #ff6a3d;
+}
+
+.close {
+    color: white;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.close:hover,
+.close:focus {
+    color: #ff6a3d;
+}
+
+#reviews {
+    margin-top: 20px;
+    background-color: #f4db7d;
+    color: black;
+    padding: 15px;
+    border-radius: 10px;
+}
+
+/* Button inside modal */
+.dropdown-section button {
+    background-color: #ff6a3d;
+    color: white;
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.dropdown-section button:hover {
+    background-color: #ff5221;
+}
+
+.nav-links {
+    position: absolute;
+    right: 2%; /* 10px from the right */
+}
+
+.see-reviews-btn {
+    background-color: #ff6a3d;
+    color: white;
+    font-family: "Inter-SemiBold", Helvetica;
+    font-size: 18px;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.see-reviews-btn:hover {
+    background-color: #ff5221;
+}
+
+
+@media (max-width: 660px) {
+    body{
+        margin-top: 10%;
+    }
+}
+

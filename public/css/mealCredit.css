@@ -10,7 +10,18 @@ body {
     padding: 0;
     background-color: var(--background-color);
     color: var(--text-color);
+    margin-top: 4%;
 }
+body {
+    visibility: hidden; /* Hide body initially */
+    opacity: 0;
+    transition: opacity 0.3s ease-in; /* Smooth transition */
+  }
+  
+  body.loaded {
+    visibility: visible;
+    opacity: 1;
+  }
 .container {
     max-width: 800px;
     margin: 0 auto;

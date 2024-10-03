@@ -65,9 +65,11 @@ body {
 
 .container {
     display: flex;
-    justify-content: center;
+    margin-top: 2%;
     align-items: center;
+    flex-direction: column; /* Ensures content is stacked vertically */
     height: 100vh;
+    padding: 20px; /* Adding padding for better spacing */
 }
 
 .sidenav {
@@ -96,76 +98,76 @@ body {
     background-color: var(--primary-color);
 }
 
-.form {
-    width: 100%;
-    max-width: 400px;
-    padding: 20px;
-    background: var(--background-color);
-    border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+/* Booking list styling */
+.booking-list {
+    list-style-type: none;
+    padding: 0;
+    margin-top: 10px;
+    width: 100%; /* Ensures the list takes full container width */
+    max-width: 600px; /* Optional: restrict the width of the booking list */
 }
 
-/* Heading for the notification form */
-.heading {
-    color: var(--primary-color );
-    font-size: 24px;
-    font-weight: 400;
-    margin-bottom: 20px;
-    text-align: center;
+.booking-item {
+    background-color: #F6F9FF;
+    color: #1A2238;
+    padding: 15px;
+    margin: 10px 0;
+    border-radius: 8px;
+    transition: background-color 0.3s, color 0.3s;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Adds subtle shadow for depth */
 }
 
-/* Input container styling */
-.input-container {
-    margin-bottom: 20px;
+.booking-item:hover {
+    background-color: #FF6A3D;
+    color: white;
 }
 
-.label {
-    color: #FF6A3D;
-    font-size: 24px;
-    font-weight: 400;
-    margin-bottom: 10px;
-}
-
-/* Input field styling */
-.input-field {
-    width: 100%;
-    height: 39px;
-    padding: 5px;
-    border-radius: 10px;
+/* Button styling (for actions like "Book Now") */
+.button {
+    background-color: #FF6A3D;
+    color: white;
+    padding: 10px 15px;
     border: none;
-    background: #F6F9FF;
-}
-
-.textarea-field {
-    width: 100%;
-    height: 115px;
-    padding: 10px;
-    border-radius: 20px;
-    border: none;
-    background: #F6F9FF;
-}
-
-/* Send button styling */
-.send-btn {
-    width: 50%;
-    height: 37px;
-    background: #FF6A3D;
     border-radius: 5px;
-    border: none;
-    color: black;
-    font-size: 24px;
     cursor: pointer;
+    transition: background-color 0.3s;
+    margin-top: 20px;
     text-align: center;
-    padding: 5px;
 }
 
+.button:hover {
+    background-color: #FF4C1D;
+}
+
+/* Success message styling */
 .success-message {
-    color: white; /* Text color */
-    background-color: green; /* Background color */
+    color: white;
+    background-color: green;
     padding: 10px;
     border-radius: 5px;
     font-size: 16px;
     margin-top: 20px;
     text-align: center;
+    width: 100%; /* Ensures the message spans the full width */
 }
 
+/* Error message styling */
+.error-message {
+    color: white;
+    background-color: red;
+    padding: 10px;
+    border-radius: 5px;
+    font-size: 16px;
+    margin-top: 20px;
+    text-align: center;
+    width: 100%;
+}
+#name {
+    font-size: 36px; /* Larger font size for the heading */
+    color: #FF6A3D; /* Custom color */
+    text-align: center; /* Center the heading */
+    margin-bottom: 20px; /* Add some space below the heading */
+    text-transform: uppercase; /* Make the text uppercase */
+    letter-spacing: 2px; /* Adds spacing between letters */
+    font-weight: bold; /* Make the text bold */
+}

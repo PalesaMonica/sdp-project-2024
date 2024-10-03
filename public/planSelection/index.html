@@ -8,29 +8,31 @@
 </head>
 <body>
     <div class="header"></div>
-        <div class="logo" onclick="window.location.href='userDashboard.html'">
-            <img src="images/option-21.svg" alt="CampusCrave Logo" onclick="window.location.href='userDashboard.html'">
-            <span class="logo-text" onclick="window.location.href='userDashboard.html'" >Campus<span class="crave" onclick="window.location.href='userDashboard.html'">Crave</span></span>
-        </div>
+    <div class="logo" onclick="window.location.href='../userDashboard.html'">
+        <img src="../images/option-21.svg" alt="CampusCrave Logo">
+        <span class="logo-text">Campus<span class="crave">Crave</span></span>
+    </div>
 
-        <div class="container">
-            <h1>Select Your Meal Plan</h1>
-            <div class="plan-options">
-                <div class="plan">
-                    <h2>Thrice-Daily Plan</h2>
-                    <p>3 meals per day at a cost of R35,000 per year</p>
-                    <button onclick="selectPlan('thrice-daily')">Select Thrice-Daily Plan</button>
-                </div>
-                <div class="plan">
-                    <h2>Twice-Daily Plan</h2>
-                    <p>2 meals per day at a cost of R25,000 per year</p>
-                    <button onclick="selectPlan('twice-daily')">Select Twice-Daily Plan</button>
-                </div>
-            </div>
-            <div id="message"></div>
-        </div>
+    <div class="instruction">
+        <span class="white-text">Please select a </span><span class="orange-text">meal plan</span><span class="white-text"> below</span>
+    </div>
     
-        
-        <script src="/src/js/planSelection.js"></script>
-    </body>
+    <div id="message" ></div> <!-- Moved below the instruction -->
+    
+    <div class="plan-options">
+        <div class="plan">
+            <h2>Thrice-Daily Plan</h2>
+            <p>3 meals per day at a cost of R35,000 per year</p>
+            <button onclick="selectPlan('thrice-daily')">Select Thrice-Daily Plan</button>
+        </div>
+        <div class="plan">
+            <h2>Twice-Daily Plan</h2>
+            <p>2 meals per day at a cost of R25,000 per year</p>
+            <button onclick="selectPlan('twice-daily')">Select Twice-Daily Plan</button>
+        </div>
+    </div>
+    
+
+    <script src="../../src/js/planSelection.js"></script>
+</body>
 </html>

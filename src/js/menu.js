@@ -1,3 +1,41 @@
+document.addEventListener("DOMContentLoaded", () => {
+    fetch("/get-username")
+    .then((response) => {
+      if (response.status === 401) {
+        // Redirect to login page if user is not authorized
+        window.location.href = "/login";
+        throw new Error("Unauthorized access. Redirecting to login...");
+      }
+      return response.json();
+    })
+      .then((data) => {
+        if (data.username) {
+          document.getElementById("username").textContent = `${data.username}!`;
+        } else {
+          console.error("Failed to load username.");
+        }
+      })
+      .catch((error) => console.error("Error fetching username:", error));
+      
+      const unreadCount = localStorage.getItem('unreadCount') || 0; // Default to 0 if not found
+      document.getElementById("unread-count").textContent = unreadCount;
+  
+      const openBtn = document.querySelector('.open-btn');
+      const closeBtn = document.querySelector('.close-btn');
+      const sidenav = document.getElementById('sidenav');
+      const body = document.body;
+    
+      openBtn.addEventListener('click', () => {
+        sidenav.style.width = '250px'; // Open the sidenav
+        body.classList.add('open-sidenav'); // Shift the content
+      });
+    
+      closeBtn.addEventListener('click', () => {
+        sidenav.style.width = '0'; // Close the sidenav
+        body.classList.remove('open-sidenav'); // Reset the content margin
+      });
+  });
+  
 const diningHallSelector = document.getElementById('dining-hall-selector');
 const daySelector = document.getElementById('day-selector');
 const menuContainer = document.getElementById('menu-container');
@@ -8,7 +46,14 @@ const closeButton = document.getElementsByClassName('close')[0];
 window.addEventListener('load', () => {
     // Fetch the dietary preference and display it
     fetch("/get-dietary_preference")
-    .then((response) => response.json())
+    .then((response) => {
+        if (response.status === 401) {
+          // Redirect to login page if user is not authorized
+          window.location.href = "/login";
+          throw new Error("Unauthorized access. Redirecting to login...");
+        }
+        return response.json();
+      })
     .then((data) => {
       if (data.preference) {
         document.getElementById("diet-preference").textContent = `Your dietary preference is: ${data.preference}`;
@@ -52,7 +97,14 @@ function displayMenu() {
 
     // Fetch the menu items based on dining hall and day of the week
     fetch(`/api/menu?dining_hall=${diningHall}&day_of_week=week`)
-        .then(response => response.json())
+    .then((response) => {
+        if (response.status === 401) {
+          // Redirect to login page if user is not authorized
+          window.location.href = "/login";
+          throw new Error("Unauthorized access. Redirecting to login...");
+        }
+        return response.json();
+      })
         .then(menuItems => {
             // Filter menu items based on dietary preferences
             const filteredMenuItems = menuItems.filter(item => {
@@ -250,7 +302,14 @@ function replaceCartItem(duplicateItemId, item, date) {
             date: date
         })
     })
-    .then(response => response.json())
+    .then((response) => {
+        if (response.status === 401) {
+          // Redirect to login page if user is not authorized
+          window.location.href = "/login";
+          throw new Error("Unauthorized access. Redirecting to login...");
+        }
+        return response.json();
+      })
     .then(data => {
         showToaster('Item replaced in cart!');
         updateCartIcon(data.cartCount);  // Update the cart icon
@@ -275,7 +334,12 @@ function addToCart(item, date) {
         })
     })
     .then(response => {
-        if (response.status === 409) {
+        if (response.status === 401) {
+            // Redirect to login page if user is not authorized
+            window.location.href = "/login";
+            throw new Error("Unauthorized access. Redirecting to login...");
+          }
+       else if (response.status === 409) {
             // Duplicate found, show the popup
             return response.json().then(data => {
                 showDuplicatePopup(item, date, data.duplicateItemId);
@@ -296,7 +360,14 @@ function addToCart(item, date) {
 // Fetch the current cart item count and update the cart icon
 function fetchCartItemCount() {
     fetch('/api/cart-count')  // Assuming you have an API to get the cart item count
-    .then(response => response.json())
+    .then((response) => {
+        if (response.status === 401) {
+          // Redirect to login page if user is not authorized
+          window.location.href = "/login";
+          throw new Error("Unauthorized access. Redirecting to login...");
+        }
+        return response.json();
+      })
     .then(data => {
         updateCartIcon(data.cartCount);  // Update the cart icon with the number of items
     })
@@ -363,7 +434,14 @@ function setupSearch() {
     const selectedView = daySelector.value;
   
     fetch(`/api/menu?dining_hall=${diningHall}&day_of_week=week`)
-      .then(response => response.json())
+    .then((response) => {
+        if (response.status === 401) {
+          // Redirect to login page if user is not authorized
+          window.location.href = "/login";
+          throw new Error("Unauthorized access. Redirecting to login...");
+        }
+        return response.json();
+      })
       .then(menuItems => {
         const filteredItems = menuItems.filter(item =>
           item.item_name.toLowerCase().includes(searchTerm) ||
@@ -412,4 +490,36 @@ function backToDash() {
 //reload the page
 function reloadPage() {
     location.reload();
+  }
+
+  function toggleNav() {
+    const sidenav = document.getElementById("sidenav");
+    const container = document.querySelector(".container");
+    if (sidenav.style.width === "250px") {
+        sidenav.style.width = "0";
+        document.body.style.marginLeft = "0";
+        container.style.marginLeft = "auto";
+    } else {
+        sidenav.style.width = "250px";
+        document.body.style.marginLeft = "250px";
+        container.style.marginLeft = "auto";
+    }
+  }
+  
+  function logout() {
+    fetch('/logout', {
+      method: 'POST',
+      credentials: 'same-origin',  // Ensures the session cookie is sent
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.message === 'Logout successful') {
+        window.location.href = data.redirectUrl;  // Redirect to login page
+      } else {
+        console.error('Logout failed:', data.message);
+      }
+    })
+    .catch(err => {
+      console.error('Error during logout:', err);
+    });
   }

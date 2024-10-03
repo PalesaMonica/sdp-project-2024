@@ -10,33 +10,35 @@ body {
     padding: 20px;
     background-color: var(--background-color);
     color: var(--text-color);
+    margin-top: 4%;
 }
 
-.header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 20px;
-}
+body {
+    visibility: hidden; /* Hide body initially */
+    opacity: 0;
+    transition: opacity 0.3s ease-in; /* Smooth transition */
+  }
+  
+  body.loaded {
+    visibility: visible;
+    opacity: 1;
+  }
 
-.logo {
-    display: flex;
-    align-items: center;
-}
 
-.logo img {
-    width: 40px;
-    height: 40px;
-    margin-right: 10px;
-}
-
-.logo-text {
-    font-size: 24px;
+.reservation-button {
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-size: 16px;
     font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
 }
 
-.crave {
-    color: var(--primary-color);
+.reservation-button:hover {
+    background-color: #e55d3b; /* Darker color on hover */
 }
 
 .cart-container {
@@ -274,3 +276,8 @@ body {
     background-color: #f44336;
 }
 
+@media (max-width: 660px) {
+    body{
+        margin-top: 10%;
+    }
+}
