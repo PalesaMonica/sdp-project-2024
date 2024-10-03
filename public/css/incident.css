@@ -1,10 +1,25 @@
-body, html {
+:root {
+    --primary-color: #ff6a3d;
+    --background-color: #1a1e2e;
+    --text-color: #ffffff;
+}
+body {
+    font-family: Arial, sans-serif;
+    background-color: var(--background-color);
     margin: 0;
     padding: 0;
-    height: 100%;
-    font-family: 'Jaldi', sans-serif;
-    background-color: #1A2238;
+    margin-top: 10%;
 }
+body {
+    visibility: hidden; /* Hide body initially */
+    opacity: 0;
+    transition: opacity 0.3s ease-in; /* Smooth transition */
+  }
+  
+  body.loaded {
+    visibility: visible;
+    opacity: 1;
+  }
 
 .container {
     display: flex;
@@ -14,18 +29,41 @@ body, html {
     padding: 20px; /* Adds some padding around the edges of the page */
 }
 
+.logo {
+    display: flex;
+    align-items: center;
+}
+
+.logo img {
+    width: 40px;
+    height: 40px;
+    margin-right: 10px;
+}
+
+.logo-text {
+    font-size: 24px;
+    font-weight: bold;
+    color: var(--text-color);
+}
+
+.crave {
+    color: var(--primary-color);
+}
+
 /* Ensure the form inside .header2 is centered */
 .header2 {
+    margin-top: 4%;
     display: flex;
     justify-content: center;
     align-items: center;
     height: 100vh; /* Makes it take the full height of the viewport */
-    width: 100%;
-    max-width: 400px;
+    width: 80%;
+    height: 50%;
     padding: 20px;
-    background: #1A2238;
-    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.03);
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    border-radius: 10px;
+  
     margin: 0 auto;
     flex-direction: column; /* Centers content vertically */
     text-align: center; /* Centers text and form elements */
@@ -106,38 +144,6 @@ body, html {
     text-align: center;
 }
 
-.header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    position: sticky; /* Makes the header stick at the top */
-    top: 0; /* Keeps the header at the top */
-    z-index: 100; /* Ensures the header stays above other content */
-    background-color: var(--background-color); /* Keeps the background intact */
-    padding: 10px; /* Padding around the header */
-    margin-bottom: 20px; /* Space below the header */
-  }
-.logo {
-    display: flex; /* This ensures the image and text are aligned horizontally */
-    align-items: center; /* Aligns the logo text and image vertically */
-}
-
-.logo-image {
-    width: 40px;
-    height: 40px;
-    margin-right: 10px; /* Space between the logo image and text */
-}
-
-.logo-text {
-    font-size: 30px; /* Logo font size */
-    font-weight: bold; /* Logo font weight */
-    display: inline-block;
-    color: #FF6A3D; /* Color of the "Campus" part */
-}
-
-.crave {
-    color: white; /* Color of the "Crave" part */
-}
 
 .back-button {
     background: none;
@@ -158,4 +164,11 @@ body, html {
     background: #F6F9FF;
     border: none;
     cursor: pointer;
+}
+
+@media (max-width: 660px) {
+
+    .header2 {
+        margin-top: 25%;
+    }
 }

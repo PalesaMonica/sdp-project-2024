@@ -5,8 +5,6 @@
 }
 
 body {
-    margin: 0;
-    padding: 0;
     background-color: var(--background-color);
     display: flex;
     flex-direction: column;
@@ -48,9 +46,6 @@ body {
 }
 
 .menu-button {
-    position: fixed;
-    top: 3%;
-    right: 10%;
     background-color: var(--primary-color);
     color: white;
     border: none;
@@ -66,9 +61,17 @@ body {
     background-color: #e55d3b; /* Darker color on hover */
 }
 
-
 /* Greeting and instruction styling */
-.greeting, .instruction, .current-plan {
+.greeting{
+    color: white;
+    font-size: 20px;
+    font-family: Inter, Arial, sans-serif;
+    font-weight: 800;
+    margin: 10px 0;
+    text-align: center;
+}
+
+.instruction, .current-plan {
     color: white;
     font-size: 20px;
     font-family: Inter, Arial, sans-serif;
@@ -228,33 +231,4 @@ body {
     display: block;
 }
 
-/* Media queries for responsive design */
-@media (max-width: 600px) {
-    .name {
-        font-size: 4vw; /* Adjust for smaller screens */
-    }
 
-    .box-container {
-        width: 100vw; /* Full width for small screens */
-        padding: 20px;
-    }
-
-    .box {
-        height: auto; /* Adjust height based on content */
-        padding: 15px;
-    }
-
-    .box img {
-        width: 40px; /* Adjust image size for smaller screens */
-    }
-
-    .save-button {
-        width: 100%; /* Full width for smaller screens */
-        padding: 12px 0; /* Adjust padding for small screens */
-    }
-
-    .back-button {
-        padding: 8px 16px; /* Smaller padding for small screens */
-        font-size: 14px; /* Adjust font size */
-    }
-}

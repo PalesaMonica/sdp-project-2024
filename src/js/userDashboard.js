@@ -1,4 +1,6 @@
 document.addEventListener("DOMContentLoaded", () => {
+  fetchCartItemCount(); 
+  
   fetch("/get-username")
   .then((response) => {
     if (response.status === 401) {
@@ -52,6 +54,20 @@ function navigate(page) {
   alert(`Navigating to ${page} page`);
 }
 
+function toggleNav() {
+  const sidenav = document.getElementById("sidenav");
+  const container = document.querySelector(".container");
+  if (sidenav.style.width === "250px") {
+      sidenav.style.width = "0";
+      document.body.style.marginLeft = "0";
+      container.style.marginLeft = "auto";
+  } else {
+      sidenav.style.width = "250px";
+      document.body.style.marginLeft = "250px";
+      container.style.marginLeft = "auto";
+  }
+}
+
 function logout() {
   fetch('/logout', {
     method: 'POST',
@@ -68,6 +84,28 @@ function logout() {
   .catch(err => {
     console.error('Error during logout:', err);
   });
+}
+
+function fetchCartItemCount() {
+  fetch('/api/cart-count')  // Assuming you have an API to get the cart item count
+  .then((response) => {
+      if (response.status === 401) {
+        // Redirect to login page if user is not authorized
+        window.location.href = "/login";
+        throw new Error("Unauthorized access. Redirecting to login...");
+      }
+      return response.json();
+    })
+  .then(data => {
+      updateCartIcon(data.cartCount);  // Update the cart icon with the number of items
+  })
+  .catch(error => console.error('Error fetching cart count:', error));
+}
+
+// Function to update the cart icon with the cart item count
+function updateCartIcon(cartItemCount) {
+  const cartIcon = document.getElementById('cart-count');
+  cartIcon.textContent = cartItemCount;
 }
 
 module.exports = { navigate };

@@ -7,23 +7,34 @@
     <link rel="stylesheet" href="css/menu.css">
 </head>
 <body>
-    <div class="container">
-        <div class="header">
+    <header class="header">
+        <div class="header-content">
+            <button class="navbar-toggle" onclick="toggleNav()">☰</button>
             <div class="logo">
-                <img src="images/option-21.svg" alt="CampusCrave Logo" onclick="backToDash()">
-                <span class="logo-text" onclick="backToDash()" >Campus<span class="crave" onclick="backToDash()">Crave</span></span>
+                <img src="images/option-21.svg" alt="CampusCrave Logo">
+                <span class="logo-text">Campus<span class="crave">Crave</span></span>
             </div>
             <div class="cart-icon">
                 <span id="cart-count">0</span>
                 <img src="images/cart-icon.svg" alt="Cart" onclick="window.location.href='cart.html'">
             </div>
+            <div class="search-bar">
+                <input type="text" id="search-input" placeholder="Search for meals...">
+                <button id="search-button">Search</button>
+            </div>
         </div>
+    </header>
+  
+      <!-- Slide-Out Navigation Menu -->
+      <nav id="sidenav" class="sidenav">
+        <a href="userDashboard.html">Home</a>
+        <a href="Notification" id="notification-link">Notification <span id="unread-count" class="unread-count">0</span></a>
+        <a href="incident"  id="incident-link">Report Incident</a>
+        <a href="userProfile.html">Manage Account</a>
+        <a onclick="logout()">Logout</a>
+      </nav>
 
-        
-        <div class="search-bar">
-            <input type="text" id="search-input" placeholder="Search for meals...">
-            <button id="search-button">Search</button>
-        </div>
+    <div class="container">
 
         <div class="menu-controls">
             <select id="dining-hall-selector">
