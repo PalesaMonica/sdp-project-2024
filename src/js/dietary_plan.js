@@ -24,30 +24,31 @@ function showConfirmationModal(dietPlan) {
 }
 
 function confirmSelection(dietPlan) {
-    fetch('/saveDietPreference', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ dietPlan })
-    })
-    .then((response) => {
-        if (response.status === 401) {
-          // Redirect to login page if user is not authorized
+  fetch('/saveDietPreference', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ dietPlan })
+  })
+  .then((response) => {
+      if (response.status === 401) {
           window.location.href = "/login";
           throw new Error("Unauthorized access. Redirecting to login...");
-        }
-        return response.json();
-      })
-    .then(data => {
-        // Show the toaster with the confirmation message
-        showToaster(`Your ${dietPlan} diet plan has been confirmed!`);
-
-        // Reload the page after showing the toaster for 3 seconds
-        setTimeout(() => {
-            window.location.reload();  // Reload the page
-        }, 1500); // Show the toaster for 3 seconds
-    })
-    .catch(error => console.error('Error:', error));
+      } else if (response.status === 403) {
+          // Show a toaster for the 3-month restriction
+          showToaster('You can only change your diet plan once every 3 months.');
+          throw new Error("Diet plan change restricted.");
+      }
+      return response.json();
+  })
+  .then(data => {
+      showToaster(`Your ${dietPlan} diet plan has been confirmed!`);
+      setTimeout(() => {
+          window.location.reload();
+      }, 1500);
+  })
+  .catch(error => console.error('Error:', error));
 }
+
 
 function showToaster(message) {
     const toaster = document.getElementById('toaster');
