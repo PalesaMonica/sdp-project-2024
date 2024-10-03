@@ -94,6 +94,7 @@ function fetchReviews() {
             const reviewElement = document.createElement('div');
             reviewElement.innerHTML = `
                 <h3>Rating: ${review.rating}</h3>
+                <p><strong>Dining Hall:</strong> ${review.dining_hall}</p>
                 <p>${review.review_text}</p>
                 <small>Posted on: ${new Date(review.created_at).toLocaleString()}</small>
             `;
