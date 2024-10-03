@@ -11,7 +11,14 @@ function confirmSelection() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ dietPlan })
     })
-    .then(response => response.json())
+    .then((response) => {
+        if (response.status === 401) {
+          // Redirect to login page if user is not authorized
+          window.location.href = "/login";
+          throw new Error("Unauthorized access. Redirecting to login...");
+        }
+        return response.json();
+      })
     .then(data => {
         alert(`Your ${dietPlan} diet plan has been confirmed!`);
         window.location.href = 'menu.html';

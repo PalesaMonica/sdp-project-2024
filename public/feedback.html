@@ -8,24 +8,22 @@
     <link rel="stylesheet" href="css/feedback.css" />
 </head>
 <body>
+    <nav class="nav-links">
+        <button class="see-reviews-btn" onclick="openReviewModal()">See Reviews</button>
+    </nav>
+
+
+    <!-- Feedback Screen Section -->
     <div class="feedback-screen">
         <div class="div">
             <!-- Main Heading -->
             <div class="group-2">
                 <p class="text-wrapper-3">Your feedback matters to us!</p>
-                <img class="image" src="images/logo.png" />
-            </div>
-
-            <!-- Rating Text -->
-            <div class="main-rating-w-text">
-                <div class="overlap-group">
-                    <p class="text-wrapper">How would you like to describe your experience with CampusCrave?</p>
-                </div>
             </div>
 
             <!-- Feedback Form -->
             <div class="feedback-form-wrapper">
-                <form id="feedback-form">
+                <form id="feedback-form" onsubmit="handleSubmit(event)">
                     <!-- Dining Hall Dropdown -->
                     <label for="dining_hall" class="labels">Dining Hall:</label>
                     <select id="dining_hall" name="dining_hall" required>
@@ -63,8 +61,16 @@
                 </form>
                 <div id="confirmation-message"></div>
             </div>
+        </div>
+    </div>
 
-            <!-- Review Filter and Display Section -->
+    <!-- Modal for Reviews -->
+    <div id="review-modal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeReviewModal()">&times;</span>
+            <h2>Filter Reviews</h2>
+
+            <!-- Review Filter -->
             <div class="dropdown-section">
                 <label for="review_filter" class="dropdown-label">Select Review Rating:</label>
                 <select id="review_filter">
@@ -78,9 +84,11 @@
                 <button onclick="fetchReviews()">See Reviews</button>
             </div>
 
+            <!-- Reviews Display Section -->
             <div id="reviews"></div>
         </div>
     </div>
     <script src="/src/js/feedback.js"></script>
+    <script src="/src/js/headerLoader.js"></script>
 </body>
 </html>

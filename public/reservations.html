@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Reservations - CampusCrave</title>
+    <link rel="stylesheet" href="css/reservations.css">
+</head>
+<body>
+
+        <main class="reservations-container">
+            <div class = "menu">
+                <button class="menu-button" onclick="window.location.href='menu.html'">Go To Menu</button>
+            </div>
+            <h1>Your Reservations</h1>
+            <div id="reservations-list"></div>
+        </main>
+    </div>
+
+    <div id="reservation-modal" class="modal">
+        <div class="modal-content">
+            <h2>Reservation Details</h2>
+            <div id="reservation-details"></div>
+            <button id="delete-reservation">Delete Reservation</button>
+            <button id="close-modal">Close</button>
+        </div>
+    </div>
+
+    <div id="delete-reservation-modal" class="modal">
+        <div class="modal-content">
+            <h2>Confirm Deletion</h2>
+            <p>Are you sure you want to delete this reservation?</p>
+            <button id="Yes-btn">Yes</button>
+            <button id="No-btn">No-Cancel</button>
+        </div>
+    </div>
+
+
+    <script src="../src/js/reservations.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/qrious@4.0.2/dist/qrious.min.js"></script>
+    <script src="../src/js/headerLoader.js"></script>
+</body>
+</html>

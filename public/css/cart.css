@@ -1,0 +1,283 @@
+:root {
+    --primary-color: #ff6a3d;
+    --background-color: #1a1e2e;
+    --text-color: #ffffff;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 20px;
+    background-color: var(--background-color);
+    color: var(--text-color);
+    margin-top: 4%;
+}
+
+body {
+    visibility: hidden; /* Hide body initially */
+    opacity: 0;
+    transition: opacity 0.3s ease-in; /* Smooth transition */
+  }
+  
+  body.loaded {
+    visibility: visible;
+    opacity: 1;
+  }
+
+
+.reservation-button {
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.reservation-button:hover {
+    background-color: #e55d3b; /* Darker color on hover */
+}
+
+.cart-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.cart-item {
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    padding: 20px;
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.item-details {
+    display: flex;
+    align-items: center;
+}
+
+.cart-item img {
+    width: 130px;
+    height: 130px;
+    object-fit: cover;
+    border-radius: 5px;
+    margin-right: 15px;
+}
+
+.item-info {
+    color: var(--text-color);
+}
+
+.item-info h3 {
+    margin: 0 0 5px;
+    font-size: 1.2em;
+    color: var(--primary-color);
+}
+
+.item-info p {
+    margin: 5px 0;
+    font-size: 0.9em;
+}
+
+.remove-item {
+    background-color: #ff4d4d;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.remove-item:hover {
+    background-color: #e60000;
+}
+
+#confirm-reservation {
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    padding: 15px 25px;
+    font-size: 16px;
+    cursor: pointer;
+    display: block;
+    margin: 20px auto;
+    border-radius: 5px;
+    transition: background-color 0.3s ease;
+}
+
+#confirm-reservation:hover {
+    background-color: #e55542;
+}
+
+.modal {
+  display: none; /* Hidden by default */
+  position: fixed;
+  z-index: 1;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5); /* Black background with opacity */
+}
+
+.modal-content {
+  background-color: #fefefe;
+  margin: 15% auto;
+  padding: 20px;
+  border: 1px solid #888;
+  width: 80%;
+  max-width: 400px;
+  text-align: center;
+  border-radius: 10px;
+}
+
+#confirm-btn, #cancel-btn {
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  margin: 10px;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+#cancel-btn {
+  background-color: #f44336;
+}
+
+#confirm-btn:hover {
+  background-color: #45a049;
+}
+
+#cancel-btn:hover {
+  background-color: #e60000;
+}
+
+.modal {
+    display: none; /* Hidden by default */
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7); /* Black background with increased opacity */
+}
+
+#duplicate-reservation-modal {
+    display: none; /* Hidden by default */
+    position: fixed;
+    z-index: 1000; /* Ensure it sits on top of other elements */
+    left: 0;
+    top: 0;
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    background-color: rgba(0, 0, 0, 0.7); /* Black background with opacity */
+}
+
+.modal-content {
+    background-color: var(--background-color);
+    margin: 15% auto;
+    padding: 20px;
+    border: 1px solid var(--primary-color);
+    width: 80%;
+    max-width: 400px;
+    text-align: center;
+    border-radius: 10px;
+    color: var(--text-color);
+}
+
+#replace-btn,
+#delete-btn {
+    background-color: var(--primary-color);
+    color: white;
+    padding: 10px 20px;
+    margin: 10px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s ease;
+}
+
+#confirm-btn, #cancel-btn {
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    margin: 10px;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: background-color 0.3s ease;
+}
+
+#cancel-btn {
+    background-color: #ff4d4d; /* Using similar red tone as remove-item button */
+}
+
+#confirm-btn:hover {
+    background-color: #e55542; /* Lighter shade of primary color for hover */
+}
+
+#cancel-btn:hover {
+    background-color: #e60000; /* Darker red on hover */
+}
+
+/* Cancel button with different color */
+#delete-btn {
+    background-color: #dc3545;
+}
+
+/* Hover effect for buttons */
+#replace-btn:hover {
+    background-color: #e55542;
+}
+
+#cancel-reservation-btn:hover {
+    background-color: #c82333;
+}
+
+.modal-content h2 {
+    font-size: 24px;
+    color: var(--primary-color); /* Highlight the header with primary color */
+}
+
+.modal-content p {
+    font-size: 16px;
+    margin: 15px 0;
+}
+
+.toast {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    padding: 10px 20px;
+    border-radius: 4px;
+    color: white;
+    opacity: 0;
+    transform: translateY(-20px);
+    transition: opacity 0.3s, transform 0.3s;
+    z-index: 1000;
+}
+
+.toast-success {
+    background-color: var(--primary-color);
+}
+
+.toast-error {
+    background-color: #f44336;
+}
+
+@media (max-width: 660px) {
+    body{
+        margin-top: 10%;
+    }
+}

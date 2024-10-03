@@ -52,7 +52,7 @@
     }
     .button-container button {
       padding: 10px;
-      background: #FF6347;
+      background: #ff6a3d;
       color: #fff;
       border: none;
       border-radius: 4px;
@@ -95,7 +95,12 @@
       try {
         if (!reservationId) throw new Error('Reservation ID is missing');
         const response = await fetch(`/api/confirmReservation?id=${reservationId}`);
-        if (!response.ok) throw new Error('Failed to fetch reservation details');
+        if (response.status === 401) {
+                // Redirect to login page if user is not authorized
+                window.location.href = "/login";
+                throw new Error("Unauthorized access. Redirecting to login...");
+              }
+        else if (!response.ok) throw new Error('Failed to fetch reservation details');
         const data = await response.json();
 
         document.getElementById('summary-date').textContent = data.date || "No change";
@@ -132,8 +137,12 @@
           },
           body: JSON.stringify(cancellationData)
         });
-        
-        if (!response.ok) throw new Error('Failed to cancel reservation');
+        if (response.status === 401) {
+                // Redirect to login page if user is not authorized
+                window.location.href = "/login";
+                throw new Error("Unauthorized access. Redirecting to login...");
+              }
+        else if (!response.ok) throw new Error('Failed to cancel reservation');
         
         alert('Your reservation has been successfully cancelled!');
         window.location.href = 'userDashboard.html'; 

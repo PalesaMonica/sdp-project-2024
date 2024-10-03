@@ -1,8 +1,11 @@
-/* Global styles */
+:root {
+    --primary-color: #ff6a3d;
+    --background-color: #1a1e2e;
+    --text-color: #ffffff;
+}
+
 body {
-    margin: 0;
-    padding: 0;
-    background-color: #1A2238;
+    background-color: var(--background-color);
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -14,35 +17,61 @@ body {
 /* Header styling */
 .header {
     position: absolute;
-    top: 10px;
-    left: 10px;
+    top: 20px;
+    left: 10%;
     display: flex;
     align-items: center;
 }
 
 .logo {
-    width: 10vw; /* Responsive size based on viewport width */
-    max-width: 50px; /* Max size for larger screens */
-    height: auto;
+    display: flex;
+    align-items: center;
+
 }
 
-.name {
-    margin-left: 10px;
-    font-size: 30px; /* Responsive font size */
+.logo img {
+    width: 40px;
+    height: 40px;
+    margin-right: 10px;
+}
+
+.logo-text {
+    color: white;
+    font-size: 24px;
     font-weight: bold;
-    color: #FFFFFF;
-}
-
-.campus {
-    color: #FF6A3D;
 }
 
 .crave {
-    color: #FFFFFF;
+    color: var(--primary-color);
+}
+
+.menu-button {
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.menu-button:hover {
+    background-color: #e55d3b; /* Darker color on hover */
 }
 
 /* Greeting and instruction styling */
-.greeting, .instruction, .current-plan {
+.greeting{
+    color: white;
+    font-size: 20px;
+    font-family: Inter, Arial, sans-serif;
+    font-weight: 800;
+    margin: 10px 0;
+    text-align: center;
+}
+
+.instruction, .current-plan {
     color: white;
     font-size: 20px;
     font-family: Inter, Arial, sans-serif;
@@ -52,7 +81,7 @@ body {
 }
 
 .greeting span, .instruction span .current-plan span{
-    color: #FF6A3D;
+    color: var(--primary-color);
 }
 
 /* Box container styling */
@@ -62,7 +91,7 @@ body {
     gap: 20px;
     width: 80vw; 
     max-width: 800px; 
-    background: #9DAAF2;
+    background: rgba(255, 255, 255, 0.1);
     padding: 30px;
     border-radius: 8px;
     border: 1px solid rgba(0, 0, 0, 0.1);
@@ -142,33 +171,64 @@ body {
     background-color: #e55d3b; /* Slightly darker shade for hover effect */
 }
 
-/* Media queries for responsive design */
-@media (max-width: 600px) {
-    .name {
-        font-size: 4vw; /* Adjust for smaller screens */
-    }
-
-    .box-container {
-        width: 100vw; /* Full width for small screens */
-        padding: 20px;
-    }
-
-    .box {
-        height: auto; /* Adjust height based on content */
-        padding: 15px;
-    }
-
-    .box img {
-        width: 40px; /* Adjust image size for smaller screens */
-    }
-
-    .save-button {
-        width: 100%; /* Full width for smaller screens */
-        padding: 12px 0; /* Adjust padding for small screens */
-    }
-
-    .back-button {
-        padding: 8px 16px; /* Smaller padding for small screens */
-        font-size: 14px; /* Adjust font size */
-    }
+/* Modal styles */
+.modal {
+    display: none; /* Hidden by default */
+    position: fixed;
+    z-index: 1000; /* Ensure it sits on top */
+    left: 0;
+    top: 0;
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    background-color: rgba(0, 0, 0, 0.5); /* Black background with opacity */
 }
+
+.modal-content {
+    background-color: var(--background-color);
+    margin: 15% auto;
+    padding: 20px;
+    border: 1px solid var(--primary-color);
+    width: 80%;
+    max-width: 400px;
+    text-align: center;
+    border-radius: 10px;
+    color: var(--text-color);
+}
+
+#confirm-button, #cancel-button {
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    margin: 10px;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: background-color 0.3s ease;
+}
+
+#cancel-button {
+    background-color: #ccc;
+}
+
+#confirm-button:hover {
+    background-color: #e65c2e;
+}
+
+#toaster {
+    position: fixed;
+    top: 20px;  
+    right: 10px;
+    background-color: var(--primary-color);
+    color: white;
+    padding: 15px;
+    border-radius: 5px;
+    display: none;
+    z-index: 1000;
+    font-size: 16px;
+}
+
+#toaster.show {
+    display: block;
+}
+
+

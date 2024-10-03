@@ -26,13 +26,20 @@ class Reservation {
 
     // Create a new reservation
     static async createReservation(reservationDetails) {
-        const { diningHallId, name, surname, date, meals, specialRequest, status } = reservationDetails;
+        const { diningHallId, username, date, meals, specialRequest, status } = reservationDetails;
     
         // Validate required fields
-        if (!name || !surname || !date || !meals) {
-          throw new Error('Missing required fields: name, surname, date, and meals are required.');
+        if (!username || !date || !meals) {
+            throw new Error('Missing required fields: username, date, and meals are required.');
         }
     
+         // Calculate meal price before making a reservation
+        const mealPrice = await Reservation.getMealPrice(meals);
+        const availableCredits = await Reservation.getUserCredits(userId);
+
+        if (availableCredits < mealPrice) {
+            throw new Error('Insufficient credits to make this reservation.');
+        }
         const validStatuses = ['confirmed', 'cancelled', 'modified'];
         const reservationStatus = validStatuses.includes(status) ? status : 'confirmed';
     
@@ -40,34 +47,38 @@ class Reservation {
         const qrCode = qr.imageSync(reservationUuid, { type: 'png' });
     
         try {
-          // Prepare the SQL insert query and values
-          const queries = [];
-          const values = [];
+            // Prepare the SQL insert query and values
+            const queries = [];
+            const values = [];
     
-          // Insert each meal type and its associated time into the reservations table
-          for (const [mealType, time] of Object.entries(meals)) {
-            if (time) {
-              queries.push(`
-                INSERT INTO reservations 
-                (dining_hall_id, name, surname, date, time, meal_type, special_requests, status) 
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-              `);
-              values.push([diningHallId, name, surname, date, time, mealType, specialRequest, reservationStatus]);
+            // Insert each meal type and its associated time into the reservations table
+            for (const [mealType, time] of Object.entries(meals)) {
+                if (time) {
+                    queries.push(`
+                        INSERT INTO reservations 
+                        (dining_hall_id, username, date, time, meal_type, status) 
+                        VALUES (?, ?, ?, ?, ?, ?)
+                    `);
+                    values.push([diningHallId, username, date, time, mealType, specialRequest, reservationStatus]);
+                }
             }
-          }
     
-          // Execute all queries sequentially
-          for (let i = 0; i < queries.length; i++) {
-            await pool.query(queries[i], values[i]);
-          }
+            // Execute all queries sequentially
+            for (let i = 0; i < queries.length; i++) {
+                await pool.query(queries[i], values[i]);
+            }
     
-          // Return reservation ID (UUID) and generated QR code
-          return { reservationId: reservationUuid, qrCode };
+            // Deduct credits after successful reservation
+            await Reservation.deductCredits(userId, mealPrice); // Deduct credits
+        
+        // Return reservation ID (UUID) and generated QR code
+            return { reservationId: reservationUuid, qrCode };
         } catch (error) {
-          console.error('Error creating reservation:', error);
-          throw new Error('Error creating reservation in the database');
+            console.error('Error creating reservation:', error);
+            throw new Error('Error creating reservation in the database');
         }
     }
+    
 
     // Fetch meal prices
     static async getMealPrices() {
@@ -211,6 +222,55 @@ class Reservation {
             throw new Error(`Error canceling reservation: ${error.message}`);
         }
     }
+
+    // Add Credits
+    static async addCredits(userId, amount) {
+        try {
+            const [results] = await pool.query("UPDATE users SET available_credits = available_credits + ? WHERE id = ?", [amount, userId]);
+            return results;
+        } catch (err) {
+            throw new Error(`Failed to add credits: ${err.message}`);
+        }
+    }
+    
+    static async getUserCredits(userId) {
+        try {
+        const query = "SELECT available_credits FROM users WHERE id = ?";
+        const [rows] = await pool.execute(query, [userId]);
+        if (rows.length > 0) {
+            return rows[0].available_credits; // Return the user's available credits
+        } else {
+            throw new Error("User not found");
+        }
+        } catch (err) {
+        throw new Error(`Failed to fetch user credits: ${err.message}`);
+        }
+    }
+
+    // Deduct Credits
+    static async deductCredits(userId, amount) {
+        try {
+            const query = 'UPDATE users SET available_credits = available_credits - ? WHERE id = ?';
+            const params = [parseFloat(amount), userId]; // Ensure amount is a float
+            await pool.execute(query, params);
+        } catch (err) {
+            throw new Error(`Failed to deduct credits: ${err.message}`);
+        }
+        console.log("Deducting amount:", amount, "from user:", userId);
+
+    }
+
+    // Fetch recent transactions
+    static async getRecentTransactions(userId) {
+        try {
+            const query = "SELECT meal_type, date, amount FROM transactions WHERE user_id = ? ORDER BY date DESC LIMIT 4";
+            const [rows] = await pool.execute(query, [userId]);
+            return rows; // Return recent transactions
+        } catch (err) {
+            throw new Error(`Failed to fetch transactions: ${err.message}`);
+        }
+    }
+
 }
 
 module.exports = Reservation;

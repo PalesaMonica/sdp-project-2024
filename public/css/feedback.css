@@ -1,10 +1,30 @@
-body{
-    margin: 0;
-    padding: 0;
+:root {
+    --primary-color: #ff6a3d;
+    --background-color: #1a1e2e;
+    --text-color: #ffffff;
 }
 
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 20px;
+    background-color: var(--background-color);
+    color: var(--text-color);
+    margin-top: 4%;
+}
+body {
+    visibility: hidden; /* Hide body initially */
+    opacity: 0;
+    transition: opacity 0.3s ease-in; /* Smooth transition */
+  }
+  
+  body.loaded {
+    visibility: visible;
+    opacity: 1;
+  }
+
 .feedback-screen {
-    background-color: #1e2939;
+    background-color: #1a1e2e;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -15,7 +35,7 @@ body{
 }
 
 .feedback-screen .div {
-    background-color: #1e2939;
+    background-color: #1a1e2e;
     width: 100%;
     max-width: 600px;
     padding: 20px;
@@ -24,7 +44,7 @@ body{
 
 .feedback-screen .group-2 {
     text-align: center;
-    margin-bottom: 20px;
+    margin-bottom: 10px;
 }
 
 .feedback-screen .text-wrapper-3 {
@@ -42,7 +62,7 @@ body{
 
 .feedback-screen .main-rating-w-text {
     text-align: center;
-    margin-bottom: 20px;
+    margin-bottom: 10px;
 }
 
 .feedback-screen .text-wrapper {
@@ -57,7 +77,7 @@ body{
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 15px;
+    gap: 5px;
     width: 100%;
     box-sizing: border-box;
 }
@@ -76,7 +96,7 @@ body{
 }
 
 .feedback-screen .feedback-form-wrapper {
-    margin-bottom: 20px;
+    margin-bottom: 10px;
 }
 
 .feedback-form-wrapper textarea {
@@ -99,7 +119,7 @@ body{
 }
 
 .feedback-screen .submit-button {
-    margin-top: 20px;
+    margin-top: 5px;
     text-align: center;
 }
 
@@ -116,7 +136,7 @@ body{
 }
 
 .feedback-screen .dropdown-section {
-    margin-top: 20px;
+    margin-top: 5px;
     text-align: center;
 }
 
@@ -126,7 +146,7 @@ body{
     color: white;
 }
 
-.labels{
+.labels {
     color: white;
 }
 
@@ -151,7 +171,7 @@ body{
     font-size: 16px;
     border: none;
     border-radius: 5px;
-    margin-top: 10px;
+    margin-top: 5px;
     cursor: pointer;
 }
 
@@ -165,7 +185,7 @@ body{
 }
 
 #confirmation-message {
-    margin-top: 20px;
+    margin-top: 5px;
     text-align: center;
     font-family: "Inter-SemiBold", Helvetica;
     color: #f4db7d;
@@ -187,7 +207,7 @@ body{
 }
 
 .group-2 {
-    margin-top: 30px;
+    margin-top: 10px;
     text-align: center;
 }
 
@@ -285,48 +305,9 @@ body{
     background-color: #ff5221;
 }
 
-/* Header Styling */
-.header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 20px;
-    background-color: #1a1e2e;
-    position: relative;
-}
-
-.logo {
-    display: flex;
-    align-items: center;
-    position: absolute;
-    left: 10px; /* 10px from the left */
-}
-
-.back-button {
-    background: none;
-    border: none;
-    cursor: pointer;
-}
-
-.back-button-image {
-    width: 40px;
-    height: 40px;
-    margin-right: 10px;
-}
-
-.logo-text {
-    font-size: 30px;
-    font-weight: bold;
-    color: #FF6A3D;
-}
-
-.crave {
-    color: white;
-}
-
 .nav-links {
     position: absolute;
-    right: 10px; /* 10px from the right */
+    right: 2%; /* 10px from the right */
 }
 
 .see-reviews-btn {
@@ -344,3 +325,11 @@ body{
 .see-reviews-btn:hover {
     background-color: #ff5221;
 }
+
+
+@media (max-width: 660px) {
+    body{
+        margin-top: 10%;
+    }
+}
+

@@ -7,18 +7,32 @@
     <title>CampusCrave Dashboard</title>
   </head>
   <body>
+    <header class="header">
+      <div class="header-content">
+          <button class="navbar-toggle" onclick="toggleNav()">☰</button>
+          <div class="logo">
+              <img src="images/option-21.svg" alt="CampusCrave Logo">
+              <span class="logo-text">Campus<span class="crave">Crave</span></span>
+          </div>
+          <div class="cart-icon">
+            <span id="cart-count">0</span>
+            <img src="images/cart-icon.svg" alt="Cart" onclick="window.location.href='cart.html'">
+        </div>
+      </div>
+  </header>
+
+    <!-- Slide-Out Navigation Menu -->
+    <nav id="sidenav" class="sidenav">
+      <a href="userDashboard.html">Home</a>
+      <a href="Notification" id="notification-link">Notification <span id="unread-count" class="unread-count">0</span></a>
+      <a href="incident"  id="incident-link">Report Incident</a>
+      <a href="userProfile.html">Manage Account</a>
+      <a onclick="logout()">Logout</a>
+    </nav>
+
     <div class="container">
-      <header class="header">
-        <div class="logo">
-          <img src="images/option-21.svg" alt="CampusCrave" />
-          CampusCrave
-        </div>
-        <div class="menu-icon" onclick="window.location.href='login.html'">
-          →
-        </div>
-      </header>
       <main>
-        <div class="welcome">Welcome <span id="username"> John</span></div>
+        <div class="welcome">Welcome <span id="username">John</span></div>
         <div class="dashboard">
           <div class="grid">
             <div class="grid-item" onclick="window.location.href='menu.html'">
@@ -53,21 +67,20 @@
             </div>
             <div
               class="grid-item"
-              onclick="window.location.href='diningHalls.html'"
+              onclick="window.location.href='reservations.html'"
             >
               <svg viewBox="0 0 24 24" fill="currentColor">
                 <path
                   d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM7 10h5v5H7z"
                 />
               </svg>
-              Reservation
+              Reservations
             </div>
           </div>
         </div>
       </main>
       <footer class="footer">
         <div class="footer-item" onclick="window.location.href='feedback.html'">
-
           Feedback
           <svg viewBox="0 0 24 24" fill="currentColor">
             <path
@@ -75,17 +88,9 @@
             />
           </svg>
         </div>
-        <div class="footer-item" onclick="navigate('info')">
-          Dining Information
-          <svg viewBox="0 0 24 24" fill="currentColor">
-            <path
-              d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"
-            />
-          </svg>
-        </div>
       </footer>
     </div>
-  </body>
 
-  <script src="/src/js/userDashboard.js"></script>
+    <script src="/src/js/userDashboard.js"></script>
+  </body>
 </html>

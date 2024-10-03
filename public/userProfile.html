@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Campus Crave</title>
+    <link rel="stylesheet" href="css/userProfile.css">
+
+    <!-- Font Awesome for Icons -->
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+</head>
+<body>
+
+    <!-- Profile Section -->
+    <div class="profile-container" id="profile">
+        <h2 id="user-name">Loading...</h2> 
+
+        <!-- Buttons with Icons -->
+        <a class="btn" onclick="showPersonalInfo()">
+            <span>Personal Information</span>
+            <i class="fas fa-arrow-right"></i>
+        </a>
+        <a class="btn" onclick="showUpdatePassword()">
+            <span>Update Password</span>
+            <i class="fas fa-arrow-right"></i>
+        </a>
+
+        <p>Need further assistance?</p>
+        <div class="support-container">
+            <a href="tel:+27117171763">Customer Support Line: +27- 011-717-1763</a>
+            <a href="mailto:test@stuff.wits.ac.za">Email Customer Support: test@stuff.wits.ac.za </a>
+        </div>
+
+        <a class="logout-link" onclick="logout()">Logout</a>
+    </div>
+
+    <!-- Personal Information Section -->
+    <div class="profile-container hidden" id="personal-info">
+        <h2>Personal Information</h2>
+        <div class="personal-info">
+            <div class="detail">
+        <span>Username:</span>
+        <p id="personal-name">Loading...</p> <!-- Displays username -->
+    </div>
+    <div class="detail">
+        <span>Role:</span>
+        <p id="personal-role">Loading...</p> <!-- Displays surname -->
+    </div>
+    <div class="detail">
+        <span>Email:</span>
+        <p id="personal-email">Loading...</p> <!-- Displays email -->
+    </div>
+        </div>
+        <div class="centered-btn">
+            <a class="btn" onclick="showProfile()">Back to Profile</a>
+        </div>
+    </div>
+
+    <!-- Update Password Section -->
+    <div class="profile-container hidden" id="update-password">
+        <h2>Update Password</h2>
+        <div class="form-group">
+            <label for="currentPassword">Current Password</label>
+            <input type="password" id="currentPassword" required>
+        </div>
+        <div class="form-group">
+            <label for="newPassword">New Password</label>
+            <input type="password" id="newPassword" required>
+        </div>
+        <div class="form-group">
+            <label for="confirmPassword">Confirm New Password</label>
+            <input type="password" id="confirmPassword" required>
+        </div>
+        <div class="centered-btn">
+            <button class="btn" onclick="submitPassword()">Update Password</button>
+            <a class="btn" onclick="showProfile()">Cancel</a>
+        </div>
+    </div>
+
+     <script src="../../src/js/userProfile.js"></script>
+     <script src="../../src/js/headerLoader.js"></script>
+</body>
+</html>

@@ -1,0 +1,148 @@
+/* userstyle.css */
+:root {
+    --primary-color: #ff6a3d;
+    --background-color: #1a1e2e;
+    --text-color: #ffffff;
+}
+body {
+    font-family: Arial, sans-serif;
+    background-color: var(--background-color);
+    margin: 0;
+    padding: 0;
+    margin-top: 4%;
+}
+
+body {
+    visibility: hidden; /* Hide body initially */
+    opacity: 0;
+    transition: opacity 0.3s ease-in; /* Smooth transition */
+  }
+  
+  body.loaded {
+    visibility: visible;
+    opacity: 1;
+  }
+
+.container {
+    width: 80%;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+h1 {
+    text-align: center;
+    color: #333;
+}
+
+.notifications-list {
+    margin-top: 20px;
+}
+
+.notification {
+    border-left: 5px solid var(--primary-color); /* Red border for alerts */
+    background-color: #FFE6E6; /* Light red background for alerts */
+    border-radius: 5px;
+    padding: 15px;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+}
+
+.notification.unread {
+    border-left: 5px solid #FF6A3D;
+}
+
+.notification.alert {
+    border-left: 5px solid #FF4C4C; /* Red border for alerts */
+    background-color: #FFE6E6; /* Light red background for alerts */
+}
+.notification.read {
+    opacity: 0.6;
+    color: gray;
+}
+
+
+.notification .icon {
+    width: 40px;
+    height: 40px;
+    margin-right: 15px;
+}
+
+.notification .icon img {
+    width: 100%; /* Ensure the image fills the icon container */
+    height: auto; /* Maintain aspect ratio */
+}
+
+.notification h2 {
+    margin: 0 0 10px;
+    color: #FF6A3D;
+}
+
+.notification.alert h2 {
+    color: #FF4C4C; /* Red color for alert titles */
+}
+
+.notification p {
+    margin: 0;
+}
+
+.mark-read-btn {
+    background-color: #FF6A3D;
+    color: white;
+    border: none;
+    padding: 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 10px;
+}
+
+.mark-read-btn:hover {
+    background-color: #e55b2f;
+}
+
+.heading {
+    color: #FF6A3D;
+    font-size: 24px;
+    font-weight: 400;
+    margin-bottom: 20px;
+    text-align: center;
+}
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: sticky; /* Makes the header stick at the top */
+    top: 0; /* Keeps the header at the top */
+    z-index: 100; /* Ensures the header stays above other content */
+    background-color: var(--background-color); /* Keeps the background intact */
+    padding: 10px; /* Padding around the header */
+    margin-bottom: 20px; /* Space below the header */
+  }
+
+  .back-button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    margin-right:5px; /* Space between the back button and logo */
+}
+
+.back-button-image {
+    width: 40px;
+    height: 40px;
+    margin-right: 10px;
+}
+.logo {
+    display: flex;
+    align-items: center;
+  }
+  
+  .logo-text {
+    font-size: 30px; /* Logo font size */
+    font-weight: bold; /* Logo font weight */
+    display: inline-block;
+    color: #FF6A3D; /* Prevent wrapping */
+  }
+  .crave {
+    color: white;
+  }

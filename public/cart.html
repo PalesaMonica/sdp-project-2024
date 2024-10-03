@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Cart</title>
+    <link rel="stylesheet" href="css/cart.css">
+</head>
+<body>
+    <div class = "reservation-btn">
+        <button class="reservation-button" onclick="window.location.href='reservations.html'">Reservations</button>
+    </div>
+    
+    <h2>Your Cart</h2>
+    <div id="cart-items"></div>
+    <button id="confirm-reservation">Confirm Reservation</button>
+
+    <!-- Modal structure for confirmation -->
+    <div id="reservation-modal" class="modal">
+        <div class="modal-content">
+        <h2>Confirm Reservation</h2>
+        <p>Are you sure you want to confirm your reservation?</p>
+        <button id="confirm-btn">Confirm</button>
+        <button id="cancel-btn">Cancel</button>
+        </div>
+    </div>
+
+    <!-- Conflict modal -->
+    <div id="conflict-modal" class="modal">
+        <div class="modal-content">
+            <h3>Duplicate Reservation Found</h3>
+            <p>A reservation already exists for this meal type and date.</p>
+            <p>Would you like to replace the existing reservation or remove the item from your cart?</p>
+            <button id="replace-btn">Replace Reservation</button>
+            <button id="delete-btn">Remove from Cart</button>
+        </div>
+    </div>
+
+    <div id="toaster"></div>
+
+    <script src="../src/js/cart.js"></script>
+    <script src="../src/js/headerLoader.js"></script>
+    
+</body>
+</html>

@@ -1,13 +1,13 @@
 <?xml version="1.0" ?>
 <!DOCTYPE coverage SYSTEM "http://cobertura.sourceforge.net/xml/coverage-04.dtd">
-<coverage lines-valid="27" lines-covered="25" line-rate="0.9259000000000001" branches-valid="6" branches-covered="4" branch-rate="0.6666" timestamp="1726565445155" complexity="0" version="0.1">
+<coverage lines-valid="30" lines-covered="25" line-rate="0.8332999999999999" branches-valid="10" branches-covered="4" branch-rate="0.4" timestamp="1727889772109" complexity="0" version="0.1">
   <sources>
     <source>D:\SDP\sdp-project-2024</source>
   </sources>
   <packages>
-    <package name="main" line-rate="0.9259000000000001" branch-rate="0.6666">
+    <package name="main" line-rate="0.8332999999999999" branch-rate="0.4">
       <classes>
-        <class name="login.js" filename="src\js\login.js" line-rate="0.909" branch-rate="0.5">
+        <class name="login.js" filename="src\js\login.js" line-rate="0.8332999999999999" branch-rate="0.25">
           <methods>
             <method name="handleLogin" hits="2" signature="()V">
               <lines>
@@ -24,12 +24,13 @@
             <line number="14" hits="1" branch="false"/>
             <line number="16" hits="1" branch="true" condition-coverage="50% (1/2)"/>
             <line number="17" hits="1" branch="false"/>
+            <line number="20" hits="0" branch="true" condition-coverage="0% (0/2)"/>
             <line number="21" hits="0" branch="false"/>
-            <line number="23" hits="2" branch="false"/>
-            <line number="27" hits="1" branch="false"/>
+            <line number="25" hits="2" branch="false"/>
+            <line number="29" hits="1" branch="false"/>
           </lines>
         </class>
-        <class name="signup.js" filename="src\js\signup.js" line-rate="0.9375" branch-rate="0.75">
+        <class name="signup.js" filename="src\js\signup.js" line-rate="0.8332999999999999" branch-rate="0.5">
           <methods>
             <method name="handleSignup" hits="3" signature="()V">
               <lines>
@@ -51,9 +52,11 @@
             <line number="22" hits="1" branch="false"/>
             <line number="24" hits="1" branch="true" condition-coverage="50% (1/2)"/>
             <line number="25" hits="1" branch="false"/>
-            <line number="29" hits="0" branch="false"/>
-            <line number="31" hits="2" branch="false"/>
-            <line number="35" hits="1" branch="false"/>
+            <line number="29" hits="0" branch="true" condition-coverage="0% (0/2)"/>
+            <line number="30" hits="0" branch="false"/>
+            <line number="33" hits="0" branch="false"/>
+            <line number="36" hits="2" branch="false"/>
+            <line number="40" hits="1" branch="false"/>
           </lines>
         </class>
       </classes>

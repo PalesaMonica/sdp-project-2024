@@ -69,13 +69,21 @@
     <h1>Your reservation has been confirmed!</h1>
     <div class="summary">
       <p><strong>Dining Hall:</strong> <span id="dining-hall-name"></span></p>
-      <p><strong>Summary:</strong></p>
-      <p>- Breakfast: <span id="breakfast-status"></span> at <span id="breakfast-time"></span></p>
-      <p>- Lunch: <span id="lunch-status"></span> at <span id="lunch-time"></span></p>
-      <p>- Dinner: <span id="dinner-status"></span> at <span id="dinner-time"></span></p>
-      <p>Reservation Date: <span id="reservation-date"></span></p>
+      <p><strong>Reservation Date:</strong> <span id="reservation-date"></span></p>
+
+      <div id="breakfast-section" style="display: none;">
+        <p><strong>Breakfast:</strong> at <span id="breakfast-time"></span></p>
+      </div>
+
+      <div id="lunch-section" style="display: none;">
+        <p><strong>Lunch:</strong> at <span id="lunch-time"></span></p>
+      </div>
+
+      <div id="dinner-section" style="display: none;">
+        <p><strong>Dinner:</strong> at <span id="dinner-time"></span></p>
+      </div>
+
       <p>Total Cost: <span id="total-cost"></span></p>
-      <p>Confirmation Number: <span id="confirmation-number"></span></p>
     </div>
     <div class="qr-code">
       <p>Scan your QR code:</p>
@@ -88,12 +96,13 @@
     </div>
   </div>
 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js"></script>
   <script>
     // Predefined meal prices in ZAR
     const mealPrices = {
-      breakfast: 80.00,
-      lunch: 90.00,
-      dinner: 110.00
+      breakfast: 60.00,
+      lunch: 60.00,
+      dinner: 60.00
     };
 
     // Fetch reservation data from sessionStorage or similar
@@ -104,7 +113,12 @@
       try {
         // Fetch the dining hall information from your backend API
         const response = await fetch(`/api/dining-halls/${diningHallId}`);
-        if (!response.ok) {
+        if (response.status === 401) {
+                // Redirect to login page if user is not authorized
+                window.location.href = "/login";
+                throw new Error("Unauthorized access. Redirecting to login...");
+              }
+       else  if (!response.ok) {
           throw new Error('Failed to fetch dining hall details.');
         }
         const diningHall = await response.json();
@@ -122,14 +136,24 @@
           document.getElementById('dining-hall-name').textContent = diningHallName;
         });
 
-      // Update meal status and times
-      document.getElementById('breakfast-status').textContent = reservationData.meals.breakfast ? 'Yes' : 'No';
-      document.getElementById('lunch-status').textContent = reservationData.meals.lunch ? 'Yes' : 'No';
-      document.getElementById('dinner-status').textContent = reservationData.meals.dinner ? 'Yes' : 'No';
-      document.getElementById('breakfast-time').textContent = reservationData.meals.breakfast ? reservationData.meals.breakfast : 'N/A';
-      document.getElementById('lunch-time').textContent = reservationData.meals.lunch ? reservationData.meals.lunch : 'N/A';
-      document.getElementById('dinner-time').textContent = reservationData.meals.dinner ? reservationData.meals.dinner : 'N/A';
+      // Update reservation date
       document.getElementById('reservation-date').textContent = reservationData.date;
+
+      // Show meals only if they were booked
+      if (reservationData.meals.breakfast) {
+        document.getElementById('breakfast-section').style.display = 'block';
+        document.getElementById('breakfast-time').textContent = reservationData.meals.breakfast.startTime;
+      }
+
+      if (reservationData.meals.lunch) {
+        document.getElementById('lunch-section').style.display = 'block';
+        document.getElementById('lunch-time').textContent = reservationData.meals.lunch.startTime;
+      }
+
+      if (reservationData.meals.dinner) {
+        document.getElementById('dinner-section').style.display = 'block';
+        document.getElementById('dinner-time').textContent = reservationData.meals.dinner.startTime;
+      }
 
       // Calculate total cost
       let totalCost = 0;
@@ -140,9 +164,12 @@
       // Update total cost
       document.getElementById('total-cost').textContent = `R${totalCost.toFixed(2)}`;
 
-      // Example confirmation number and QR code URL (these should be dynamic)
-      document.getElementById('confirmation-number').textContent = reservationData.confirmationNumber;
-      document.getElementById('qr-code').src = reservationData.qrCodeUrl;  // Use actual QR code URL
+      // Generate QR code with reservation details
+      const qr = new QRious({
+        element: document.getElementById('qr-code'),
+        value: JSON.stringify(reservationData),  // Store the full reservation details in the QR code
+        size: 200
+      });
     } else {
       alert('No reservation data found.');
     }

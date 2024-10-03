@@ -1,0 +1,173 @@
+:root {
+    --primary-color: #ff6a3d;
+    --background-color: #1a1e2e;
+    --text-color: #ffffff;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: var(--background-color);
+    color: var(--text-color);
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    transition: margin-left 0.3s;
+}
+
+.header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    background-color: var(--background-color);
+    z-index: 100;
+    padding: 10px 20px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.header-content {
+    display: flex;
+    align-items: center;
+    max-width: 1200px;
+
+}
+
+.navbar-toggle {
+    background: none;
+    border: none;
+    color: var(--text-color);
+    font-size: 24px;
+    cursor: pointer;
+    padding: 0;
+    margin-right: 15px;
+    width: auto;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+}
+
+.logo img {
+    width: 40px;
+    height: 40px;
+    margin-right: 10px;
+}
+
+.logo-text {
+    font-size: 24px;
+    font-weight: bold;
+}
+
+.crave {
+    color: var(--primary-color);
+}
+
+.container {
+    display: flex;
+    margin-top: 2%;
+    align-items: center;
+    flex-direction: column; /* Ensures content is stacked vertically */
+    height: 100vh;
+    padding: 20px; /* Adding padding for better spacing */
+}
+
+.sidenav {
+    height: 100%;
+    width: 0;
+    position: fixed;
+    top: 60px;
+    left: 0;
+    background-color: rgba(255, 255, 255, 0.1);
+    overflow-x: hidden;
+    transition: 0.3s;
+    z-index: 99;
+}
+
+.sidenav a {
+    padding: 15px 30px;
+    text-decoration: none;
+    font-size: 18px;
+    color: white;
+    display: block;
+    transition: background-color 0.2s ease;
+    white-space: nowrap;
+}
+
+.sidenav a:hover {
+    background-color: var(--primary-color);
+}
+
+/* Booking list styling */
+.booking-list {
+    list-style-type: none;
+    padding: 0;
+    margin-top: 10px;
+    width: 100%; /* Ensures the list takes full container width */
+    max-width: 600px; /* Optional: restrict the width of the booking list */
+}
+
+.booking-item {
+    background-color: #F6F9FF;
+    color: #1A2238;
+    padding: 15px;
+    margin: 10px 0;
+    border-radius: 8px;
+    transition: background-color 0.3s, color 0.3s;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Adds subtle shadow for depth */
+}
+
+.booking-item:hover {
+    background-color: #FF6A3D;
+    color: white;
+}
+
+/* Button styling (for actions like "Book Now") */
+.button {
+    background-color: #FF6A3D;
+    color: white;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    margin-top: 20px;
+    text-align: center;
+}
+
+.button:hover {
+    background-color: #FF4C1D;
+}
+
+/* Success message styling */
+.success-message {
+    color: white;
+    background-color: green;
+    padding: 10px;
+    border-radius: 5px;
+    font-size: 16px;
+    margin-top: 20px;
+    text-align: center;
+    width: 100%; /* Ensures the message spans the full width */
+}
+
+/* Error message styling */
+.error-message {
+    color: white;
+    background-color: red;
+    padding: 10px;
+    border-radius: 5px;
+    font-size: 16px;
+    margin-top: 20px;
+    text-align: center;
+    width: 100%;
+}
+#name {
+    font-size: 36px; /* Larger font size for the heading */
+    color: #FF6A3D; /* Custom color */
+    text-align: center; /* Center the heading */
+    margin-bottom: 20px; /* Add some space below the heading */
+    text-transform: uppercase; /* Make the text uppercase */
+    letter-spacing: 2px; /* Adds spacing between letters */
+    font-weight: bold; /* Make the text bold */
+}

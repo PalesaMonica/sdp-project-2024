@@ -1,0 +1,80 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #1A2238; /* Dark background color */
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    height: 100vh;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    margin: 20px 0;
+    cursor: pointer;
+}
+
+.logo img {
+    width: 50px; /* Adjust logo size */
+    height: auto;
+    margin-right: 10px;
+}
+
+.logo-text {
+    font-size: 24px;
+    color: #FFFFFF; /* White color for text */
+}
+
+.crave {
+    color: #FF6A3D; /* Highlight 'Crave' in an accent color */
+}
+
+
+h1 {
+    color: #1A2238; /* Dark text color */
+}
+
+.plan-options {
+    display: flex;
+    justify-content: space-around;
+    margin-top: 20px;
+    flex-wrap: wrap; /* Ensure it wraps on smaller screens */
+}
+
+.plan {
+    background-color: #FF6A3D; /* Accent color for plan cards */
+    padding: 15px;
+    border-radius: 8px;
+    width: 45%; /* Responsive width */
+    margin: 10px; /* Spacing between cards */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.plan h2 {
+    color: #FFFFFF; /* White text color */
+    margin-bottom: 10px;
+}
+
+button {
+    padding: 10px 20px;
+    font-size: 16px;
+    background-color: #1A2238; /* Dark color for buttons */
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s; /* Smooth transition for hover effect */
+    margin-top: 10px; /* Space above button */
+}
+
+button:hover {
+    background-color: #FF6A3D; /* Accent color for hover effect */
+}
+
+#message {
+    margin-top: 20px;
+    font-size: 16px;
+    color: green; /* Green message text */
+}

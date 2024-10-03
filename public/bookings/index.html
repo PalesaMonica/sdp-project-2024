@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Jaldi:wght@400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../css/bookings.css"> <!-- Adjust the path as needed -->
+    <script src="../../src/js/bookings.js"></script>
+    <title id>Dining Hall Bookings</title>
+</head>
+<body>
+    <div class="header">
+        <div class="header-content">
+            <button class="navbar-toggle" onclick="toggleNav()">☰</button>
+            <div class="logo">
+                <img src="/images/option-21.svg" alt="CampusCrave Logo">
+                <span class="logo-text">Campus<span class="crave">Crave</span> Management</span>
+            </div>
+        </div>
+    </div>
+
+    <div id="sidenav" class="sidenav">
+        <a href="/staffDashboard.html">Home</a>
+        <a href="/bookings/index.html">Dining Hall Bookings</a>
+        <a href="/adminNotification/index.html">Create Notification</a>
+        <a onclick="logout()">Logout</a>
+    </div>
+
+    <div class="container">
+        <h1 id="name">Dining Hall Bookings</h1>
+        
+        <ul class="booking-list" id="booking-list">
+            <!-- Booking items will be dynamically inserted here -->
+        </ul>
+        <div id="message" class="success-message" style="display: none;"></div>
+        <div id="error-message" class="error-message" style="display: none;"></div>
+    </div>
+
+   
+</body>
+</html>
