@@ -358,7 +358,7 @@ function formatDate(dateString) {
 
 function getDirections(reservationId) {
     console.log(`Getting directions for reservation ${reservationId}`);
-    window.location.href = '#';
+    window.location.href = '/directions';
 }
 
 function formatDate(dateString) {
