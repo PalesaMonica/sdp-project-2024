@@ -144,7 +144,13 @@ passport.deserializeUser(function(id, done) {
 
 
 // Serve static files from the "public" directory
-app.use(express.static(path.join(__dirname, "public")));
+// app.use(express.static(path.join(__dirname, "public")));
+
+app.use(express.static(path.join(__dirname, 'public'), {
+  maxAge: '1y', // Cache static files for 1 year
+  etag: false  // Disable ETag to rely on cache-control
+}));
+
 
 // Serve JavaScript from 'src/js' folder
 app.use('/src', express.static(path.join(__dirname, 'src/')));
