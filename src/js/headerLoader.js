@@ -1,42 +1,22 @@
 document.addEventListener("DOMContentLoaded", () => {
-    // Fetch and insert the header into the page
-    fetch('/header.html') // Provide the correct path to your header.html
+    fetch('/header.html')
         .then(response => response.text())
         .then(data => {
-            document.body.insertAdjacentHTML('afterbegin', data); // Inserts the header at the top of the body
+            document.body.insertAdjacentHTML('afterbegin', data);
 
-            // Initialize any functions related to the header (e.g., cart count)
+            // Initialize any header-related functions after the header is loaded
+            const unreadCount = localStorage.getItem('unreadCount') || 0;
+            const unreadCountElem = document.getElementById("unread-count");
+            if (unreadCountElem) {
+                unreadCountElem.textContent = unreadCount;
+            }
+
             fetchCartItemCount();
-
-            // Once everything is loaded, make the body visible
             document.body.classList.add('loaded');
         })
         .catch(error => console.error('Error loading header:', error));
-
-        fetchCartItemCount(); 
-    
-        fetch("/get-username")
-        .then((response) => {
-          if (response.status === 401) {
-            // Redirect to login page if user is not authorized
-            window.location.href = "/login";
-            throw new Error("Unauthorized access. Redirecting to login...");
-          }
-          return response.json();
-        })
-          .then((data) => {
-            if (data.username) {
-              document.getElementById("username").textContent = `${data.username}!`;
-            } else {
-              console.error("Failed to load username.");
-            }
-          })
-          .catch((error) => console.error("Error fetching username:", error));
-          
-          const unreadCount = localStorage.getItem('unreadCount') || 0; // Default to 0 if not found
-          document.getElementById("unread-count").textContent = unreadCount;
-        
 });
+
 
 
   

@@ -8,10 +8,15 @@ body {
     background-color: var(--background-color);
     display: flex;
     flex-direction: column;
-    justify-content: center;
+    justify-content: space-around;
     align-items: center;
-    height: 100vh;
+    height: 80vh;
     font-family: Arial, sans-serif;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
 }
 
 /* Header styling */
@@ -55,23 +60,17 @@ body {
     font-weight: bold;
     cursor: pointer;
     transition: background-color 0.3s ease;
+    margin-left: auto; /* Push button to the right */
+
 }
 
 .menu-button:hover {
     background-color: #e55d3b; /* Darker color on hover */
 }
 
-/* Greeting and instruction styling */
-.greeting{
-    color: white;
-    font-size: 20px;
-    font-family: Inter, Arial, sans-serif;
-    font-weight: 800;
-    margin: 10px 0;
-    text-align: center;
-}
 
-.instruction, .current-plan {
+/* Greeting and instruction styling */
+.greeting, .instruction, .current-plan {
     color: white;
     font-size: 20px;
     font-family: Inter, Arial, sans-serif;
@@ -96,7 +95,7 @@ body {
     border-radius: 8px;
     border: 1px solid rgba(0, 0, 0, 0.1);
     justify-items: center;
-    margin-top: 40px; 
+    margin-top: 10px; 
 }
 
 /* Box styling */
@@ -231,4 +230,33 @@ body {
     display: block;
 }
 
+/* Media queries for responsive design */
+@media (max-width: 600px) {
+    .name {
+        font-size: 4vw; /* Adjust for smaller screens */
+    }
 
+    .box-container {
+        width: 100vw; /* Full width for small screens */
+        padding: 20px;
+    }
+
+    .box {
+        height: auto; /* Adjust height based on content */
+        padding: 15px;
+    }
+
+    .box img {
+        width: 40px; /* Adjust image size for smaller screens */
+    }
+
+    .save-button {
+        width: 100%; /* Full width for smaller screens */
+        padding: 12px 0; /* Adjust padding for small screens */
+    }
+
+    .back-button {
+        padding: 8px 16px; /* Smaller padding for small screens */
+        font-size: 14px; /* Adjust font size */
+    }
+}
