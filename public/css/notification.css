@@ -4,6 +4,44 @@
     --background-color: #1a1e2e;
     --text-color: #ffffff;
 }
+
+.header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    background-color: var(--background-color);
+    z-index: 100;
+    padding: 10px 20px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  }
+  
+  .header-content {
+    display: flex;
+    align-items: center;
+    max-width: 1200px;
+  }
+  
+  .logo {
+    display: flex;
+    align-items: center;
+  }
+  
+  .logo img {
+    width: 40px;
+    height: 40px;
+    margin-right: 10px;
+  }
+  
+  .logo-text {
+    font-size: 24px;
+    font-weight: bold;
+  }
+  
+  .crave {
+    color: var(--primary-color);
+  }
+
 body {
     font-family: Arial, sans-serif;
     background-color: var(--background-color);
@@ -108,41 +146,3 @@ h1 {
     margin-bottom: 20px;
     text-align: center;
 }
-.header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    position: sticky; /* Makes the header stick at the top */
-    top: 0; /* Keeps the header at the top */
-    z-index: 100; /* Ensures the header stays above other content */
-    background-color: var(--background-color); /* Keeps the background intact */
-    padding: 10px; /* Padding around the header */
-    margin-bottom: 20px; /* Space below the header */
-  }
-
-  .back-button {
-    background: none;
-    border: none;
-    cursor: pointer;
-    margin-right:5px; /* Space between the back button and logo */
-}
-
-.back-button-image {
-    width: 40px;
-    height: 40px;
-    margin-right: 10px;
-}
-.logo {
-    display: flex;
-    align-items: center;
-  }
-  
-  .logo-text {
-    font-size: 30px; /* Logo font size */
-    font-weight: bold; /* Logo font weight */
-    display: inline-block;
-    color: #FF6A3D; /* Prevent wrapping */
-  }
-  .crave {
-    color: white;
-  }

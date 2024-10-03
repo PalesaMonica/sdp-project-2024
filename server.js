@@ -9,6 +9,7 @@ const passport = require("passport");
 const cors = require('cors');
 const bcrypt = require("bcryptjs"); // For password hashing
 const GoogleStrategy = require("passport-google-oauth20").Strategy;
+const compression = require('compression'); // Added compression middleware
 const http = require('http');
 require("dotenv").config();
 
@@ -22,6 +23,9 @@ const io = require('socket.io')(server, {
       methods: ["GET", "POST"]
   }
 });
+// Enable Gzip compression
+app.use(compression());
+
 // Password validation regex
 const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{8,}$/;
 app.use(express.json());
@@ -144,6 +148,7 @@ passport.deserializeUser(function(id, done) {
 // Serve static files from the "public" directory
 // app.use(express.static(path.join(__dirname, "public")));
 
+// Serve static files with cache-control
 app.use(express.static(path.join(__dirname, 'public'), {
   maxAge: '1y', // Cache static files for 1 year
   etag: false  // Disable ETag to rely on cache-control
@@ -154,8 +159,12 @@ app.use(express.static(path.join(__dirname, 'public'), {
 app.use('/src', express.static(path.join(__dirname, 'src/')));
 app.use('/socket.io', express.static(path.join(__dirname, 'node_modules', 'socket.io', 'client-dist')));
 // Use body-parser middleware to parse incoming requests
-app.use(bodyParser.urlencoded({ extended: true }));
-app.use(bodyParser.json());
+
+
+// Limit the size of request body to optimize performance
+app.use(bodyParser.json({ limit: '10kb' }));
+app.use(bodyParser.urlencoded({ extended: true, limit: '10kb' }));
+
 
 // Google OAuth routes
 app.get(
@@ -1889,7 +1898,6 @@ app.get('/get-meal-plan', (req, res) => {
     }
   );
 });
-
 
 //infrastructure booking api connection
 const infrastructureApiKey = process.env.INFRASTRUCTURE_API_KEY;
