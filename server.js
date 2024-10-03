@@ -146,20 +146,21 @@ passport.deserializeUser(function(id, done) {
 
 
 // Serve static files from the "public" directory
-// app.use(express.static(path.join(__dirname, "public")));
+app.use(express.static(path.join(__dirname, "public")));
 
 // Serve static files with cache-control
-app.use(express.static(path.join(__dirname, 'public'), {
-  maxAge: '1y', // Cache static files for 1 year
-  etag: false  // Disable ETag to rely on cache-control
-}));
+// app.use(express.static(path.join(__dirname, 'public'), {
+//   maxAge: '1y', // Cache static files for 1 year
+//   etag: false  // Disable ETag to rely on cache-control
+// }));
 
 
 // Serve JavaScript from 'src/js' folder
 app.use('/src', express.static(path.join(__dirname, 'src/')));
 app.use('/socket.io', express.static(path.join(__dirname, 'node_modules', 'socket.io', 'client-dist')));
 // Use body-parser middleware to parse incoming requests
-
+// app.use(bodyParser.urlencoded({ extended: true }));
+// app.use(bodyParser.json());
 
 // Limit the size of request body to optimize performance
 app.use(bodyParser.json({ limit: '10kb' }));

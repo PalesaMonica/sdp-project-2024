@@ -5,43 +5,6 @@
     --text-color: #ffffff;
 }
 
-.header {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    background-color: var(--background-color);
-    z-index: 100;
-    padding: 10px 20px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-  }
-  
-  .header-content {
-    display: flex;
-    align-items: center;
-    max-width: 1200px;
-  }
-  
-  .logo {
-    display: flex;
-    align-items: center;
-  }
-  
-  .logo img {
-    width: 40px;
-    height: 40px;
-    margin-right: 10px;
-  }
-  
-  .logo-text {
-    font-size: 24px;
-    font-weight: bold;
-  }
-  
-  .crave {
-    color: var(--primary-color);
-  }
-
 body {
     font-family: Arial, sans-serif;
     background-color: var(--background-color);
