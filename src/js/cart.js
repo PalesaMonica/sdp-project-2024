@@ -43,7 +43,8 @@ document.addEventListener('DOMContentLoaded', function() {
         replaceReservation(conflictReservationId, cartItemIdToReplace);  // Replace reservation
         conflictModal.style.display = 'none';
     });
-
+    
+});
 
     let cartItems = []; // Store cart items
 
@@ -297,9 +298,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 throw error;  // Re-throw the error to be caught in the main chain
             });
     }
-    
-});
 
 module.exports = {
-    removeItem
+    removeItem, fetchCartItems, displayCartItems, confirmReservation, replaceReservation, showToast 
   };

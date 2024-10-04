@@ -1,112 +1,147 @@
 const { JSDOM } = require('jsdom');
-require('jest-fetch-mock').enableMocks();
 
-// Mock the DOM environment
-const dom = new JSDOM('<!DOCTYPE html><html><body></body></html>');
-global.document = dom.window.document;
+// Create a mock DOM environment
+const dom = new JSDOM(`
+<!DOCTYPE html>
+<html>
+<body>
+    <select id="dining-hall-selector">
+        <option value="1">Main</option>
+        <option value="2">Convocation</option>
+    </select>
+    <select id="day-selector">
+        <option value="week">Weekly View</option>
+        <option value="day">Daily View</option>
+    </select>
+    <div id="menu-container"></div>
+    <div id="item-modal">
+        <span class="close"></span>
+        <h2 id="item-name"></h2>
+        <img id="item-image" src="" alt="">
+        <p id="item-ingredients"></p>
+        <p id="item-diet-type"></p>
+        <p id="item-meal-type"></p>
+        <p id="item-dining-hall"></p>
+        <p id="item-meal-date"></p>
+    </div>
+    <div id="duplicate-modal">
+        <button id="replace-btn"></button>
+        <button id="cancel-replace-btn"></button>
+    </div>
+    <div id="toaster"></div>
+    <div id="cart-count">0</div>
+    <div id="username"></div>
+    <div id="diet-preference"></div>
+    <input type="text" id="search-input">
+    <button id="search-button"></button>
+</body>
+</html>
+`);
+
+// Set up the mock DOM globals
 global.window = dom.window;
-
-// Mock localStorage
-const localStorageMock = {
-  getItem: jest.fn(),
-  setItem: jest.fn(),
-  clear: jest.fn()
-};
-global.localStorage = localStorageMock;
-
-// Implement mock functions that actually make fetch calls
-const mockDisplayMenu = async () => {
-  const diningHallSelector = document.getElementById('dining-hall-selector');
-  const diningHall = diningHallSelector ? diningHallSelector.value : '1';
-  
-  await fetch(`/api/menu?dining_hall=${diningHall}&day_of_week=week`);
-  // Implementation details not needed for the test
+global.document = dom.window.document;
+global.localStorage = {
+    getItem: jest.fn(),
+    setItem: jest.fn(),
+    removeItem: jest.fn(),
+    clear: jest.fn()
 };
 
-// Mock the menu.js module with our implemented mock functions
-jest.mock('../src/js/menu.js', () => ({
-  displayMenu: mockDisplayMenu,
-  expandMenuItemsByMealType: jest.fn(),
-  sortMenuItemsByNextSevenDays: jest.fn(),
-  createMenuItem: jest.fn()
-}));
+// Mock fetch
+global.fetch = jest.fn(() => 
+    Promise.resolve({
+        ok: true,
+        json: () => Promise.resolve({})
+    })
+);
 
-// Import the mocked functions
-const {
-  displayMenu,
-  expandMenuItemsByMealType,
-  sortMenuItemsByNextSevenDays,
-  createMenuItem
+// Now we can require your menu.js file
+const { 
+    displayMenu, 
+    expandMenuItemsByMealType, 
+    sortMenuItemsByNextSevenDays, 
+    createMenuItem, 
+    addToCart 
 } = require('../src/js/menu.js');
 
-// Unit Tests
-describe('Menu Functions Unit Tests', () => {
-  beforeEach(() => {
-    fetch.resetMocks();
-    localStorage.clear();
-    document.body.innerHTML = `
-      <div id="menu-container"></div>
-      <select id="dining-hall-selector"><option value="1">Main</option></select>
-      <select id="day-selector"><option value="week">Week</option></select>
-    `;
-  });
+describe('Menu Functions', () => {
+    beforeEach(() => {
+        // Clear all mocks before each test
+        jest.clearAllMocks();
+        
+        // Reset the menu container
+        document.getElementById('menu-container').innerHTML = '';
+        
+        // Reset fetch mock
+        fetch.mockClear();
+    });
 
-  test('expandMenuItemsByMealType splits meal types correctly', () => {
-    const testItem = {
-      id: 1,
-      item_name: 'Test Item',
-      meal_type: 'breakfast,lunch'
-    };
-    
-    expandMenuItemsByMealType.mockReturnValue([
-      { ...testItem, meal_type: 'breakfast' },
-      { ...testItem, meal_type: 'lunch' }
-    ]);
+    test('expandMenuItemsByMealType correctly expands items', () => {
+        const testItems = [{
+            id: 1,
+            meal_type: 'breakfast,lunch',
+            item_name: 'Test Item'
+        }];
 
-    const result = expandMenuItemsByMealType([testItem]);
-    
-    expect(result).toHaveLength(2);
-    expect(result[0].meal_type).toBe('breakfast');
-    expect(result[1].meal_type).toBe('lunch');
-  });
+        const expanded = expandMenuItemsByMealType(testItems);
+        
+        expect(expanded).toHaveLength(2);
+        expect(expanded[0].meal_type).toBe('breakfast');
+        expect(expanded[1].meal_type).toBe('lunch');
+    });
 
-  test('displayMenu fetches and displays menu items correctly', async () => {
-    const mockMenuItems = [
-      {
-        id: 1,
-        item_name: 'Test Item',
-        image_url: 'test.jpg',
-        meal_type: 'breakfast',
-        diet_type: 'vegetarian',
-        dining_hall_id: 1,
-        day_of_week: 'Monday'
-      }
-    ];
+    test('sortMenuItemsByNextSevenDays sorts items correctly', () => {
+        const testItems = [
+            { day_of_week: 'Monday', id: 1 },
+            { day_of_week: 'Tuesday', id: 2 }
+        ];
 
-    fetch.mockResponseOnce(JSON.stringify(mockMenuItems));
+        const sorted = sortMenuItemsByNextSevenDays(testItems);
+        
+        expect(sorted).toHaveLength(7); // Should have 7 days
+        expect(sorted.every(day => day.hasOwnProperty('day'))).toBe(true);
+        expect(sorted.every(day => day.hasOwnProperty('date'))).toBe(true);
+        expect(sorted.every(day => Array.isArray(day.items))).toBe(true);
+    });
 
-    await displayMenu();
-    
-    expect(fetch).toHaveBeenCalledWith('/api/menu?dining_hall=1&day_of_week=week');
-  });
+    test('createMenuItem creates correct DOM element', () => {
+        const testItem = {
+            id: 1,
+            item_name: 'Test Item',
+            meal_type: 'breakfast',
+            diet_type: 'vegetarian',
+            image_url: 'test.jpg',
+            dining_hall_id: 1
+        };
+        const testDate = '2024-10-05';
+
+        const menuItem = createMenuItem(testItem, testDate);
+        
+        expect(menuItem.querySelector('h3').textContent).toBe('Test Item');
+        expect(menuItem.querySelector('h4').textContent).toBe('Breakfast');
+        expect(menuItem.querySelector('img').src).toContain('test.jpg');
+    });
+
+    test('addToCart makes correct fetch call', async () => {
+        const testItem = {
+            id: 1,
+            dining_hall_id: 1,
+            meal_type: 'breakfast'
+        };
+        const testDate = '2024-10-05';
+
+        await addToCart(testItem, testDate);
+        
+        expect(fetch).toHaveBeenCalledWith('/api/add-to-cart', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                item: testItem,
+                date: testDate
+            })
+        });
+    });
 });
-
-// Mock Data Generator for Testing
-function generateMockMenuData(count = 10) {
-  const mealTypes = ['breakfast', 'lunch', 'dinner'];
-  const dietTypes = ['vegetarian', 'gluten-free', 'halal', 'none'];
-  const daysOfWeek = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
-
-  return Array.from({ length: count }, (_, i) => ({
-    id: i + 1,
-    item_name: `Test Item ${i + 1}`,
-    ingredients: `Ingredient 1, Ingredient 2`,
-    meal_type: mealTypes[i % mealTypes.length],
-    dining_hall_id: (i % 3) + 1,
-    diet_type: dietTypes[i % dietTypes.length],
-    image_url: `test-image-${i + 1}.jpg`,
-    day_of_week: daysOfWeek[i % daysOfWeek.length]
-  }));
-}
-
-module.exports = { generateMockMenuData };
