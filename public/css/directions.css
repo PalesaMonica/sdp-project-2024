@@ -28,29 +28,55 @@ body {
   flex-direction: row;
   justify-content: center;
   padding: 10px;
+  flex-wrap: wrap; /* Allows items to wrap on smaller screens */
+  gap: 10px; /* Adds consistent spacing between elements */
   margin-top: 5%;
 }
 
 #source,
 #destination {
-  height: 30px;
-  width: 500px;
+  height: 50px;
+  flex-grow: 1; /* Ensures the input fields expand based on available space */
+  max-width: 500px; /* Limit width on larger screens */
   padding: 7px;
   font-weight: 700;
   font-size: medium;
-  margin: 5px;
+  margin: 0; /* Reset margin for consistency */
   border: none;
   border-radius: 12px;
+  box-sizing: border-box; /* Ensures padding is considered within width */
 }
+
 .get-direction {
-  width: 250px;
   height: 50px;
+  width: 250px; /* Consistent width for button on larger screens */
   font-weight: 700;
-  margin-left: 5px;
+  margin-left: 5px; /* Space between button and inputs */
   border-radius: 12px;
   background-color: #ff6a3d;
   color: #fff;
   border: none;
+  cursor: pointer;
+  box-sizing: border-box;
+}
+
+@media (max-width: 768px) {
+  .container {
+    flex-direction: column;
+    align-items: stretch; /* Makes child elements take up full width */
+    gap: 10px; /* Adds spacing between elements */
+  }
+
+  #source,
+  #destination,
+  .get-direction {
+    width: 100%; /* Full width for smaller screens */
+    max-width: 100%; /* Override max-width to fit smaller screens */
+  }
+
+  .get-direction {
+    margin-left: 0; /* Remove left margin to center button */
+  }
 }
 
 .header {
@@ -96,4 +122,16 @@ body {
   .container {
     margin-top: 12%;
   }
+}
+
+@media (max-width: 500px) {
+  .container {
+    margin-top: 14%;
   }
+}
+
+@media (max-width: 350px) {
+  .container {
+    margin-top: 24%;
+  }
+}
