@@ -523,3 +523,11 @@ function reloadPage() {
       console.error('Error during logout:', err);
     });
   }
+
+  module.exports = {
+    displayMenu,
+    expandMenuItemsByMealType,
+    sortMenuItemsByNextSevenDays,
+    createMenuItem,
+    addToCart
+  };

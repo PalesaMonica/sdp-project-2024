@@ -1,6 +1,6 @@
 <?xml version="1.0" ?>
 <!DOCTYPE coverage SYSTEM "http://cobertura.sourceforge.net/xml/coverage-04.dtd">
-<coverage lines-valid="30" lines-covered="25" line-rate="0.8332999999999999" branches-valid="10" branches-covered="4" branch-rate="0.4" timestamp="1727889772109" complexity="0" version="0.1">
+<coverage lines-valid="30" lines-covered="25" line-rate="0.8332999999999999" branches-valid="10" branches-covered="4" branch-rate="0.4" timestamp="1728001015178" complexity="0" version="0.1">
   <sources>
     <source>D:\SDP\sdp-project-2024</source>
   </sources>
@@ -21,7 +21,7 @@
             <line number="5" hits="2" branch="false"/>
             <line number="7" hits="2" branch="false"/>
             <line number="8" hits="2" branch="false"/>
-            <line number="14" hits="1" branch="false"/>
+            <line number="14" hits="2" branch="false"/>
             <line number="16" hits="1" branch="true" condition-coverage="50% (1/2)"/>
             <line number="17" hits="1" branch="false"/>
             <line number="20" hits="0" branch="true" condition-coverage="0% (0/2)"/>
@@ -49,7 +49,7 @@
             <line number="13" hits="2" branch="false"/>
             <line number="15" hits="2" branch="false"/>
             <line number="16" hits="2" branch="false"/>
-            <line number="22" hits="1" branch="false"/>
+            <line number="22" hits="2" branch="false"/>
             <line number="24" hits="1" branch="true" condition-coverage="50% (1/2)"/>
             <line number="25" hits="1" branch="false"/>
             <line number="29" hits="0" branch="true" condition-coverage="0% (0/2)"/>

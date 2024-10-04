@@ -297,4 +297,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 throw error;  // Re-throw the error to be caught in the main chain
             });
     }
+    
 });
+
+module.exports = {
+    removeItem
+  };
