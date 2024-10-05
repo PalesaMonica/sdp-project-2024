@@ -463,10 +463,17 @@ function setupSearch() {
   
 
 
-// Close modal functionality
-closeButton.onclick = function() {
-    modal.style.display = 'none';
-}
+
+if (closeButton) {
+    closeButton.onclick = function() {
+      modal.style.display = 'none';
+    };
+  }
+
+// // Close modal functionality
+// closeButton.onclick = function() {
+//     modal.style.display = 'none';
+// }
 
 window.onclick = function(event) {
     if (event.target == modal) {
@@ -523,3 +530,11 @@ function reloadPage() {
       console.error('Error during logout:', err);
     });
   }
+
+  module.exports = {
+    displayMenu,
+    expandMenuItemsByMealType,
+    sortMenuItemsByNextSevenDays,
+    createMenuItem,
+    addToCart
+  };

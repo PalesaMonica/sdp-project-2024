@@ -1,5 +1,4 @@
 const { JSDOM } = require('jsdom');
-// Ensure correct path to signup.js for the handleSignup function
 const { handleSignup } = require('../src/js/signup');
 
 describe('signup.html', () => {

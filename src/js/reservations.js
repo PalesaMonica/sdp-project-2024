@@ -260,7 +260,6 @@ function adjustToTimeZone(dateString) {
     return localDate.toLocaleDateString('en-US', options);
 }
 
-
 function displayReservationDetails(reservation) {
     const detailsContainer = document.getElementById('reservation-details');
     const modal = document.getElementById('reservation-modal');
@@ -328,7 +327,7 @@ function deleteReservation(reservationId) {
 
 
 
-function formatDate(dateString) {
+/*function formatDate(dateString) {
     if (!dateString) return 'No date provided';
     
     const date = new Date(dateString);
@@ -343,9 +342,9 @@ function formatDate(dateString) {
     
     const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
     return date.toLocaleDateString(undefined, options);
-}
+}*/
 
-function formatDate(dateString) {
+/*function formatDate(dateString) {
     // Check if the dateString is valid and convert it to the appropriate format
     const date = new Date(dateString);
     if (isNaN(date)) {
@@ -353,7 +352,7 @@ function formatDate(dateString) {
     }
     const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
     return date.toLocaleDateString(undefined, options);
-}
+}*/
 
 
 function getDirections(reservationId) {
@@ -361,15 +360,15 @@ function getDirections(reservationId) {
     window.location.href = '/directions';
 }
 
-function formatDate(dateString) {
+/*function formatDate(dateString) {
     const date = new Date(dateString + 'T00:00:00Z');
     const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
     return date.toLocaleDateString(undefined, options);
-}
+}*/
 
-function formatTime(timeString) {
+/*function formatTime(timeString) {
     return new Date(`1970-01-01T${timeString}`).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-}
+}*/
 
 function getMealType(mealType) {
     const mealTypes = {
@@ -389,3 +388,5 @@ function calculateCost(reservation) {
     };
     return baseCost + (mealCosts[reservation.meal_type] || 0);
 }
+
+module.exports = {displayReservations,fetchReservations,deleteReservation,groupReservationsByDay};

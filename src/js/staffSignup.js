@@ -35,4 +35,7 @@ async function handleStaffSignup(event) {
     }
 }
 
+
 document.querySelector('form').addEventListener('submit', handleStaffSignup);
+
+module.exports = { handleStaffSignup };

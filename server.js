@@ -146,13 +146,13 @@ passport.deserializeUser(function(id, done) {
 
 
 // Serve static files from the "public" directory
-app.use(express.static(path.join(__dirname, "public")));
+// app.use(express.static(path.join(__dirname, "public")));
 
 // Serve static files with cache-control
-// app.use(express.static(path.join(__dirname, 'public'), {
-//   maxAge: '1y', // Cache static files for 1 year
-//   etag: false  // Disable ETag to rely on cache-control
-// }));
+app.use(express.static(path.join(__dirname, 'public'), {
+  maxAge: '1y', // Cache static files for 1 year
+  etag: false  // Disable ETag to rely on cache-control
+}));
 
 
 // Serve JavaScript from 'src/js' folder
@@ -450,25 +450,54 @@ app.post("/logout", (req, res) => {
   });
 });
 
-app.post('/saveDietPreference',ensureAuthenticated, (req, res) => {
+app.post('/saveDietPreference', ensureAuthenticated, (req, res) => {
   const { dietPlan } = req.body;
   const user_id = req.user.id;
   const email = req.user.email;
   const username = req.user.username;
 
-  const query = `
-    INSERT INTO dietary_preference (email, preference, user_id, username) 
-    VALUES (?, ?, ? , ?)
-    ON DUPLICATE KEY UPDATE preference = VALUES(preference)
+  // Query to get the user's current dietary preference and last_modified date
+  const selectQuery = `
+      SELECT preference, last_modified
+      FROM dietary_preference
+      WHERE user_id = ?
   `;
 
-  connection.query(query, [email, dietPlan, user_id, username], (err, result) => {
+  connection.query(selectQuery, [user_id], (err, result) => {
       if (err) {
-          return res.status(500).json({ msg: 'Error saving preference' });
+          return res.status(500).json({ msg: 'Error retrieving current preference' });
       }
-      res.status(200).json({ msg: 'Diet preference saved or updated' });
+
+      if (result.length > 0) {
+          const lastModified = result[0].last_modified;
+          const currentDate = new Date();
+          const threeMonthsAgo = new Date();
+          threeMonthsAgo.setMonth(currentDate.getMonth() - 3);
+
+          // Check if the user is allowed to update their diet plan
+          if (new Date(lastModified) > threeMonthsAgo) {
+              return res.status(403).json({ 
+                  msg: 'You can only change your dietary preference once every 3 months.' 
+              });
+          }
+      }
+
+      // If the user is allowed to update, proceed with saving the new preference
+      const insertQuery = `
+          INSERT INTO dietary_preference (email, preference, user_id, username, last_modified) 
+          VALUES (?, ?, ?, ?, NOW())
+          ON DUPLICATE KEY UPDATE preference = VALUES(preference), last_modified = NOW()
+      `;
+
+      connection.query(insertQuery, [email, dietPlan, user_id, username], (err, result) => {
+          if (err) {
+              return res.status(500).json({ msg: 'Error saving preference' });
+          }
+          res.status(200).json({ msg: 'Diet preference saved or updated' });
+      });
   });
 });
+
 
 app.get('/get-username', (req, res) => {
   if (req.isAuthenticated()) {
