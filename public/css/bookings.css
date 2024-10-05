@@ -222,3 +222,50 @@ body {
     color: white; /* Matches the rest of the text */
     margin-bottom: 10px; /* Optional: Adds spacing below the label */
 }
+/* Booking list styling */
+.booking-list {
+    list-style-type: none;
+    padding: 0;
+    margin-top: 10px;
+    width: 100%; /* Ensures the list takes full container width */
+    max-width: 600px; /* Optional: restrict the width of the booking list */
+}
+
+.booking-item {
+    background-color: #F6F9FF;
+    color: #1A2238;
+    padding: 15px;
+    margin: 10px 0;
+    border-radius: 8px;
+    transition: background-color 0.3s, color 0.3s;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Adds subtle shadow for depth */
+}
+
+.booking-item:hover {
+    background-color: #FF6A3D;
+    color: white;
+}
+
+/* Error message styling */
+.error-message {
+    color: white;
+    background-color: red;
+    padding: 10px;
+    border-radius: 5px;
+    font-size: 16px;
+    margin-top: 20px;
+    text-align: center;
+    width: 100%;
+}
+
+/* Success message styling */
+.success-message {
+    color: white;
+    background-color: green;
+    padding: 10px;
+    border-radius: 5px;
+    font-size: 16px;
+    margin-top: 20px;
+    text-align: center;
+    width: 100%;
+}
