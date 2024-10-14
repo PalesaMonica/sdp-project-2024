@@ -1,7 +1,7 @@
 :root {
-    --primary-color: #ff6a3d;
-    --background-color: #1a1e2e;
-    --text-color: #ffffff;
+    --primary-color: #043673;
+    --background-color: #ffffff;
+    --text-color: #043673;
 }
 
 body {
@@ -65,13 +65,13 @@ body {
 }
 
 .menu-button:hover {
-    background-color: #e55d3b; /* Darker color on hover */
+    transform: scale(1.1) ; /* Darker color on hover */
 }
 
 
 /* Greeting and instruction styling */
 .greeting, .instruction, .current-plan {
-    color: white;
+    color: var(--text-color);
     font-size: 20px;
     font-family: Inter, Arial, sans-serif;
     font-weight: 800;
@@ -100,7 +100,7 @@ body {
 
 /* Box styling */
 .box {
-    background-color: #FF6A3D;
+    background-color: var(--primary-color);
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -121,11 +121,12 @@ body {
 .box img {
     width: 50px; /* Ensure images fit uniformly in the box */
     height: auto;
+    color: white;
 }
 
 /* Label inside box */
 .label {
-    color: #030303;
+    color: var(--background-color);
     font-size: 1rem;
     font-weight: 800;
     margin-top: 10px;
@@ -134,7 +135,7 @@ body {
 
 /* Save button styling */
 .save-button {
-    background-color: #FF6A3D;
+    background-color: var(--primary-color);
     color: white;
     border: none;
     padding: 20px 40px;
@@ -155,7 +156,7 @@ body {
     position: absolute;
     top: 10px;
     right: 10px;
-    background-color: #FF6A3D;
+    background-color: var(--primary-color);
     color: white;
     border: none;
     padding: 10px 20px;
@@ -210,7 +211,7 @@ body {
 }
 
 #confirm-button:hover {
-    background-color: #e65c2e;
+    background-color: #917248;
 }
 
 #toaster {

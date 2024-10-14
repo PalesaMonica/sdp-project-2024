@@ -1,7 +1,7 @@
 :root {
-    --primary-color: #ff6a3d;
-    --background-color: #1a1e2e;
-    --text-color: #ffffff;
+    --primary-color: #043673;
+    ---background-color: #ffffff;
+    --text-color: #043673;
 }
 
 body {
@@ -38,7 +38,7 @@ body {
 }
 
 .reservation-button:hover {
-    background-color: #e55d3b; /* Darker color on hover */
+    transform: scale(1.1); /* Slightly increase size on hover */
 }
 
 .cart-container {
@@ -87,7 +87,7 @@ body {
 }
 
 .remove-item {
-    background-color: #ff4d4d;
+    background-color: #917248;
     color: white;
     border: none;
     padding: 10px 15px;
@@ -97,7 +97,7 @@ body {
 }
 
 .remove-item:hover {
-    background-color: #e60000;
+    background-color: #7a5f3e;
 }
 
 #confirm-reservation {
@@ -114,7 +114,7 @@ body {
 }
 
 #confirm-reservation:hover {
-    background-color: #e55542;
+    transform: scale(1.1);
 }
 
 .modal {

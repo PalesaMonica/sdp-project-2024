@@ -1,7 +1,7 @@
 :root {
-    --primary-color: #ff6a3d;
-    --background-color: #1a1e2e;
-    --text-color: #ffffff;
+    --primary-color: #043673;
+    --background-color: #ffffff;
+    --text-color: #043673;
 }
 
 .header {
@@ -46,7 +46,7 @@
   .logo-text {
     font-size: 24px;
     font-weight: bold;
-    color: var(--text-color);
+    color: #917248;
   }
   
   .crave {
@@ -69,7 +69,7 @@
     padding: 15px 30px;
     text-decoration: none;
     font-size: 18px;
-    color: white;
+    color: var(--primary-color);
     display: block;
     transition: background-color 0.2s ease;
     white-space: nowrap;
@@ -77,11 +77,13 @@
   
   .sidenav a:hover {
     background-color: var(--primary-color);
+    color: var(--background-color);
   }
   
   .cart-icon img {
     width: 35px;
     height: 35px;
+    color:#043673;
 }
 
 .add-to-cart {
@@ -128,7 +130,7 @@
 }
 
 .unread-count {
-  background-color: #FF6A3D; /* Background color */
+  background-color: var(--primary-color); /* Background color */
   color: white; /* Text color */
   border-radius: 50%; /* Make it round */
   padding: 3px 7px; /* Padding for size */

@@ -1,8 +1,8 @@
 /* Basic Reset */
 :root {
-    --primary-color: #ff6a3d;
-    --background-color: #1a1e2e;
-    --text-color: #ffffff;
+    --primary-color: #043673;
+    --background-color: #ffffff;
+    --text-color: #043673;
 }
 
 * {
@@ -36,7 +36,7 @@ body {
 .profile-container h2 {
     margin: 0;
     font-size: 24px;
-    color: #FF6a3d;
+    color: #043673;
     margin-bottom: 20px;
 }
 
@@ -48,7 +48,7 @@ body {
     padding: 12px 20px;
     margin: 12px 0;
     border-radius: 25px;
-    background-color: #FF6a3d;
+    background-color: #043673;
     color: white;
     text-decoration: none;
     font-size: 16px;
@@ -62,7 +62,7 @@ body {
 }
 
 .btn:hover {
-    background-color: #cc5630;
+    background-color: #043675;
     transform: scale(1.05);
 }
 
@@ -97,7 +97,7 @@ body {
 .support-container a {
     display: block;
     margin: 5px 0;
-    color: #FF6a3d;
+    color: #043673;
     text-decoration: none;
 }
 
@@ -106,7 +106,7 @@ body {
 }
 
 .logout-link {
-    color: #ff4d4d;
+    color: #043673;
     font-size: 16px;
     display: inline-block;
     margin-top: 20px;
@@ -114,7 +114,6 @@ body {
 }
 
 .logout-link:hover {
-    color: #d12e2e;
     text-decoration: underline;
 }
 
@@ -138,7 +137,7 @@ body {
 
 .personal-info .detail span {
     font-weight: bold;
-    color: #FF6a3d;
+    color: #043673;
 }
 
 /* Centered Buttons */

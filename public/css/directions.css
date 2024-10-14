@@ -1,7 +1,7 @@
 :root {
-  --primary-color: #ff6a3d;
-  --background-color: #1a1e2e;
-  --text-color: #ffffff;
+  --primary-color: #043673;
+  --background-color: #ffffff;
+  --text-color: #043673;
 }
 
 
@@ -42,7 +42,7 @@ body {
   font-weight: 700;
   font-size: medium;
   margin: 0; /* Reset margin for consistency */
-  border: none;
+  border: 1px solid #ccc;
   border-radius: 12px;
   box-sizing: border-box; /* Ensures padding is considered within width */
 }
@@ -53,7 +53,7 @@ body {
   font-weight: 700;
   margin-left: 5px; /* Space between button and inputs */
   border-radius: 12px;
-  background-color: #ff6a3d;
+  background-color: var(--primary-color);
   color: #fff;
   border: none;
   cursor: pointer;

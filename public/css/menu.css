@@ -1,7 +1,7 @@
 :root {
-    --primary-color: #ff6a3d;
-    --background-color: #1a1e2e;
-    --text-color: #ffffff;
+    --primary-color: #043673;
+    --background-color: #ffffff;
+    --text-color: #043673;
 }
 
 body {
@@ -35,12 +35,13 @@ body {
     display: flex;
     align-items: center;
     max-width: 1200px;
+  
   }
   
   .navbar-toggle {
     background: none;
     border: none;
-    color: var(--text-color);
+    color: #043673;
     font-size: 24px;
     cursor: pointer;
     padding: 0;
@@ -62,6 +63,7 @@ body {
   .logo-text {
     font-size: 24px;
     font-weight: bold;
+    color: #917248;
   }
   
   .crave {
@@ -84,7 +86,7 @@ body {
     padding: 15px 30px;
     text-decoration: none;
     font-size: 18px;
-    color: white;
+    color: #043673;
     display: block;
     transition: background-color 0.2s ease;
     white-space: nowrap;
@@ -92,6 +94,7 @@ body {
   
   .sidenav a:hover {
     background-color: var(--primary-color);
+    color: var(--background-color);
   }
   
 .cart-icon img {
@@ -101,7 +104,7 @@ body {
 
 .add-to-cart {
     background-color: var(--primary-color);
-    color: var(--text-color);
+    color: var(--background-color);
     border: none;
     border-radius: 50%;
     width: 35px;
@@ -115,8 +118,8 @@ body {
 }
 
 .add-to-cart:hover {
-    background-color: white;
-    color: var(--primary-color);
+    /* background-color: white;
+    color: var(--primary-color); */
     transform: scale(1.1);
 }
 
@@ -144,7 +147,7 @@ body {
 
 
 .unread-count {
-    background-color: #FF6A3D; /* Background color */
+    background-color: var(--primary-color); /* Background color */
     color: white; /* Text color */
     border-radius: 50%; /* Make it round */
     padding: 3px 7px; /* Padding for size */
@@ -242,7 +245,7 @@ body {
 
 select {
     background-color: var(--primary-color);
-    color: var(--text-color);
+    color: #ffffff;
     border: none;
     padding: 5px 10px;
     border-radius: 5px;

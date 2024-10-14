@@ -1,7 +1,7 @@
 :root {
-    --primary-color: #ff6a3d;
-    --background-color: #1a1e2e;
-    --text-color: #ffffff;
+    --primary-color: #043673;
+    --background-color: #ffffff;
+    --text-color: #043673;
 }
 
 body {
@@ -139,7 +139,7 @@ body {
 }
 
 .view-btn:hover {
-    background-color: #e55542;
+    background-color: #917248;
 }
 
 .directions-btn {
@@ -205,11 +205,11 @@ body {
 }
 
 #close-modal:hover {
-    background-color: #e55542;
+    transform: scale(1.1);
 }
 
 #delete-reservation {
-    background-color: #ff4136;
+    background-color: #917248;
     color: white;
     border: none;
     padding: 10px 20px;

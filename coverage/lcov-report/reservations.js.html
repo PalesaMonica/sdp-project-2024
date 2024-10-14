@@ -23,30 +23,30 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">6.04% </span>
+                <span class="strong">1.34% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>9/149</span>
+                <span class='fraction'>2/149</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">7.5% </span>
+                <span class="strong">0% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>3/40</span>
+                <span class='fraction'>0/40</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">8.1% </span>
+                <span class="strong">0% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>3/37</span>
+                <span class='fraction'>0/37</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">6.12% </span>
+                <span class="strong">1.36% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>9/147</span>
+                <span class='fraction'>2/147</span>
             </div>
         
             
@@ -633,13 +633,13 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -753,7 +753,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -1023,14 +1023,14 @@ function <span class="fstat-no" title="function not covered" >displayReservation
     });
 }
 &nbsp;
-function groupReservationsByDay(reservations) {
-    return reservations.reduce((groups, reservation) =&gt; {
-        const date = new Date(reservation.date).toLocaleDateString('en-CA');
-        if (!groups[date]) {
-            groups[date] = [];
+function <span class="fstat-no" title="function not covered" >groupReservationsByDay(</span>reservations) {
+<span class="cstat-no" title="statement not covered" >    return reservations.reduce(<span class="fstat-no" title="function not covered" >(g</span>roups, reservation) =&gt; {</span>
+        const date = <span class="cstat-no" title="statement not covered" >new Date(reservation.date).toLocaleDateString('en-CA');</span>
+<span class="cstat-no" title="statement not covered" >        if (!groups[date]) {</span>
+<span class="cstat-no" title="statement not covered" >            groups[date] = [];</span>
         }
-        groups[date].push(reservation);
-        return groups;
+<span class="cstat-no" title="statement not covered" >        groups[date].push(reservation);</span>
+<span class="cstat-no" title="statement not covered" >        return groups;</span>
     }, {});
 }
 &nbsp;
@@ -1143,8 +1143,8 @@ function <span class="fstat-no" title="function not covered" >displayReservation
 &nbsp;
 }
 &nbsp;
-function deleteReservation(reservationId) {
-    <span class="missing-if-branch" title="if path not taken" >I</span>if (confirm('Are you sure you want to cancel this reservation?')) {
+function <span class="fstat-no" title="function not covered" >deleteReservation(</span>reservationId) {
+<span class="cstat-no" title="statement not covered" >    if (confirm('Are you sure you want to cancel this reservation?')) {</span>
 <span class="cstat-no" title="statement not covered" >        fetch(`/api/reservations/${reservationId}`, {</span>
             method: 'DELETE',
         })
@@ -1243,7 +1243,7 @@ module.exports = {displayReservations,fetchReservations,deleteReservation,groupR
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2024-10-04T16:10:13.443Z
+                at 2024-10-04T19:17:45.963Z
             </div>
         <script src="prettify.js"></script>
         <script>

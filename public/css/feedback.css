@@ -1,7 +1,7 @@
 :root {
-    --primary-color: #ff6a3d;
-    --background-color: #1a1e2e;
-    --text-color: #ffffff;
+    --primary-color: #043673;
+    --background-color: #ffffff;
+    --text-color: #043673;
 }
 
 body {
@@ -24,7 +24,7 @@ body {
   }
 
 .feedback-screen {
-    background-color: #1a1e2e;
+    background-color: #ffffff;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -35,7 +35,7 @@ body {
 }
 
 .feedback-screen .div {
-    background-color: #1a1e2e;
+    background-color: #ffffff;
     width: 100%;
     max-width: 600px;
     padding: 20px;
@@ -50,7 +50,7 @@ body {
 .feedback-screen .text-wrapper-3 {
     font-family: "Inter-SemiBold Italic", Helvetica;
     font-size: 24px;
-    color: #ff6a3d;
+    color: #043673;
 }
 
 .feedback-screen .image {
@@ -69,7 +69,7 @@ body {
     font-family: "Inter-Regular", Helvetica;
     font-weight: 400;
     font-size: 20px;
-    color: #ff6a3d;
+    color: #043673;
     margin-top: 0;
 }
 
@@ -126,7 +126,7 @@ body {
 .feedback-screen .submit-btn {
     width: 100%;
     padding: 15px;
-    background-color: #ff6a3d;
+    background-color: #043673;
     color: white;
     font-family: "Inter-SemiBold", Helvetica;
     font-size: 18px;
@@ -165,7 +165,7 @@ body {
     width: 100%;
     max-width: 400px;
     padding: 15px;
-    background-color: #ff6a3d;
+    background-color: #043673;
     color: white;
     font-family: "Inter-SemiBold", Helvetica;
     font-size: 16px;
@@ -177,7 +177,7 @@ body {
 
 /* Reviews display section */
 #reviews {
-    background-color: #f4db7d;
+    background-color: #917248;
     color: black;
     padding: 15px;
     border-radius: 10px;
@@ -188,11 +188,11 @@ body {
     margin-top: 5px;
     text-align: center;
     font-family: "Inter-SemiBold", Helvetica;
-    color: #f4db7d;
+    color: #917248;
 }
 
 .submit-button {
-    background-color: #ff6a3d;
+    background-color: #043673;
     color: white;
     font-size: 20px;
     padding: 12px 24px;
@@ -203,7 +203,7 @@ body {
 }
 
 .submit-button:hover {
-    background-color: #ff5221;
+    transform: scale(1.1);
 }
 
 .group-2 {
@@ -236,7 +236,7 @@ body {
 
 .star:hover,
 .star.selected {
-    color: #ff6a3d;
+    color: #043673;
 }
 
 /* Modal Styles */
@@ -255,7 +255,7 @@ body {
 }
 
 .modal-content {
-    background-color: #1a1e2e;
+    background-color: #ffffff;
     margin: 5% auto;
     padding: 20px;
     border: 1px solid #888;
@@ -267,7 +267,7 @@ body {
 
 .modal-content h2 {
     text-align: center;
-    color: #ff6a3d;
+    color: #043673;
 }
 
 .close {
@@ -280,12 +280,12 @@ body {
 
 .close:hover,
 .close:focus {
-    color: #ff6a3d;
+    color: #043673;
 }
 
 #reviews {
     margin-top: 20px;
-    background-color: #f4db7d;
+    background-color: #917248;
     color: black;
     padding: 15px;
     border-radius: 10px;
@@ -293,7 +293,7 @@ body {
 
 /* Button inside modal */
 .dropdown-section button {
-    background-color: #ff6a3d;
+    background-color: #043673;
     color: white;
     padding: 10px;
     border: none;
@@ -302,7 +302,7 @@ body {
 }
 
 .dropdown-section button:hover {
-    background-color: #ff5221;
+    background-color: var(--primary-color);
 }
 
 .nav-links {
@@ -311,7 +311,7 @@ body {
 }
 
 .see-reviews-btn {
-    background-color: #ff6a3d;
+    background-color: #043673;
     color: white;
     font-family: "Inter-SemiBold", Helvetica;
     font-size: 18px;
@@ -323,7 +323,7 @@ body {
 }
 
 .see-reviews-btn:hover {
-    background-color: #ff5221;
+    transform: scale(1.1);
 }
 
 

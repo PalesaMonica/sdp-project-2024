@@ -1,8 +1,8 @@
 /* userstyle.css */
 :root {
-    --primary-color: #ff6a3d;
-    --background-color: #1a1e2e;
-    --text-color: #ffffff;
+    --primary-color: #043673;
+    --background-color: #ffffff;
+    --text-color: #043673;
 }
 
 body {
@@ -51,7 +51,7 @@ h1 {
 }
 
 .notification.unread {
-    border-left: 5px solid #FF6A3D;
+    border-left: 5px solid #043673;
 }
 
 .notification.alert {
@@ -77,7 +77,7 @@ h1 {
 
 .notification h2 {
     margin: 0 0 10px;
-    color: #FF6A3D;
+    color: #043673;
 }
 
 .notification.alert h2 {
@@ -89,7 +89,7 @@ h1 {
 }
 
 .mark-read-btn {
-    background-color: #FF6A3D;
+    background-color: #043673;
     color: white;
     border: none;
     padding: 10px;
@@ -103,7 +103,7 @@ h1 {
 }
 
 .heading {
-    color: #FF6A3D;
+    color: #043673;
     font-size: 24px;
     font-weight: 400;
     margin-bottom: 20px;

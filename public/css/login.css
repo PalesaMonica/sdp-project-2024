@@ -1,7 +1,7 @@
 :root {
-    --primary-color: #ff6a3d;
-    --background-color: #1a1e2e;
-    --text-color: #ffffff;
+    --primary-color: #043673;
+    --background-color: #ffffff;
+    --text-color: #043673;
 }
 
 html, body {
@@ -9,7 +9,7 @@ html, body {
     padding: 0;
     width: 100%;
     height: 100%;
-    background-color: #1a1e2e; /* Ensure the same background as the login container */
+    background-color: #ffffff; /* Ensure the same background as the login container */
     box-sizing: border-box;
 }
 .forgot-password {
@@ -30,7 +30,7 @@ html, body {
 
 /* Overall login container */
 .login {
-    background-color: #1a1e2e;
+    background-color: #ffffff;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -44,7 +44,7 @@ html, body {
 
 /* Inner div container */
 .login .div {
-    background-color: #1a1e2e; 
+    background-color: #ffffff; 
     overflow: hidden;
     width: 90%; /* Responsive width */
     max-width: 360px;

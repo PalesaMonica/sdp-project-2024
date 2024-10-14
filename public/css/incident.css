@@ -1,7 +1,7 @@
 :root {
-    --primary-color: #ff6a3d;
-    --background-color: #1a1e2e;
-    --text-color: #ffffff;
+    --primary-color: #043673;
+    --background-color: #ffffff;
+    --text-color: #043673;
 }
 body {
     font-family: Arial, sans-serif;
@@ -73,7 +73,7 @@ body {
     width: 100%;
     max-width: 400px;
     padding: 20px;
-    background: #1A2238;
+    background: var(--background-color);
     border-radius: 10px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     text-align: center; /* Centering form elements */
@@ -82,7 +82,7 @@ body {
 
 /* Heading for the notification form */
 .heading {
-    color: #FF6A3D;
+    color: #043673;
     font-size: 24px;
     font-weight: 400;
     margin-bottom: 20px;
@@ -95,7 +95,7 @@ body {
 }
 
 .label {
-    color: #FF6A3D;
+    color: #043673;
     font-size: 24px;
     font-weight: 400;
     margin-bottom: 10px;
@@ -124,10 +124,10 @@ body {
 .send-btn {
     width: 100%; /* Full width button */
     height: 37px;
-    background: #FF6A3D;
+    background: #043673;
     border-radius: 5px;
     border: none;
-    color: black;
+    color: white;
     font-size: 24px;
     cursor: pointer;
     text-align: center;
