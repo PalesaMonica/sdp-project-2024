@@ -2,6 +2,7 @@
     --primary-color: #043673;
     --background-color: #ffffff;
     --text-color: #043673;
+    --special: #917248;
 }
 
 html, body {
@@ -12,7 +13,7 @@ html, body {
     background-color: #ffffff; /* Ensure the same background as the login container */
     box-sizing: border-box;
 }
-.forgot-password {
+/* .forgot-password {
     text-align: center;
     margin-top: 10px;
 }
@@ -24,8 +25,7 @@ html, body {
 
 .forgot-link:hover {
     text-decoration: underline;
-}
-
+} */
 
 
 /* Overall login container */
@@ -71,7 +71,7 @@ html, body {
 .login .signin {
     font-family: "Irish Grover-Regular", Helvetica;
     font-weight: 400;
-    color: #ffffff;
+    color: var(--primary-color);
     font-size: 40px;
     letter-spacing: 0.94px;
     line-height: normal;
@@ -80,12 +80,12 @@ html, body {
 }
 
 .login .text-wrapper {
-    color: #ffffff;
+    color: var(--primary-color);
     letter-spacing: 0.94px;
 }
 
 .login .span {
-    color: #ff6a3d;
+    color: var(--special);
     letter-spacing: 0.94px;
 }
 
@@ -132,8 +132,8 @@ html, body {
 .login .icon {
     position: absolute;
     left: 10px;
-    width: 36px;
-    height: 36px;
+    width: 28px;
+    height: 28px;
 }
 
 /* Sign In Button */
@@ -146,7 +146,7 @@ html, body {
     border-radius: 12px;
     font-family: "Inter-Regular", Helvetica;
     font-size: 22px;
-    color: #000000;
+    color: var(--background-color);
     letter-spacing: 0.52px;
     border: none;    
     
