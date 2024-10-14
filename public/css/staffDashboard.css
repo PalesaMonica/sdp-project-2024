@@ -80,21 +80,22 @@ body {
     overflow-x: hidden;
     transition: 0.3s;
     z-index: 99;
-}
-
-.sidenav a {
+  }
+  
+  .sidenav a {
     padding: 15px 30px;
     text-decoration: none;
     font-size: 18px;
-    color: white;
+    color: #043673;
     display: block;
     transition: background-color 0.2s ease;
     white-space: nowrap;
-}
-
-.sidenav a:hover {
+  }
+  
+  .sidenav a:hover {
     background-color: var(--primary-color);
-}
+    color: var(--background-color);
+  }
 
 /* Rest of your existing styles remain the same */
 .management-section {
@@ -117,7 +118,7 @@ input, select, #add-new-meal, #add-to-menu, #create-menu-option, #add-new-item, 
     border: none;
     border-radius: 5px;
     background-color: rgba(255, 255, 255, 0.1);
-    color: var(--text-color);
+    color: var(--background-color);
 }
 
 
@@ -128,7 +129,7 @@ input, select, #add-new-meal, #add-to-menu, #create-menu-option, #add-new-item, 
 }
 
 #add-new-meal:hover, #add-to-menu:hover, #create-menu-option:hover, #add-new-item:hover, #add-menu-option:hover {
-    background-color: #e55d3b;
+    background-color: #022c60;
 }
 
 select {
@@ -164,7 +165,7 @@ select {
 }
 
 .unread-count {
-background-color: #FF6A3D;  /* Background color */
+background-color: #043673;  /* Background color */
 color: white;               /* Text color */
 border-radius: 50%;         /* Make it round */
 padding: 3px 7px;           /* Padding for size */
@@ -182,7 +183,7 @@ font-size: 14px;            /* Font size */
     padding: 10px;
     background-color: rgba(255, 255, 255, 0.1);
     border: none;
-    color: var(--text-color);
+    color: var(--background-color);
     cursor: pointer;
 }
 
@@ -206,10 +207,12 @@ font-size: 14px;            /* Font size */
     cursor: pointer;
     display: flex;
     flex-direction: column;
+    border: 1px solid rgba(0, 0, 0, 0.2);
 }
 
 .menu-item-pool-item.selected {
     background-color: var(--primary-color);
+    color: var(--background-color);
 }
 
 .menu-item-name {
@@ -289,6 +292,7 @@ textarea {
 
 .tab-button.active {
     background-color: var(--primary-color);
+    color: var(--background-color);
 }
 
 .tab-content {
