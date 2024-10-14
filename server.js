@@ -1940,18 +1940,25 @@ app.get('/api/get-map-key', (req, res) => {
 });
 
 //infrastructure booking api connection
-const infrastructureApiKey = process.env.INFRASTRUCTURE_API_KEY;
+
 
 app.get('/api/dining/bookings', ensureAuthenticated, async (req, res) => {
   try {
-    const infrastructureApiUrl = 'https://wits-infrastructure-management.web.app/'; // Replace with actual API URL
-    const venueID = req.query.venueID || 'defaultVenueId'; // Replace 'defaultVenueId' with an actual ID or fetch dynamically
+    const infrastructureApiUrl = 'https://wits-infrastructure-management.web.app/api/bookings/findByField';
+    const venueID = req.query.venueID;
 
-    // Fetch bookings from the Infrastructure System API, passing the API key and venueId
-    const response = await axios.get(`${infrastructureApiUrl}/api/bookings/findByField?venueID=${venueID}`, {
+    if (!venueID) {
+      return res.status(400).json({ message: 'venueID parameter is required' });
+    }
+
+    // Construct the URL with the `venueID` and `x-api-key`
+    const url = `${infrastructureApiUrl}?venueID=${encodeURIComponent(venueID)}`;
+
+    // Make the request and pass API key in headers as well
+    const response = await axios.get(url, {
       headers: {
-        'Authorization': `Bearer ${infrastructureApiKey}` // Include API key in the request headers
-      }
+        'x-api-key': process.env.INFRASTRUCTURE_API_KEY,
+      },
     });
 
     const bookings = response.data;
@@ -1963,6 +1970,8 @@ app.get('/api/dining/bookings', ensureAuthenticated, async (req, res) => {
     res.status(500).json({ message: 'Failed to fetch dining hall bookings' });
   }
 });
+
+
 
 io.on('connection', (socket) => {
   console.log('A user connected');

@@ -11,7 +11,6 @@ function fetchBookings() {
         // Construct the correct API endpoint with venueID query parameter
         const venueID = encodeURIComponent(diningHall);
         const apiUrl = `/api/dining/bookings?venueID=${venueID}`;
-        ;  // Adjust the endpoint as necessary
         
         // Fetch bookings for the selected dining hall using the correct API
         fetch(apiUrl)
@@ -20,8 +19,7 @@ function fetchBookings() {
                     // Redirect to login page if user is not authorized
                     window.location.href = "/login";
                     throw new Error("Unauthorized access. Redirecting to login...");
-                  }
-               else if (!response.ok) {
+                } else if (!response.ok) {
                     throw new Error('Failed to fetch bookings');
                 }
                 return response.json();
@@ -36,12 +34,20 @@ function fetchBookings() {
                     // Populate booking list
                     bookings.forEach(booking => {
                         const li = document.createElement('li');
-                        li.textContent = `Booking: ${booking.details}`; // Customize based on your actual data structure
+                        li.classList.add('booking-item');  // Apply the booking-item class for styling
+                        
+                        // Customize the content based on your booking structure
+                        li.innerHTML = `
+                            <strong>${booking.bookingDescription}</strong><br>
+                            <span>Date: ${booking.bookingDate}</span><br>
+                            <span>Start: ${booking.bookingStartTime}</span> | 
+                            <span>End: ${booking.bookingEndTime}</span>
+                        `;
+
                         bookingList.appendChild(li);
                     });
                 } else {
-                    bookingList.innerHTML = '<li style="font-weight: bold; color: #FF6A3D;">No bookings found for this dining hall.</li>';
-
+                    bookingList.innerHTML = '<li class="booking-item" style="font-weight: bold; color: #FF6A3D;">No bookings found for this dining hall.</li>';
                 }
             })
             .catch(error => {
@@ -66,7 +72,6 @@ function toggleNav() {
     }
 }
 
-
 function logout() {
     fetch('/logout', {
         method: 'POST',
@@ -75,18 +80,15 @@ function logout() {
     .then(response => response.json())
     .then(data => {
         if (data.message === 'Logout successful') {
-        window.location.href = data.redirectUrl;  // Redirect to login page
+            window.location.href = data.redirectUrl;  // Redirect to login page
         } else {
-        console.error('Logout failed:', data.message);
+            console.error('Logout failed:', data.message);
         }
     })
     .catch(err => {
         console.error('Error during logout:', err);
     });
 }
-// Mock the fetch function for testing
-window.onload =fetchBookings;
-
 
 function goBack() {
     window.location.href = '../../staffDashboard.html'; // Replace with the actual page you want to go back to
