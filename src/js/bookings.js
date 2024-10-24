@@ -47,7 +47,7 @@ function fetchBookings() {
                         bookingList.appendChild(li);
                     });
                 } else {
-                    bookingList.innerHTML = '<li class="booking-item" style="font-weight: bold; color: #FF6A3D;">No bookings found for this dining hall.</li>';
+                    bookingList.innerHTML = '<li class="booking-item" style="font-weight: bold; color:  #043673;">No bookings found for this dining hall.</li>';
                 }
             })
             .catch(error => {

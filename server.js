@@ -1873,6 +1873,7 @@ app.post('/notifications/:id/read',ensureAuthenticated, (req, res) => {
   });
 });
 
+
 // Route to handle meal plan selection
 app.post("/selectPlan", (req, res) => {
   if (!req.isAuthenticated()) {

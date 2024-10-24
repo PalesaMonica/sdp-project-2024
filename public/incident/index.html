@@ -9,45 +9,45 @@
 </head>
 
 <body>
-    <div  class="header2"> <form id="incidentReportForm">
-        <div class="input-container">
-            <label for="incidentType" class="label">Type of Incident</label>
-            <select id="incidentType" class="input-field" required>
-                <option value="" disabled selected>Select incident type</option>
-                <option value="fire">Fire</option>
-                <option value="medical">Medical</option>
-                <option value="natural">Natural</option>
-                <option value="security">Security</option>
-            </select>
-        </div>
+    <div class="header2"> 
+        <form id="incidentReportForm">
+            <div class="input-container">
+                <label for="incidentType" class="label">Type of Incident</label>
+                <select id="incidentType" class="input-field" required>
+                    <option value="" disabled selected>Select incident type</option>
+                    <option value="fire">Fire</option>
+                    <option value="medical">Medical</option>
+                    <option value="natural">Natural</option>
+                    <option value="security">Security</option>
+                </select>
+            </div>
 
-        <div class="input-container">
-            <label for="buildingName" class="label">Building Name</label>
-            <select id="buildingName" class="select-field" required>
-                <option value="" disabled selected>Select building</option>
-                <option value="Jubilee Hall">Wits University Jubilee Hall</option>
-                <option value="Convocation Dining Hall">Convocation Dining Hall</option>
-                <option value="Main Dining Hall">Wits Main Dining Hall</option>
-            </select>
-        </div>
+            <div class="input-container">
+                <label for="buildingName" class="label">Building Name</label>
+                <select id="buildingName" class="select-field" required>
+                    <option value="" disabled selected>Select building</option>
+                    <option value="Wits University Jubilee Hall">Wits University Jubilee Hall</option>
+                    <option value="Convocation Dining Hall">Convocation Dining Hall</option>
+                    <option value="Wits Main Dining Hall">Wits Main Dining Hall</option>
+                </select>
+            </div>
 
-        <div class="input-container">
-            <label for="description" class="label">Description</label>
-            <textarea id="description" class="textarea-field" required></textarea>
-        </div>
+            <div class="input-container">
+                <label for="description" class="label">Description</label>
+                <textarea id="description" class="textarea-field" required></textarea>
+            </div>
 
-        <div class="input-container">
-            <label for="incidentImage" class="label">Upload Image (Optional)</label>
-            <input type="file" id="incidentImage" class="image-upload" accept="image/*">
-        </div>
+            <div class="input-container">
+                <label for="incidentImage" class="label">Upload Image (Optional)</label>
+                <input type="file" id="incidentImage" class="image-upload" accept="image/*">
+            </div>
 
-        <button type="submit" class="send-btn">Submit Incident Report</button>
-    </form>
+            <button type="submit" class="send-btn">Submit Incident Report</button>
+        </form>
 
-    <div id="successMessage" style="display: none;" class="success-message">Incident reported successfully!</div>
-</div>
+        <div id="successMessage" style="display: none;" class="success-message">Incident reported successfully!</div>
+    </div>
 
-   
     <script src="../../src/js/incident.js"></script>
     <script src="../../src/js/headerLoader.js"></script>
 </body>

@@ -24,7 +24,7 @@
     <!-- Slide-Out Navigation Menu -->
     <nav id="sidenav" class="sidenav">
       <a href="userDashboard.html">Home</a>
-      <a href="Notification" id="notification-link">Notification <span id="unread-count" class="unread-count">0</span></a>
+      <a href="Notification" id="notification-link">Notification <span id="unread-count" class="unread-count"></span></a>
       <a href="incident"  id="incident-link">Report Incident</a>
       <a href="userProfile.html">Manage Account</a>
       <a onclick="logout()">Logout</a>
@@ -32,7 +32,7 @@
 
     <div class="container">
       <main>
-        <div class="welcome">Welcome <span id="username">John</span></div>
+        <div class="welcome">Welcome <span id="username"></span></div>
         <div class="dashboard">
           <div class="grid">
             <div class="grid-item" onclick="window.location.href='menu.html'">
@@ -90,7 +90,8 @@
         </div>
       </footer>
     </div>
-
+    <script src="../../src/js/notification.js" defer></script>
     <script src="/src/js/userDashboard.js"></script>
+  
   </body>
 </html>
