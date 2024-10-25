@@ -53,20 +53,29 @@ function closeNav() {
 function navigate(page) {
   alert(`Navigating to ${page} page`);
 }
-
 function toggleNav() {
   const sidenav = document.getElementById("sidenav");
-  const container = document.querySelector(".container");
-  if (sidenav.style.width === "250px") {
-      sidenav.style.width = "0";
-      document.body.style.marginLeft = "0";
-      container.style.marginLeft = "auto";
+  const links = document.querySelectorAll('.nav-link');
+  
+  if (sidenav.style.left === "0px") {
+    sidenav.style.left = "-100%";
+    links.forEach((link, index) => {
+      setTimeout(() => {
+        link.style.opacity = '0';
+        link.style.transform = 'translateX(-50px)';
+      }, index * 50);
+    });
   } else {
-      sidenav.style.width = "250px";
-      document.body.style.marginLeft = "250px";
-      container.style.marginLeft = "auto";
+    sidenav.style.left = "0px";
+    links.forEach((link, index) => {
+      setTimeout(() => {
+        link.style.opacity = '1';
+        link.style.transform = 'translateX(0)';
+      }, index * 100);
+    });
   }
 }
+
 
 function logout() {
   fetch('/logout', {

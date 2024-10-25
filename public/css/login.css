@@ -26,7 +26,7 @@ body {
     clip-path: polygon(0 0, 100% 0, 100% 100%, 0 80%);
     z-index: -1;
 }  
- 
+  
 .login-container {
      background-color: white; 
     position: relative;
