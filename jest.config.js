@@ -11,5 +11,7 @@ module.exports = {
   //   "**/__tests__/**/*.js?(x)",
   //   "**/?(*.)+(spec|test).js?(x)"
   // ],
+  
+  testEnvironment: 'jsdom', 
   setupFiles: ['./jest.setup.js']
 };

@@ -12,54 +12,57 @@
         <button class="see-reviews-btn" onclick="openReviewModal()">See Reviews</button>
     </nav>
 
-
-    <!-- Feedback Screen Section -->
-    <div class="feedback-screen">
-        <div class="div">
-            <!-- Main Heading -->
-            <div class="group-2">
-                <p class="text-wrapper-3">Your feedback matters to us!</p>
-            </div>
-
-            <!-- Feedback Form -->
-            <div class="feedback-form-wrapper">
+    <div class="container">
+        <!-- Feedback Screen Section -->
+        <div class="feedback-screen">
+            <h1>  Your Feedback Matters To Us!</h1>
+            <div class="form-container">
+                <!-- Feedback Form -->
                 <form id="feedback-form" onsubmit="handleSubmit(event)">
-                    <!-- Dining Hall Dropdown -->
-                    <label for="dining_hall" class="labels">Dining Hall:</label>
-                    <select id="dining_hall" name="dining_hall" required>
-                        <option value="Main">Main</option>
-                        <option value="Convocation">Convocation</option>
-                        <option value="Jubilee">Jubilee</option>
-                    </select><br><br>
-
-                    <!-- Review Type Dropdown -->
-                    <label for="review_type" class="labels">Review Type:</label>
-                    <select id="review_type" name="review_type" required>
-                        <option value="Meal">Meal</option>
-                        <option value="Service">Service</option>
-                    </select><br><br>
-
-                    <!-- Star Rating System -->
-                    <label for="rating" class="labels">Rating:</label>
-                    <div class="star-rating">
-                        <span class="star" data-value="1">&#9733;</span>
-                        <span class="star" data-value="2">&#9733;</span>
-                        <span class="star" data-value="3">&#9733;</span>
-                        <span class="star" data-value="4">&#9733;</span>
-                        <span class="star" data-value="5">&#9733;</span>
+                    <div class="form-group">
+                        <label for="dining_hall">Dining Hall:</label>
+                        <select id="dining_hall" name="dining_hall" required>
+                            <option value="Main">Main</option>
+                            <option value="Convocation">Convocation</option>
+                            <option value="Jubilee">Jubilee</option>
+                        </select>
                     </div>
-                    <input type="hidden" id="rating" name="rating" required><br><br>
 
-                    <!-- Review Text Area -->
-                    <label for="review_text" class="labels">What is your overall experience?</label><br>
-                    <textarea id="review-text" name="review_text" rows="4" cols="50" placeholder="Please share your thoughts" required></textarea><br><br>
+                    <div class="form-group">
+                        <label for="review_type">Review Type:</label>
+                        <select id="review_type" name="review_type" required>
+                            <option value="Meal">Meal</option>
+                            <option value="Service">Service</option>
+                        </select>
+                    </div>
 
-                    <!-- Submit Button -->
-                    <div class="submit-button">
+                    <div class="form-group">
+                        <label>Rating:</label>
+                        <div class="star-rating">
+                            <span class="star" data-value="1">&#9733;</span>
+                            <span class="star" data-value="2">&#9733;</span>
+                            <span class="star" data-value="3">&#9733;</span>
+                            <span class="star" data-value="4">&#9733;</span>
+                            <span class="star" data-value="5">&#9733;</span>
+                        </div>
+                        <input type="hidden" id="rating" name="rating" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="review_text">What is your overall experience?</label>
+                        <textarea id="review-text" name="review_text" rows="4" placeholder="Please share your thoughts" required></textarea>
+                    </div>
+
+                    <div class="form-group">
                         <input type="submit" value="Submit" class="submit-btn">
                     </div>
                 </form>
                 <div id="confirmation-message"></div>
+            </div>
+
+            <!-- Button to open the review modal -->
+            <div class="review-modal-btn">
+                <button class="see-reviews-btn" onclick="openReviewModal()">See Reviews</button>
             </div>
         </div>
     </div>
@@ -70,9 +73,8 @@
             <span class="close" onclick="closeReviewModal()">&times;</span>
             <h2>Filter Reviews</h2>
 
-            <!-- Review Filter -->
             <div class="dropdown-section">
-                <label for="review_filter" class="dropdown-label">Select Review Rating:</label>
+                <label for="review_filter">Select Review Rating:</label>
                 <select id="review_filter">
                     <option value="all">All Reviews</option>
                     <option value="5">5-Star Reviews</option>
@@ -84,10 +86,10 @@
                 <button onclick="fetchReviews()">See Reviews</button>
             </div>
 
-            <!-- Reviews Display Section -->
             <div id="reviews"></div>
         </div>
     </div>
+    
     <script src="/src/js/feedback.js"></script>
     <script src="/src/js/headerLoader.js"></script>
 </body>

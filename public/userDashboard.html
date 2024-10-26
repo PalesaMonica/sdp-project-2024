@@ -1,96 +1,67 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="css/userDashboard.css" />
-    <title>CampusCrave Dashboard</title>
-  </head>
-  <body>
-    <header class="header">
-      <div class="header-content">
-          <button class="navbar-toggle" onclick="toggleNav()">☰</button>
-          <div class="logo">
-              <img src="images/option-21.svg" alt="CampusCrave Logo">
-              <span class="logo-text">Campus<span class="crave">Crave</span></span>
-          </div>
-          <div class="cart-icon">
-            <span id="cart-count">0</span>
-            <img src="images/carty.svg" alt="Cart" onclick="window.location.href='cart.html'">
-        </div>
-      </div>
-  </header>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+  <title>CampusCrave</title>
+  <link rel="stylesheet" href="./css/userDashboard.css">
+</head>
+<body>
+  <nav id="sidenav" class="sidenav">
+    <a href="userDashboard.html" class="nav-item">Home</a>
+    <a href="./Notification/" class="nav-item">Notifications</a>
+    <a href="userProfile.html" class="nav-item">Manage Account</a>
+    <a href="#" class="nav-item" onclick="logout()">Logout</a>
+  </nav>
 
-    <!-- Slide-Out Navigation Menu -->
-    <nav id="sidenav" class="sidenav">
-      <a href="userDashboard.html">Home</a>
-      <a href="Notification" id="notification-link">Notification <span id="unread-count" class="unread-count">0</span></a>
-      <a href="incident"  id="incident-link">Report Incident</a>
-      <a href="userProfile.html">Manage Account</a>
-      <a onclick="logout()">Logout</a>
-    </nav>
+  <div class="container">
+    <!-- Main Content -->
+    <main class="main-content">
+      <section class="welcome">
+        <h2>Welcome, <span id="username">Student</span>!</h2>
+        <p>Discover your dining experience at your fingertips.</p>
+      </section>
 
-    <div class="container">
-      <main>
-        <div class="welcome">Welcome <span id="username">John</span></div>
-        <div class="dashboard">
-          <div class="grid">
-            <div class="grid-item" onclick="window.location.href='menu.html'">
-              <svg viewBox="0 0 24 24" fill="currentColor">
-                <path
-                  d="M3 13h2v-2H3v2zm0 4h2v-2H3v2zm0-8h2V7H3v2zm4 4h14v-2H7v2zm0 4h14v-2H7v2zM7 7v2h14V7H7z"
-                />
-              </svg>
-              Menu
-            </div>
-            <div
-              class="grid-item"
-              onclick="window.location.href='mealCredit.html'"
-            >
-              <svg viewBox="0 0 24 24" fill="currentColor">
-                <path
-                  d="M11.8 10.9c-2.27-.59-3-1.2-3-2.15 0-1.09 1.01-1.85 2.7-1.85 1.78 0 2.44.85 2.5 2.1h2.21c-.07-1.72-1.12-3.3-3.21-3.81V3h-3v2.16c-1.94.42-3.5 1.68-3.5 3.61 0 2.31 1.91 3.46 4.7 4.13 2.5.6 3 1.48 3 2.41 0 .69-.49 1.79-2.7 1.79-2.06 0-2.87-.92-2.98-2.1h-2.2c.12 2.19 1.76 3.42 3.68 3.83V21h3v-2.15c1.95-.37 3.5-1.5 3.5-3.55 0-2.84-2.43-3.81-4.7-4.4z"
-                />
-              </svg>
-              Meal Credits<br />Management
-            </div>
-            <div
-              class="grid-item"
-              onclick="window.location.href='dietary_plan.html'"
-            >
-              <svg viewBox="0 0 24 24" fill="currentColor">
-                <path
-                  d="M8.1 13.34l2.83-2.83L3.91 3.5c-1.56 1.56-1.56 4.09 0 5.66l4.19 4.18zm6.78-1.81c1.53.71 3.68.21 5.27-1.38 1.91-1.91 2.28-4.65.81-6.12-1.46-1.46-4.2-1.1-6.12.81-1.59 1.59-2.09 3.74-1.38 5.27L3.7 19.87l1.41 1.41L12 14.41l6.88 6.88 1.41-1.41L13.41 13l1.47-1.47z"
-                />
-              </svg>
-              Dietary<br />Preference
-            </div>
-            <div
-              class="grid-item"
-              onclick="window.location.href='reservations.html'"
-            >
-              <svg viewBox="0 0 24 24" fill="currentColor">
-                <path
-                  d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM7 10h5v5H7z"
-                />
-              </svg>
-              Reservations
-            </div>
+      <section class="cards">
+        <div class="card" onclick="window.location.href='menu.html'">
+          <div class="card-content">
+            <div class="card-icon">🍽️</div>
+            <h3>View Menu</h3>
           </div>
         </div>
-      </main>
-      <footer class="footer">
-        <div class="footer-item" onclick="window.location.href='feedback.html'">
-          Feedback
-          <svg viewBox="0 0 24 24" fill="currentColor">
-            <path
-              d="M20 2H4c-1.1 0-1.99.9-1.99 2L2 22l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-7 12h-2v-2h2v2zm0-4h-2V6h2v4z"
-            />
-          </svg>
+        <div class="card" onclick="window.location.href='mealCredit.html'">
+          <div class="card-content">
+            <div class="card-icon">💲</div>
+            <h3>Meal Credits</h3>
+          </div>
         </div>
-      </footer>
-    </div>
+        <div class="card" onclick="window.location.href='dietary_plan.html'">
+          <div class="card-content">
+            <div class="card-icon">🥗</div>
+            <h3>Dietary Plan</h3>
+          </div>
+        </div>
+        <div class="card" onclick="window.location.href='reservations.html'">
+          <div class="card-content">
+            <div class="card-icon">📅</div>
+            <h3>Reservations</h3>
+          </div>
+        </div>
+        <div class="card" onclick="window.location.href='feedback.html'">
+          <div class="card-content">
+            <div class="card-icon">💬</div>
+            <h3>Feedback</h3>
+          </div>
+        </div>
+        <!-- New Reservation Card -->
+       
+      </section>
+    </main>
+  </div>
 
-    <script src="/src/js/userDashboard.js"></script>
-  </body>
+  <script src="../src/js/userDashboard.js"></script>
+  <script src="../src/js/headerLoader.js"></script>
+</body>
 </html>
+

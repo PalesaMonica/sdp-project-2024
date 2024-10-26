@@ -1,111 +1,134 @@
-/* userstyle.css */
 :root {
     --primary-color: #043673;
-    --background-color: #ffffff;
-    --text-color: #043673;
+    --secondary-color: #d1e3ff;
+    --accent-color: #041462;
+    --highlight-color: #ff9800;
+    --unread-background-color: #fff9f1;
+    --read-background-color: #f1f1f1;
+    --text-color: #333;
+    --timestamp-color: #888;
 }
 
-body {
+html, body {
+    height: 100%;
+    margin: 0;
     font-family: Arial, sans-serif;
-    background-color: var(--background-color);
-    margin: 0;
-    padding: 0;
-    margin-top: 4%;
 }
 
-body {
-    visibility: hidden; /* Hide body initially */
-    opacity: 0;
-    transition: opacity 0.3s ease-in; /* Smooth transition */
-  }
-  
-  body.loaded {
-    visibility: visible;
-    opacity: 1;
-  }
-
-.container {
-    width: 80%;
-    margin: 0 auto;
+.notifications-container {
+    width: 100%;
+    height: 100%;
     padding: 20px;
-}
-
-h1 {
-    text-align: center;
-    color: #333;
-}
-
-.notifications-list {
-    margin-top: 20px;
-}
-
-.notification {
-    border-left: 5px solid var(--primary-color); /* Red border for alerts */
-    background-color: #FFE6E6; /* Light red background for alerts */
-    border-radius: 5px;
-    padding: 15px;
-    margin-bottom: 10px;
-    display: flex;
-    align-items: center;
-    cursor: pointer;
-}
-
-.notification.unread {
-    border-left: 5px solid #043673;
-}
-
-.notification.alert {
-    border-left: 5px solid #FF4C4C; /* Red border for alerts */
-    background-color: #FFE6E6; /* Light red background for alerts */
-}
-.notification.read {
-    opacity: 0.6;
-    color: gray;
-}
-
-
-.notification .icon {
-    width: 40px;
-    height: 40px;
-    margin-right: 15px;
-}
-
-.notification .icon img {
-    width: 100%; /* Ensure the image fills the icon container */
-    height: auto; /* Maintain aspect ratio */
-}
-
-.notification h2 {
-    margin: 0 0 10px;
-    color: #043673;
-}
-
-.notification.alert h2 {
-    color: #FF4C4C; /* Red color for alert titles */
-}
-
-.notification p {
-    margin: 0;
-}
-
-.mark-read-btn {
-    background-color: #043673;
-    color: white;
-    border: none;
-    padding: 10px;
-    border-radius: 5px;
-    cursor: pointer;
-    margin-top: 10px;
-}
-
-.mark-read-btn:hover {
-    background-color: #e55b2f;
+    overflow-y: auto; /* Allow vertical scrolling if notifications overflow */
+    background-color: #f1f1f1; /* Background color for the page */
 }
 
 .heading {
-    color: #043673;
-    font-size: 24px;
-    font-weight: 400;
-    margin-bottom: 20px;
+    color: var(--primary-color);
     text-align: center;
+    font-size: 30px;
+    margin-bottom: 20px;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+.notifications-list {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+/* Individual notification card */
+.notification {
+    display: flex;
+    justify-content: space-between; /* Ensure title/content on the left, time on the right */
+    align-items: flex-start;
+    padding: 20px;
+    border-radius: 10px;
+    border-left: 6px solid var(--primary-color);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    background-color: var(--read-background-color);
+    transition: background-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+    cursor: pointer;
+    width: 100%;
+}
+
+.notification.unread {
+    background-color: var(--unread-background-color);
+    border-left-color: var(--highlight-color);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.notification:hover {
+    background-color: #fff;
+}
+
+.notification .icon {
+    flex-shrink: 0;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background-color: var(--primary-color);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-right: 20px;
+}
+
+.notification .icon img {
+    width: 30px;
+    height: 30px;
+}
+
+.notification-content {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.notification-content h2 {
+    margin: 0;
+    font-size: 18px;
+    color: var(--primary-color);
+    font-weight: bold;
+}
+
+.notification-content p {
+    margin: 0;
+    color: var(--text-color);
+    font-size: 14px;
+}
+
+/* Timestamp placed on the right and italic */
+.notification .timestamp {
+    font-style: italic;
+    color: var(--timestamp-color);
+    font-size: 12px;
+    white-space: nowrap;
+    margin-left: 20px;
+}
+
+.unread-badge {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background-color: var(--highlight-color);
+    color: white;
+    padding: 5px 10px;
+    font-size: 12px;
+    border-radius: 20px;
+    font-weight: bold;
+}
+.new-label {
+    background-color: var(--highlight-color);
+    color: white;
+    padding: 2px 8px;
+    font-size: 12px;
+    font-weight: bold;
+    border-radius: 5px;
+    margin-left: 10px;
+    text-transform: uppercase;
+    display: inline-block;
+    vertical-align: middle;
 }

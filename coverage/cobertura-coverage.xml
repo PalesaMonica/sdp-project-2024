@@ -2,7 +2,7 @@
 <!DOCTYPE coverage SYSTEM "http://cobertura.sourceforge.net/xml/coverage-04.dtd">
 <coverage lines-valid="551" lines-covered="165" line-rate="0.2994" branches-valid="150" branches-covered="27" branch-rate="0.18" timestamp="1728929736762" complexity="0" version="0.1">
   <sources>
-    <source>D:\SDP\sdp-project-2024</source>
+    <source>C:\Users\pales\OneDrive\Desktop\sdp-project\sdp-project-2024-1</source>
   </sources>
   <packages>
     <package name="main" line-rate="0.2994" branch-rate="0.18">

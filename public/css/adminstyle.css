@@ -120,7 +120,7 @@ body {
 }
 
 .label {
-    color: #FF6A3D;
+    color:  #043673;
     font-size: 24px;
     font-weight: 400;
     margin-bottom: 10px;
@@ -149,7 +149,7 @@ body {
 .send-btn {
     width: 50%;
     height: 37px;
-    background: #FF6A3D;
+    background:  #043673;
     border-radius: 5px;
     border: none;
     color: black;

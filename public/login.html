@@ -1,72 +1,52 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="globals.css" />
-    <link rel="stylesheet" href="css/login.css" />
-   <!-- <link rel="script" href="../src/js/login.js" />-->
-    <title>Log In</title>
-  </head>
-  <body>
-    <div class="login">
-      <div class="div">
-        <div class="overlap">
-          <img class="option" src="images/option-21.svg" />
-          <p class="signin">
-            <span class="text-wrapper">Sign</span><span class="span">In</span>
-          </p>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="css/login.css">
+    <title>Campus Crave - Log In</title>
+</head>
+<body>
+    <div class="login-container">
+        <!-- Decorative Background Shape -->
+        <div class="background-shape"></div>
+
+        <!-- Logo Section -->
+        <div class="logo-container">
+            <img src="images/wits.png" alt="Campus Crave Logo" class="logo">
         </div>
+        
+        <!-- Welcome Message -->
+        <h2 class="welcome-message">Welcome to Campus Crave!</h2>
+
+        <!-- Sign In Prompt -->
+        <p class="welcome-title">Sign in to get access to dining services</p>
 
         <!-- Error Message -->
         <p class="error-message" id="error-message"></p>
 
-        <div class="form-group">
-          <!-- Form for Login -->
-          <form onsubmit="handleLogin(event)">
-            <!-- Email Input -->
+        <!-- Login Form -->
+        <form onsubmit="handleLogin(event)" class="login-form">
             <div class="input-wrapper">
-              <input
-                type="email"
-                name="email"
-                placeholder="Email"
-                class="input-field"
-                required
-              />
-              <img class="icon" src="images/gmail-logo.svg" />
+                <input type="email" name="email" placeholder="Email" class="input-field" required>
+                <img class="icon" src="images/gmail-logo.svg" alt="Email Icon">
             </div>
-            <!-- Password Input -->
             <div class="input-wrapper">
-              <input
-                type="password"
-                name="password"
-                placeholder="Password"
-                class="input-field"
-                required
-              />
-              <img class="icon" src="images/lock.svg" />
+                <input type="password" name="password" placeholder="Password" class="input-field" required>
+                <img class="icon" src="images/lock.svg" alt="Password Icon">
             </div>
-            <!-- Sign In Button -->
-            <button type="submit" class="btn-sign-in">Sign In</button>
-          </form>
-        </div>
-        <div class="google-wrapper">
-          <!-- Google Sign In -->
-          <a href="/auth/google">
-            <img class="google" src="images/google-1.svg" />
-          </a>
-        </div>
+            <button type="submit" class="btn-sign-in">Login</button>
+        </form>
 
-        <!-- <p class="don-t-have-an">
-          Don’t have an account?
-          <a href="signupRedirect.html" class="signup-link">Signup</a>
-        </p> -->
-        
+        <!-- Google Sign In -->
+        <div class="google-wrapper">
+            <a href="/auth/google" class="google-signin">
+                <img src="images/google-1.svg" alt="">
+                <span>Sign in with Google</span>
+            </a>
         </div>
-      </div>
     </div>
 
-  </body>
-
-  <script src="../src/js/login.js"></script>
+    <script src="../src/js/login.js"></script>
+</body>
 </html>

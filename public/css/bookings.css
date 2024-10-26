@@ -64,12 +64,10 @@ body {
 }
 
 .container {
-    display: flex;
-    margin-top: 2%;
-    align-items: center;
-    flex-direction: column; /* Ensures content is stacked vertically */
-    height: 100vh;
-    padding: 20px; /* Adding padding for better spacing */
+    max-width: 1200px;
+    margin: 80px auto 0;
+    padding: 20px;
+    transition: margin-left 0.3s;
 }
 
 .sidenav {
@@ -82,116 +80,66 @@ body {
     overflow-x: hidden;
     transition: 0.3s;
     z-index: 99;
-}
-
-.sidenav a {
+  }
+  
+  .sidenav a {
     padding: 15px 30px;
     text-decoration: none;
     font-size: 18px;
-    color: white;
+    color: #043673;
     display: block;
     transition: background-color 0.2s ease;
     white-space: nowrap;
-}
-
-.sidenav a:hover {
+  }
+  
+  .sidenav a:hover {
     background-color: var(--primary-color);
+    color: var(--background-color);
+  }
+
+.container {
+    display: flex;
+    flex-direction: column; /* Ensures content is stacked vertically */
+    align-items: center;
+    padding: 100px 20px 20px; /* Add top padding to account for fixed header */
 }
 
-/* Booking list styling */
-.booking-list {
-    list-style-type: none;
-    padding: 0;
-    margin-top: 10px;
-    width: 100%; /* Ensures the list takes full container width */
-    max-width: 600px; /* Optional: restrict the width of the booking list */
-}
-
-.booking-item {
-    background-color: #F6F9FF;
-    color: #1A2238;
-    padding: 15px;
-    margin: 10px 0;
-    border-radius: 8px;
-    transition: background-color 0.3s, color 0.3s;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Adds subtle shadow for depth */
-}
-
-.booking-item:hover {
-    background-color: #FF6A3D;
-    color: white;
-}
-
-/* Button styling (for actions like "Book Now") */
-.button {
-    background-color: #FF6A3D;
-    color: white;
-    padding: 10px 15px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background-color 0.3s;
-    margin-top: 20px;
+h1 {
+    font-size: 2.5em; /* Adjusted for better visibility */
+    color: var(--text-color);
     text-align: center;
+    margin-bottom: 20px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
 }
 
-.button:hover {
-    background-color: #FF4C1D;
+.styled-label {
+    font-size: 1.5em; /* Adjusted for better readability */
+    font-weight: bold;
+    color: var(--text-color);
+    margin-bottom: 10px; /* Adds spacing below the label */
 }
 
-/* Success message styling */
-.success-message {
-    color: white;
-    background-color: green;
-    padding: 10px;
-    border-radius: 5px;
-    font-size: 16px;
-    margin-top: 20px;
-    text-align: center;
-    width: 100%; /* Ensures the message spans the full width */
-}
-
-/* Error message styling */
-.error-message {
-    color: white;
-    background-color: red;
-    padding: 10px;
-    border-radius: 5px;
-    font-size: 16px;
-    margin-top: 20px;
-    text-align: center;
-    width: 100%;
-}
-#name {
-    font-size: 36px; /* Larger font size for the heading */
-    color: #FF6A3D; /* Custom color */
-    text-align: center; /* Center the heading */
-    margin-bottom: 20px; /* Add some space below the heading */
-    text-transform: uppercase; /* Make the text uppercase */
-    letter-spacing: 2px; /* Adds spacing between letters */
-    font-weight: bold; /* Make the text bold */
-}
-/* Dropdown container styling */
 .styled-select {
-    background-color: #1A2238; /* Dark background */
-    color: #FFFFFF; /* White text */
-    border: 1px solid var(--primary-color); /* Border matching the primary color */
+    background-color: #1A2238;
+    color: #FFFFFF;
+    border: 1px solid var(--primary-color);
     border-radius: 8px;
     padding: 10px;
     width: 100%;
     max-width: 400px; /* Limit the width of the dropdown */
     appearance: none; /* Hides default arrow */
     font-size: 16px; /* Larger font for readability */
-    outline: none; /* Remove the default outline */
-    margin-bottom: 20px; /* Adds spacing below the dropdown */
+    outline: none;
+    margin-bottom: 20px;
     cursor: pointer;
     transition: background-color 0.3s ease;
 }
 
-/* Style for the dropdown arrow (pseudo-element) */
+/* Dropdown arrow styling */
 .styled-select::after {
     content: '▼'; /* Custom arrow symbol */
-    color: white;
+    color: rgb(10, 29, 136);
     font-size: 12px;
     position: absolute;
     right: 10px;
@@ -199,36 +147,12 @@ body {
     pointer-events: none; /* Prevents clicks on the arrow */
 }
 
-/* When hovering or focusing on the dropdown */
-.styled-select:hover, .styled-select:focus {
-    background-color: #2E3B5C; /* Darker background on hover */
-    border-color: #FF6A3D; /* Change the border color on hover */
-}
-
-/* Option styling (Note: browsers may limit option styling support) */
-.styled-select option {
-    background-color: #1A2238; /* Dark background for options */
-    color: white; /* Text color */
-    padding: 10px;
-}
-
-.styled-select option:hover {
-    background-color: #FF6A3D; /* Change background on hover */
-    color: white; /* Change text color on hover */
-}
-.styled-label {
-    font-size: 2em; /* Roughly equivalent to h2 */
-    font-weight: bold;
-    color: white; /* Matches the rest of the text */
-    margin-bottom: 10px; /* Optional: Adds spacing below the label */
-}
-/* Booking list styling */
 .booking-list {
     list-style-type: none;
     padding: 0;
     margin-top: 10px;
-    width: 100%; /* Ensures the list takes full container width */
-    max-width: 600px; /* Optional: restrict the width of the booking list */
+    width: 100%;
+    max-width: 600px;
 }
 
 .booking-item {
@@ -238,18 +162,15 @@ body {
     margin: 10px 0;
     border-radius: 8px;
     transition: background-color 0.3s, color 0.3s;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Adds subtle shadow for depth */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 .booking-item:hover {
-    background-color: #FF6A3D;
+    background-color: var(--hover-color);
     color: white;
 }
 
-/* Error message styling */
-.error-message {
-    color: white;
-    background-color: red;
+.success-message, .error-message {
     padding: 10px;
     border-radius: 5px;
     font-size: 16px;
@@ -258,14 +179,28 @@ body {
     width: 100%;
 }
 
-/* Success message styling */
 .success-message {
     color: white;
     background-color: green;
-    padding: 10px;
-    border-radius: 5px;
-    font-size: 16px;
-    margin-top: 20px;
-    text-align: center;
-    width: 100%;
+}
+
+.error-message {
+    color: white;
+    background-color: red;
+}
+
+/* Additional responsive styles */
+@media (max-width: 600px) {
+    .header-content {
+        flex-direction: column; /* Stack items on smaller screens */
+        align-items: flex-start;
+    }
+
+    .navbar-toggle {
+        margin-bottom: 10px; /* Space below toggle button */
+    }
+
+    h1 {
+        font-size: 2em; /* Adjust heading size for smaller screens */
+    }
 }
