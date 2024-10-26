@@ -25,6 +25,9 @@
     "express-session": "^1.18.0",
     "fs": "^0.0.1-security",
     "http": "^0.0.1-security",
+    "imagemin": "^9.0.0",
+    "imagemin-mozjpeg": "^10.0.0",
+    "imagemin-pngquant": "^10.0.0",
     "jsonwebtoken": "^9.0.2",
     "module": "^1.1.0",
     "mysql": "^2.18.1",
@@ -38,6 +41,7 @@
     "path": "^0.12.7",
     "qr-image": "^3.2.0",
     "sequelize": "^6.37.3",
+    "sharp": "^0.33.5",
     "socket.io": "^4.8.0",
     "socket.io-client": "^4.8.0"
   },
