@@ -31,14 +31,7 @@ const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*])[A-Za-z\d!
 app.use(express.json());
 app.use(cors());
 
-// Log environment variables (for debugging purposes, remove in production)
-// console.log(
-//   process.env.DB_HOST,
-//   process.env.DB_USER,
-//   process.env.DB_PASSWORD,
-//   process.env.DB_NAME,
-//   process.env.SSL_CA
-// );
+
 
 // Create a MySQL connection with SSL
 const connection = mysql.createConnection({
