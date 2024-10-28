@@ -6,7 +6,7 @@
 
 body {
     font-family: 'Roboto', sans-serif;
-    background:white;
+    background: white;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -15,20 +15,20 @@ body {
     position: relative;
 }
 
-   body::before {
+body::before {
     content: '';
     position: absolute;
     top: 0;
     left: 0;
     width: 100%;
     height: 50vh;
-    background:  #043673;
+    background: #043673;
     clip-path: polygon(0 0, 100% 0, 100% 100%, 0 80%);
     z-index: -1;
-}  
-  
+}
+
 .login-container {
-     background-color: white; 
+    background-color: white;
     position: relative;
     width: 100%;
     max-width: 400px;
@@ -38,23 +38,9 @@ body {
     z-index: 1;
 }
 
-/* Soft Corner Gradient Accent */
-.login-container::before {
-    content: '';
-    position: absolute;
-    top: -40px;
-    right: -40px;
-    width: 200px;
-    height: 200px;
-    /* background: radial-gradient(circle at top right, rgba(4, 54, 115, 0.15), transparent); */
-    z-index: 0;
-    border-radius: 50%;
-}
-
 .logo-container {
     text-align: center;
     margin-bottom: 30px;
-    z-index: 2;
 }
 
 .logo {
@@ -68,7 +54,6 @@ body {
     color: #043673;
     text-align: center;
     margin-bottom: 15px;
-    z-index: 2;
 }
 
 .welcome-title {
@@ -76,12 +61,43 @@ body {
     color: #666;
     text-align: center;
     margin-bottom: 35px;
-    z-index: 2;
+}
+
+.login-type-buttons {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 25px;
+}
+
+.login-type-button {
+    flex: 1;
+    padding: 12px 20px;
+    border: none;
+    border-radius: 10px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.login-type-button.active {
+    background: #043673;
+    color: white;
+}
+
+.login-type-button:not(.active) {
+    background: #f0f0f0;
+    color: #333;
+}
+
+.login-type-button:hover:not(.active) {
+    background: #e0e0e0;
 }
 
 .input-wrapper {
     position: relative;
     margin-bottom: 25px;
+    display: none;
 }
 
 .icon {
@@ -120,20 +136,18 @@ body {
     font-weight: bold;
     cursor: pointer;
     transition: background-color 0.3s ease;
+    display: none;
 }
 
 .btn-sign-in:hover {
     background-color: #032a47;
 }
 
-.google-wrapper {
-    margin-top: 25px;
-    text-align: center;
-}
-
 .google-signin {
-    display: inline-flex;
+    display: none;
     align-items: center;
+    justify-content: center;
+    width: 100%;
     padding: 12px 20px;
     background-color: white;
     border: 1px solid #ccc;
@@ -142,6 +156,8 @@ body {
     color: #333;
     text-decoration: none;
     transition: background-color 0.3s ease, border-color 0.3s ease;
+    cursor: pointer;
+    margin-top: 20px;
 }
 
 .google-signin img {
@@ -159,9 +175,9 @@ body {
     font-size: 14px;
     margin-bottom: 20px;
     text-align: center;
+    display: none;
 }
 
-/* Responsive Design */
 @media (max-width: 400px) {
     .login-container {
         padding: 20px;
