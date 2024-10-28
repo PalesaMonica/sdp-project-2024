@@ -4,15 +4,22 @@ document.addEventListener('DOMContentLoaded', () => {
     loadMenuOptions();
     loadMenuItemsPool();
     setupEventListeners();
+    populateDateSelector();
 });
 
 function setupEventListeners() {
     document.getElementById('dining-hall-select').addEventListener('change', loadWeeklyMenu);
     document.getElementById('day-select').addEventListener('change', loadWeeklyMenu);
+
+    document.getElementById('dining-hall-select-2').addEventListener('change', loadMealCounts);
+    document.getElementById('day-select-2').addEventListener('change', loadMealCounts);
+
     document.querySelector('.meal-type-tabs').addEventListener('click', handleMealTabClick);
     document.getElementById('add-menu-option').addEventListener('click', addMenuOptionToDay);
     document.getElementById('add-new-item').addEventListener('click', addNewMenuItem);
     document.getElementById('create-menu-option').addEventListener('click', createNewMenuOption);
+
+    setTimeout(loadMealCounts, 100);
 }
 
 async function loadMenuOptions() {
@@ -66,6 +73,7 @@ async function loadDiningHalls() {
         const diningHalls = await response.json();
         const selects = [
             document.getElementById('dining-hall-select'),
+            document.getElementById('dining-hall-select-2'),
             document.getElementById('add-option-dining-hall')
         ];
         
@@ -151,9 +159,6 @@ function displayMenu(menu, filterMealType) {
         menuContainer.appendChild(itemElement);
     });
 }
-
-
-
 
 function createMenuItemElement(item) {
     const itemElement = document.createElement('div');
@@ -351,55 +356,173 @@ function logout() {
     });
 }
 
+function formatDate(date) {
+    return date.toISOString().split('T')[0];
+}
 
-// Switch to the Meal Count Overview tab
-document.querySelectorAll('.tab-button').forEach(button => {
-    button.addEventListener('click', () => {
-        document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
-        document.querySelector(`#${button.dataset.tab}`).classList.add('active');
-    });
-});
+// Function to format date for display (e.g., "Monday, Oct 28")
+function formatDateForDisplay(date) {
+    const options = { weekday: 'long', month: 'short', day: 'numeric' };
+    return date.toLocaleDateString('en-US', options);
+}
 
-// Populate dining halls in the selector
-fetch('/api/dining-halls')
-    .then(response => response.json())
-    .then(diningHalls => {
-        const diningHallSelect = document.getElementById('meal-count-dining-hall');
-        diningHalls.forEach(diningHall => {
-            const option = document.createElement('option');
-            option.value = diningHall.id;
-            option.textContent = diningHall.name;
-            diningHallSelect.appendChild(option);
+// Function to get dates for current week
+function getCurrentWeekDates() {
+    const today = new Date();
+    const currentDay = today.getDay(); // 0 = Sunday, 1 = Monday, etc.
+    const dates = [];
+    
+    // Find Monday (start of week)
+    const monday = new Date(today);
+    monday.setDate(today.getDate() - currentDay + (currentDay === 0 ? -6 : 1));
+    
+    // Generate dates for the week
+    for (let i = 0; i < 7; i++) {
+        const date = new Date(monday);
+        date.setDate(monday.getDate() + i);
+        dates.push({
+            value: formatDate(date),
+            display: formatDateForDisplay(date),
+            isToday: formatDate(date) === formatDate(today)
         });
+    }
+    
+    return dates;
+}
+
+// Function to populate the date selector
+function populateDateSelector() {
+    const select = document.getElementById('day-select-2');
+    const dates = getCurrentWeekDates();
+    const todayDate = formatDate(new Date());
+    
+    select.innerHTML = '<option value="">Select Day</option>';
+    
+    dates.forEach(date => {
+        const option = document.createElement('option');
+        option.value = date.value;
+        option.textContent = date.display;
+        if (date.isToday) {
+            option.classList.add('today');
+            option.textContent += ' (Today)';
+        }
+        select.appendChild(option);
     });
+    
+    // Automatically select today's date
+    select.value = todayDate;
+}
 
-// Add event listener to load meal count data when selections change
-document.getElementById('meal-count-dining-hall').addEventListener('change', loadMealCounts);
-document.getElementById('meal-count-day').addEventListener('change', loadMealCounts);
+// Function to group data by meal type
+function groupByMealType(data) {
+    const groups = {};
+    
+    data.forEach(item => {
+        if (!groups[item.meal_type]) {
+            groups[item.meal_type] = {
+                total: 0,
+                items: []
+            };
+        }
+        
+        groups[item.meal_type].items.push({
+            item_name: item.item_name,
+            count: item.count
+        });
+        groups[item.meal_type].total += item.count;
+    });
+    
+    return groups;
+}
+// Function to group data by item
+function groupByItem(data) {
+    const groups = {};
+    
+    data.forEach(item => {
+        if (!groups[item.item_name]) {
+            groups[item.item_name] = {
+                total: 0,
+                by_meal_type: {}
+            };
+        }
+        
+        groups[item.item_name].total += item.count;
+        
+        if (!groups[item.item_name].by_meal_type[item.meal_type]) {
+            groups[item.item_name].by_meal_type[item.meal_type] = 0;
+        }
+        groups[item.item_name].by_meal_type[item.meal_type] += item.count;
+    });
+    
+    return groups;
+}
+// Function to render meal type groups
+function renderMealTypeGroups(groups) {
+    const container = document.getElementById('meal-type-content');
+    container.innerHTML = '';
+    
+    if (Object.keys(groups).length === 0) {
+        container.innerHTML = '<p>No reservations found for this date.</p>';
+        return;
+    }
+    
+    Object.entries(groups).forEach(([mealType, data]) => {
+        const groupDiv = document.createElement('div');
+        groupDiv.className = 'meal-group';
+        
+        groupDiv.innerHTML = `
+            <div class="group-header">
+                <span class="capitalize">${mealType}</span>
+                <span>Total: ${data.total}</span>
+            </div>
+        `;
+        
+        container.appendChild(groupDiv);
+    });
+}
+// Function to render item groups
+function renderItemGroups(groups) {
+    const container = document.getElementById('item-content');
+    container.innerHTML = '';
+    
+    if (Object.keys(groups).length === 0) {
+        container.innerHTML = '<p>No reservations found for this date.</p>';
+        return;
+    }
+    
+    Object.entries(groups).forEach(([itemName, data]) => {
+        const groupDiv = document.createElement('div');
+        groupDiv.className = 'item-group';
+        
+        groupDiv.innerHTML = `
+            <div class="group-header">
+                <span>${itemName}</span>
+                <span>Total: ${data.total}</span>
+            </div>
 
+        `;
+        
+        container.appendChild(groupDiv);
+    });
+}
 // Function to load meal counts
-function loadMealCounts() {
-    const diningHallId = document.getElementById('meal-count-dining-hall').value;
-    const day = document.getElementById('meal-count-day').value;
-
+async function loadMealCounts() {
+    const diningHallId = document.getElementById('dining-hall-select-2').value;
+    const day = document.getElementById('day-select-2').value;
+    console.log(diningHallId, day);
+    
     if (!diningHallId || !day) return;
-
-    fetch(`/api/meal-counts?diningHallId=${diningHallId}&day=${day}`)
-        .then(response => response.json())
-        .then(data => {
-            const resultsContainer = document.getElementById('meal-count-results');
-            resultsContainer.innerHTML = ''; // Clear previous results
-
-            data.forEach(item => {
-                const mealCountItem = document.createElement('div');
-                mealCountItem.className = 'meal-count-item';
-                mealCountItem.innerHTML = `
-                    <p><strong>Meal Type:</strong> ${item.meal_type}</p>
-                    <p><strong>Item:</strong> ${item.item_name}</p>
-                    <p><strong>Count:</strong> ${item.count}</p>
-                `;
-                resultsContainer.appendChild(mealCountItem);
-            });
-        })
-        .catch(error => console.error('Error fetching meal counts:', error));
+    
+    try {
+        const response = await fetch(`/api/meal-counts?diningHallId=${diningHallId}&day=${day}`);
+        const data = await response.json();
+        
+        const mealTypeGroups = groupByMealType(data);
+        const itemGroups = groupByItem(data);
+        
+        renderMealTypeGroups(mealTypeGroups);
+        renderItemGroups(itemGroups);
+    } catch (error) {
+        console.error('Error loading meal counts:', error);
+    }
 }

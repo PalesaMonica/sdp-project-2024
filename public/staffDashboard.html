@@ -27,14 +27,14 @@
     <div class="container">
         <div class="tab-container">
             <div class="tab-buttons">
-                <button class="tab-button active" data-tab="weekly-menu">Weekly Menu</button>
+                <button class="tab-button active" data-tab="meal-count-overview">Meal Count Overview</button>
+                <button class="tab-button" data-tab="weekly-menu">Weekly Menu</button>
                 <button class="tab-button" data-tab="menu-options">Menu Options</button>
                 <button class="tab-button" data-tab="new-item">Add New Item</button>
                 <button class="tab-button" data-tab="new-menu-option">Create Menu Option</button>
-                <button class="tab-button" data-tab="meal-count-overview">Meal Count Overview</button>
             </div>
 
-            <div id="weekly-menu" class="tab-content active">
+            <div id="weekly-menu" class="tab-content">
                 <div class="dining-selector">
                     <h2>Select Dining Hall</h2>
                     <select id="dining-hall-select"></select>
@@ -118,15 +118,15 @@
                 <button id="create-menu-option" disabled>Create Menu Option</button>
             </div>
 
-            <div id="meal-count-overview" class="tab-content">
+            <div id="meal-count-overview" class="tab-content active">
                 <h2>Meal Count Overview</h2>
                 <div class="dining-selector">
                     <h3>Select Dining Hall</h3>
-                    <select id="meal-count-dining-hall"></select>
+                    <select id="dining-hall-select-2"></select>
                 </div>
                 <div class="day-selector">
                     <h3>Select Day</h3>
-                    <select id="meal-count-day">
+                    <select id="day-select-2">
                         <option value="Monday">Monday</option>
                         <option value="Tuesday">Tuesday</option>
                         <option value="Wednesday">Wednesday</option>
@@ -136,9 +136,16 @@
                         <option value="Sunday">Sunday</option>
                     </select>
                 </div>
-                <div id="meal-count-results">
-                    <!-- Meal Count data will be loaded here by JavaScript -->
-                </div>
+                <div class="count-cards">
+                    <div class="count-card">
+                        <h2 class="card-title">Reservations by Meal Type</h2>
+                        <div id="meal-type-content"></div>
+                    </div>
+                    
+                    <div class="count-card">
+                        <h2 class="card-title">Reservations by Item</h2>
+                        <div id="item-content"></div>
+                    </div>
             </div>
         </div>
     </div>

@@ -239,6 +239,8 @@ app.get("/login", (req, res) => {
   res.sendFile(path.join(__dirname, "public", "login.html"));
 });
 
+
+
 // Handle the signup form submission
 app.post("/signup", async (req, res) => {
   const { username, email, password} = req.body;
@@ -432,6 +434,10 @@ app.get("/userDashboard",ensureAuthenticated, (req, res) => {
   }
 });
 
+app.get('/staffDashboard', ensureAuthenticated, (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'staffDashboard.html'));
+});
+
 app.post("/logout", (req, res) => {
   req.logout(function(err) {
     if (err) {
@@ -442,6 +448,7 @@ app.post("/logout", (req, res) => {
     });
   });
 });
+
 
 app.post('/saveDietPreference', ensureAuthenticated, (req, res) => {
   const { dietPlan } = req.body;
@@ -1422,31 +1429,38 @@ app.delete('/api/remove-menu-item', ensureAuthenticated, (req, res) => {
 });
 
 app.get('/api/meal-counts', ensureAuthenticated, (req, res) => {
-  const { diningHallId, day } = req.query;
+    const { diningHallId, day } = req.query;
+    if (!diningHallId || !day) {
+        return res.status(400).json({ error: 'diningHallId and day are required parameters' });
+    }
+    
+    const query = `
+        SELECT 
+            dh.name AS dining_hall_name,
+            r.meal_type,
+            mi.item_name,
+            COUNT(*) AS count
+        FROM 
+            reservations r
+            JOIN dining_halls dh ON r.dining_hall_id = dh.id
+            JOIN weekly_menu mi ON r.item_id = mi.id
+        WHERE 
+            r.status != 'cancelled'
+            AND r.dining_hall_id = ?
+            AND r.date = ?
+        GROUP BY 
+            dh.name, r.meal_type, mi.item_name
+        ORDER BY 
+            r.meal_type, mi.item_name
+    `;
 
-  if (!diningHallId || !day) {
-      return res.status(400).json({ error: 'diningHallId and day are required parameters' });
-  }
-
-  const query = `
-      SELECT dining_halls.name AS dining_hall_name, reservations.meal_type, menu_item.item_name AS meal_name, COUNT(*) AS meal_count
-      FROM reservations
-      JOIN dining_halls ON reservations.dining_hall_id = dining_halls.id
-      JOIN menu_item ON reservations.item_id = menu_item.id
-      WHERE reservations.status = 'confirmed'
-        AND reservations.dining_hall_id = ?
-        AND reservations.date = ?
-      GROUP BY dining_halls.name, reservations.meal_type, menu_item.item_name
-      ORDER BY dining_halls.name, reservations.meal_type, menu_item.item_name
-  `;
-
-  connection.query(query, [diningHallId, day], (err, results) => {
-      if (err) {
-          console.error('Error fetching meal counts:', err);
-          return res.status(500).json([]);
-      }
-      res.json(results || []);
-  });
+    connection.query(query, [diningHallId, day], (err, results) => {
+        if (err) {
+            console.error('Error fetching meal counts:', err);
+            return res.status(500).json({ error: 'Database error' });
+        }
+        res.json(results);
+    });
 });
 ///////////
 
