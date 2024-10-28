@@ -644,8 +644,8 @@ app.post('/api/confirm-reservation',ensureAuthenticated, (req, res) => {
 
           const insertReservation = `
               INSERT INTO reservations 
-              (dining_hall_id, user_id, username, date, meal_type, start_time, end_time, item_id, status) 
-              VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'confirmed')
+              (dining_hall_id, user_id, username, date, meal_type, start_time, end_time, status, item_id) 
+              VALUES (?, ?, ?, ?, ?, ?, ?, 'confirmed', ?)
           `;
 
           let duplicateFound = false;

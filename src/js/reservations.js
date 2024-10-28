@@ -200,6 +200,9 @@ function createReservationElement(reservation) {
         size: 200
     });
 
+    const today = new Date(new Date().toLocaleDateString("en-CA", { timeZone: "Africa/Johannesburg" }));
+    const reservationDate = new Date(reservation.date);
+
     element.innerHTML = `
         <div class="reservation-info">
             <h3>${reservation.item_name}</h3>
@@ -210,6 +213,10 @@ function createReservationElement(reservation) {
         <div class="reservation-actions">
             <button class="view-btn" onclick="viewReservationDetails(${reservation.id})">View</button>
             <button class="directions-btn" onclick="getDirections(${reservation.id})">Directions</button>
+            <button id="delete-reservation" onclick="openDeleteModal(${reservation.id})" 
+                ${reservationDate.toDateString() === today.toDateString() ? 'disabled' : ''}>
+                Delete
+            </button>
         </div>
     `;
 
@@ -217,6 +224,17 @@ function createReservationElement(reservation) {
 
     return element;
 }
+
+function openDeleteModal(reservationId) {
+    // Set the reservation ID for deletion
+    reservationIdToDelete = reservationId;
+
+    // Show the modal
+    const deleteReservationModal = document.getElementById('delete-reservation-modal');
+    deleteReservationModal.style.display = 'block';
+}
+
+
 
 function viewReservationDetails(reservationId) {
     console.log(`Fetching details for reservation ID: ${reservationId}`);

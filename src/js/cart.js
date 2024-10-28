@@ -1,20 +1,20 @@
+// Get modal elements
+const modal = document.getElementById('reservation-modal');
+const confirmButton = document.getElementById('confirm-btn');
+const cancelButton = document.getElementById('cancel-btn');
+const makeReservationButton = document.getElementById('confirm-reservation');
+
+// Conflict modal elements
+const conflictModal = document.getElementById('conflict-modal');
+const deleteButton = document.getElementById('delete-btn');
+const replaceButton = document.getElementById('replace-btn');
+
+let conflictReservationId = null;
+let cartItemIdToReplace = null;
+
 document.addEventListener('DOMContentLoaded', function() {
     // Fetch cart items on page load
     fetchCartItems();
-
-    // Get modal elements
-    const modal = document.getElementById('reservation-modal');
-    const confirmButton = document.getElementById('confirm-btn');
-    const cancelButton = document.getElementById('cancel-btn');
-    const makeReservationButton = document.getElementById('confirm-reservation');
-
-    // Conflict modal elements
-    const conflictModal = document.getElementById('conflict-modal');
-    const deleteButton = document.getElementById('delete-btn');
-    const replaceButton = document.getElementById('replace-btn');
-
-    let conflictReservationId = null;
-    let cartItemIdToReplace = null;
 
     // Show the reservation confirmation modal
     makeReservationButton.addEventListener('click', function() {
@@ -158,7 +158,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         window.location.href = "/login";
                         throw new Error("Unauthorized access. Redirecting to login...");
                       }
-                   else if (response.status === 409) {
+                    else if (response.status === 409) {
                         return response.json().then(data => {
                             console.log('Conflict data:', data);
                             conflictReservationId = data.duplicateReservation.id;
@@ -167,7 +167,7 @@ document.addEventListener('DOMContentLoaded', function() {
                                 item.meal_type === data.duplicateReservation.meal_type
                             )?.id;
     
-                            if (conflictModal) {
+                            if (conflictModal) { 
                                 conflictModal.style.display = 'block';
                             } else {
                                 console.error('Conflict modal not found');
