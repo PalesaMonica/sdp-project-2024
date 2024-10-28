@@ -140,6 +140,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         start_time: startTime,
                         end_time: endTime,
                         meal_type: item.meal_type,
+                        item_id: item.item_id,
                         user_id: item.user_id
                     };
                 });

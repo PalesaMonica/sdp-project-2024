@@ -302,3 +302,19 @@ textarea {
 .tab-content.active {
     display: block;
 }
+
+#meal-count-results {
+    margin-top: 20px;
+}
+
+.meal-count-item {
+    padding: 10px;
+    background-color: rgba(255, 255, 255, 0.1);
+    margin-bottom: 10px;
+    border-radius: 5px;
+    color: var(--text-color);
+}
+.meal-count-item strong {
+    color: #fff;
+}
+

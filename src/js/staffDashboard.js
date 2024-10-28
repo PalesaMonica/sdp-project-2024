@@ -351,3 +351,55 @@ function logout() {
     });
 }
 
+
+// Switch to the Meal Count Overview tab
+document.querySelectorAll('.tab-button').forEach(button => {
+    button.addEventListener('click', () => {
+        document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+        document.querySelector(`#${button.dataset.tab}`).classList.add('active');
+    });
+});
+
+// Populate dining halls in the selector
+fetch('/api/dining-halls')
+    .then(response => response.json())
+    .then(diningHalls => {
+        const diningHallSelect = document.getElementById('meal-count-dining-hall');
+        diningHalls.forEach(diningHall => {
+            const option = document.createElement('option');
+            option.value = diningHall.id;
+            option.textContent = diningHall.name;
+            diningHallSelect.appendChild(option);
+        });
+    });
+
+// Add event listener to load meal count data when selections change
+document.getElementById('meal-count-dining-hall').addEventListener('change', loadMealCounts);
+document.getElementById('meal-count-day').addEventListener('change', loadMealCounts);
+
+// Function to load meal counts
+function loadMealCounts() {
+    const diningHallId = document.getElementById('meal-count-dining-hall').value;
+    const day = document.getElementById('meal-count-day').value;
+
+    if (!diningHallId || !day) return;
+
+    fetch(`/api/meal-counts?diningHallId=${diningHallId}&day=${day}`)
+        .then(response => response.json())
+        .then(data => {
+            const resultsContainer = document.getElementById('meal-count-results');
+            resultsContainer.innerHTML = ''; // Clear previous results
+
+            data.forEach(item => {
+                const mealCountItem = document.createElement('div');
+                mealCountItem.className = 'meal-count-item';
+                mealCountItem.innerHTML = `
+                    <p><strong>Meal Type:</strong> ${item.meal_type}</p>
+                    <p><strong>Item:</strong> ${item.item_name}</p>
+                    <p><strong>Count:</strong> ${item.count}</p>
+                `;
+                resultsContainer.appendChild(mealCountItem);
+            });
+        })
+        .catch(error => console.error('Error fetching meal counts:', error));
+}

@@ -31,6 +31,7 @@
                 <button class="tab-button" data-tab="menu-options">Menu Options</button>
                 <button class="tab-button" data-tab="new-item">Add New Item</button>
                 <button class="tab-button" data-tab="new-menu-option">Create Menu Option</button>
+                <button class="tab-button" data-tab="meal-count-overview">Meal Count Overview</button>
             </div>
 
             <div id="weekly-menu" class="tab-content active">
@@ -115,6 +116,29 @@
                 <div id="menu-items-pool"></div>
                 <p>Selected items: <span id="selected-items-count">0</span>/8 (mininum)</p>
                 <button id="create-menu-option" disabled>Create Menu Option</button>
+            </div>
+
+            <div id="meal-count-overview" class="tab-content">
+                <h2>Meal Count Overview</h2>
+                <div class="dining-selector">
+                    <h3>Select Dining Hall</h3>
+                    <select id="meal-count-dining-hall"></select>
+                </div>
+                <div class="day-selector">
+                    <h3>Select Day</h3>
+                    <select id="meal-count-day">
+                        <option value="Monday">Monday</option>
+                        <option value="Tuesday">Tuesday</option>
+                        <option value="Wednesday">Wednesday</option>
+                        <option value="Thursday">Thursday</option>
+                        <option value="Friday">Friday</option>
+                        <option value="Saturday">Saturday</option>
+                        <option value="Sunday">Sunday</option>
+                    </select>
+                </div>
+                <div id="meal-count-results">
+                    <!-- Meal Count data will be loaded here by JavaScript -->
+                </div>
             </div>
         </div>
     </div>

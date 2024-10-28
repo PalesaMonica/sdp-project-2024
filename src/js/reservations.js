@@ -202,6 +202,7 @@ function createReservationElement(reservation) {
 
     element.innerHTML = `
         <div class="reservation-info">
+            <h3>${reservation.item_name}</h3>
             <h3>${getMealType(reservation.meal_type)}</h3>
             <p>Time: ${formatTime(reservation.start_time)} - ${formatTime(reservation.end_time)}</p>
             <p>Dining Hall: ${reservation.dining_hall_name}</p>

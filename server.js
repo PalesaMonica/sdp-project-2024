@@ -558,11 +558,13 @@ app.get('/api/reservations', ensureAuthenticated,(req, res) => {
 
   const query = `
       SELECT r.id, r.date, r.start_time, r.end_time, r.time, r.special_requests, 
-             r.status, r.meal_type, dh.name as dining_hall_name
+             r.status, r.meal_type, m.item_name, dh.name as dining_hall_name
       FROM reservations r
+      JOIN weekly_menu m ON r.item_id = m.id
       JOIN dining_halls dh ON r.dining_hall_id = dh.id
       WHERE r.user_id = ? AND r.date BETWEEN ? AND ?
   `;
+  
 
   connection.query(query, [userId, fromDate, toDate], (err, results) => {
       if (err) {
@@ -607,7 +609,7 @@ app.post('/api/confirm-reservation',ensureAuthenticated, (req, res) => {
   const username = req.user.username;
 
   const queryCart = `
-      SELECT ci.id, ci.date, ci.meal_type, ci.dining_hall_id
+      SELECT ci.id, item_id, ci.date, ci.meal_type, ci.dining_hall_id
       FROM cart_items ci
       WHERE ci.user_id = ?
   `;
@@ -635,8 +637,8 @@ app.post('/api/confirm-reservation',ensureAuthenticated, (req, res) => {
 
           const insertReservation = `
               INSERT INTO reservations 
-              (dining_hall_id, user_id, username, date, meal_type, start_time, end_time, status) 
-              VALUES (?, ?, ?, ?, ?, ?, ?, 'confirmed')
+              (dining_hall_id, user_id, username, date, meal_type, start_time, end_time, item_id, status) 
+              VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'confirmed')
           `;
 
           let duplicateFound = false;
@@ -692,7 +694,8 @@ app.post('/api/confirm-reservation',ensureAuthenticated, (req, res) => {
                           localDate.toISOString().split('T')[0],
                           item.meal_type,
                           startTime,
-                          endTime
+                          endTime,
+                          item.item_id
                       ], (err, result) => {
                           if (err) {
                               return connection.rollback(() => {
@@ -1416,6 +1419,34 @@ app.delete('/api/remove-menu-item', ensureAuthenticated, (req, res) => {
       res.json({ message: 'Menu item removed successfully' });
     }
   );
+});
+
+app.get('/api/meal-counts', ensureAuthenticated, (req, res) => {
+  const { diningHallId, day } = req.query;
+
+  if (!diningHallId || !day) {
+      return res.status(400).json({ error: 'diningHallId and day are required parameters' });
+  }
+
+  const query = `
+      SELECT dining_halls.name AS dining_hall_name, reservations.meal_type, menu_item.item_name AS meal_name, COUNT(*) AS meal_count
+      FROM reservations
+      JOIN dining_halls ON reservations.dining_hall_id = dining_halls.id
+      JOIN menu_item ON reservations.item_id = menu_item.id
+      WHERE reservations.status = 'confirmed'
+        AND reservations.dining_hall_id = ?
+        AND reservations.date = ?
+      GROUP BY dining_halls.name, reservations.meal_type, menu_item.item_name
+      ORDER BY dining_halls.name, reservations.meal_type, menu_item.item_name
+  `;
+
+  connection.query(query, [diningHallId, day], (err, results) => {
+      if (err) {
+          console.error('Error fetching meal counts:', err);
+          return res.status(500).json([]);
+      }
+      res.json(results || []);
+  });
 });
 ///////////
 
