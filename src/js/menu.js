@@ -169,86 +169,98 @@ function sortMenuItemsByNextSevenDays(menuItems) {
     }));
 }
 
-
-function displayWeeklyView(menuItems) {
-    menuItems.forEach(({ day, date, items }) => {
-        // Pass both the day and date object to the displayDayContainer function
-        displayDayContainer({ day: day, date: date }, items, false);
-    });
+// Helper function to format date in local time
+function formatDateToLocalString(date) {
+  return new Date(date).toLocaleDateString("en-US", {
+      weekday: 'long',
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+  });
 }
 
-
+// Update displayDailyView function to use local date
 function displayDailyView(menuItems) {
-    const today = new Date().toLocaleString('en-us', { weekday: 'long' });
-    
-    const todayMenu = menuItems.find(menu => menu.day.toLowerCase() === today.toLowerCase());
-    
-    if (todayMenu) {
-        displayDayContainer({day: today, date: new Date().toISOString().split('T')[0]}, todayMenu.items, true);
-    } else {
-        console.error('No menu found for today');
-        displayDayContainer({day: today, date: new Date().toISOString().split('T')[0]}, [], true);
-    }
-
+  const today = new Date();
+  const todayFormatted = formatDateToLocalString(today);
+  const todayMenu = menuItems.find(menu => menu.day.toLowerCase() === today.toLocaleString('en-US', { weekday: 'long' }).toLowerCase());
+  
+  if (todayMenu) {
+      displayDayContainer({ day: todayFormatted, date: today.toISOString().split('T')[0] }, todayMenu.items, true);
+  } else {
+      console.error('No menu found for today');
+      displayDayContainer({ day: todayFormatted, date: today.toISOString().split('T')[0] }, [], true);
+  }
 }
 
+// Update displayWeeklyView function to use local date
+function displayWeeklyView(menuItems) {
+  menuItems.forEach(({ day, date, items }) => {
+      const localDate = new Date(date);
+      const formattedDate = formatDateToLocalString(localDate);
+      
+      displayDayContainer({ day: formattedDate, date: localDate.toISOString().split('T')[0] }, items, false);
+  });
+}
+
+// Update displayDayContainer to handle formatted dates
 function displayDayContainer(day, items, isDaily) {
-    const dayContainer = document.createElement('div');
-    dayContainer.className = 'day-container';
-    
-    const dayHeader = document.createElement('h2');
-    if (isDaily) {
-        dayHeader.textContent = `Today is ${day.day} (${day.date})`;
-        dayHeader.classList.add('today-header');
-    } else {
-        dayHeader.textContent = `${day.day} (${day.date})`;
-    }
-    dayContainer.appendChild(dayHeader);
+  const dayContainer = document.createElement('div');
+  dayContainer.className = 'day-container';
+  
+  const dayHeader = document.createElement('h2');
+  if (isDaily) {
+      dayHeader.textContent = `Today is ${day.day}`;
+      dayHeader.classList.add('today-header');
+  } else {
+      dayHeader.textContent = `${day.day}`;
+  }
+  dayContainer.appendChild(dayHeader);
 
-    const menuItemsContainer = document.createElement('div');
-    menuItemsContainer.className = 'menu-items';
+  const menuItemsContainer = document.createElement('div');
+  menuItemsContainer.className = 'menu-items';
 
-    if (items.length === 0) {
-        const emptyMessage = document.createElement('p');
-        emptyMessage.textContent = 'Menu to be updated soon';
-        emptyMessage.className = 'empty-menu-message';
-        menuItemsContainer.appendChild(emptyMessage);
-    } else {
-        items.forEach(item => {
-            // Pass both the item and the corresponding date to createMenuItem
-            const menuItem = createMenuItem(item, day.date);
-            menuItemsContainer.appendChild(menuItem);
-        });
-    }
+  if (items.length === 0) {
+      const emptyMessage = document.createElement('p');
+      emptyMessage.textContent = 'Menu to be updated soon';
+      emptyMessage.className = 'empty-menu-message';
+      menuItemsContainer.appendChild(emptyMessage);
+  } else {
+      items.forEach(item => {
+          const menuItem = createMenuItem(item, day.date);
+          menuItemsContainer.appendChild(menuItem);
+      });
+  }
 
-    dayContainer.appendChild(menuItemsContainer);
-    menuContainer.appendChild(dayContainer);
+  dayContainer.appendChild(menuItemsContainer);
+  menuContainer.appendChild(dayContainer);
 }
 
+// Update createMenuItem to use local date for display and button logic
 function createMenuItem(item, date) {
-    const menuItem = document.createElement('div');
-    menuItem.className = 'menu-item';
-    const today = new Date().toISOString().split('T')[0]; 
-    menuItem.innerHTML = `
-        <img src="${item.image_url}" alt="${item.item_name}">
-        <h3>${item.item_name}</h3>
-        <h4>${capitalizeFirstLetter(item.meal_type)}</h4> <!-- Shows the specific meal time -->
-        <p>Diet plan: ${item.diet_type}</p>
-        <button class="add-to-cart" ${date === today ? 'style="display:none;"' : ''}>+</button> <!-- Hide + button for today's date -->
-    `;
+  const menuItem = document.createElement('div');
+  menuItem.className = 'menu-item';
 
-    // Add event listener to the plus button if it's not hidden
-    if (date !== today) {
-        menuItem.querySelector('.add-to-cart').addEventListener('click', (e) => {
-            e.stopPropagation();
-            addToCart(item, date);
-        });
-    }
+  const today = new Date(new Date().toLocaleString("en-US", { timeZone: "Africa/Johannesburg" })).toISOString().split('T')[0];
+  menuItem.innerHTML = `
+      <img src="${item.image_url}" alt="${item.item_name}">
+      <h3>${item.item_name}</h3>
+      <h4>${capitalizeFirstLetter(item.meal_type)}</h4>
+      <p>Diet plan: ${item.diet_type}</p>
+      <button class="add-to-cart" ${date === today ? 'style="display:none;"' : ''}>+</button>
+  `;
 
-    // Pass both the item and the corresponding date to showItemDetails
-    menuItem.addEventListener('click', () => showItemDetails(item, date));
-    return menuItem;
+  if (date !== today) {
+      menuItem.querySelector('.add-to-cart').addEventListener('click', (e) => {
+          e.stopPropagation();
+          addToCart(item, date);
+      });
+  }
+
+  menuItem.addEventListener('click', () => showItemDetails(item, date));
+  return menuItem;
 }
+
 
 // Toaster display function
 function showToaster(message) {

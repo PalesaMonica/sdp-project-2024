@@ -61,6 +61,7 @@ document.addEventListener('DOMContentLoaded', function() {
             .then(items => {
                 cartItems = items; // Store the fetched items
                 displayCartItems(items);
+                autoRemoveTomorrowItems();
             })
             .catch(error => console.error('Error fetching cart items:', error));
     }
@@ -196,8 +197,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 showToast('There was an error fetching your cart items. Please try again.');
             });
     }
-
-        
+    
     function showToast(message, type = 'success') {
         const toast = document.createElement('div');
         toast.className = `toast toast-${type}`;
@@ -276,6 +276,24 @@ document.addEventListener('DOMContentLoaded', function() {
                 showToast('There was an error replacing your reservation. Please try again.');
             }
         });
+    }
+
+    function autoRemoveTomorrowItems() {
+        const currentTime = new Date();
+        const today = currentTime.toLocaleDateString('en-US', { timeZone: 'UTC' });
+    
+        // If the current time is past 21:00, check for tomorrow's items
+        if (currentTime.getHours() >= 21) {
+            cartItems.forEach(item => {
+                const itemDate = new Date(item.date).toLocaleDateString('en-US', { timeZone: 'UTC' });
+                const tomorrow = new Date();
+                tomorrow.setDate(currentTime.getDate() + 1);
+    
+                if (itemDate === tomorrow.toLocaleDateString('en-US', { timeZone: 'UTC' })) {
+                    removeItem(item.id);  // Remove tomorrow's item
+                }
+            });
+        }
     }
     
     function removeItem(id) {
