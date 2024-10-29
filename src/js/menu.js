@@ -241,16 +241,32 @@ function createMenuItem(item, date) {
   const menuItem = document.createElement('div');
   menuItem.className = 'menu-item';
 
-  const today = new Date(new Date().toLocaleString("en-US", { timeZone: "Africa/Johannesburg" })).toISOString().split('T')[0];
+  // Get the current date and time in local time zone
+  const now = new Date(new Date().toLocaleString("en-US", { timeZone: "Africa/Johannesburg" }));
+  const today = now.toISOString().split('T')[0];
+  const itemDate = new Date(date);
+  const itemDateFormatted = itemDate.toISOString().split('T')[0];
+
+  // Check if the item date is tomorrow
+  const isTomorrow = (itemDateFormatted === new Date(now.setDate(now.getDate() + 1)).toISOString().split('T')[0]);
+
+  // Check if the current time is after 9:00 PM
+  const isAfterOneAM = now.getHours() >= 21;
+
+  // Condition to disable "+" button
+  const disableButton = (itemDateFormatted === today) || (isTomorrow && isAfterOneAM);
+
+  // Construct HTML for menu item with conditional button display
   menuItem.innerHTML = `
       <img src="${item.image_url}" alt="${item.item_name}">
       <h3>${item.item_name}</h3>
       <h4>${capitalizeFirstLetter(item.meal_type)}</h4>
       <p>Diet plan: ${item.diet_type}</p>
-      <button class="add-to-cart" ${date === today ? 'style="display:none;"' : ''}>+</button>
+      <button class="add-to-cart" ${disableButton ? 'style="display:none;"' : ''}>+</button>
   `;
 
-  if (date !== today) {
+  // Add event listener to the plus button if it’s not hidden
+  if (!disableButton) {
       menuItem.querySelector('.add-to-cart').addEventListener('click', (e) => {
           e.stopPropagation();
           addToCart(item, date);
@@ -260,6 +276,8 @@ function createMenuItem(item, date) {
   menuItem.addEventListener('click', () => showItemDetails(item, date));
   return menuItem;
 }
+
+
 
 
 // Toaster display function

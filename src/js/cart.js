@@ -12,9 +12,12 @@ const replaceButton = document.getElementById('replace-btn');
 let conflictReservationId = null;
 let cartItemIdToReplace = null;
 
+
+
 document.addEventListener('DOMContentLoaded', function() {
     // Fetch cart items on page load
     fetchCartItems();
+    autoRemoveTomorrowItems();
 
     // Show the reservation confirmation modal
     makeReservationButton.addEventListener('click', function() {
@@ -277,25 +280,39 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     }
-
+    
     function autoRemoveTomorrowItems() {
-        const currentTime = new Date();
-        const today = currentTime.toLocaleDateString('en-US', { timeZone: 'UTC' });
+        // Get the current date and time in the "Africa/Johannesburg" timezone
+        const now = new Date(new Date().toLocaleString("en-US", { timeZone: "Africa/Johannesburg" }));
+        const currentHour = now.getHours();
     
-        // If the current time is past 21:00, check for tomorrow's items
-        if (currentTime.getHours() >= 21) {
+        // Only proceed with removal if it's past 21:00
+        if (currentHour >= 21) {
+            // Calculate tomorrow's date in the local time zone
+            const tomorrow = new Date(now);
+            tomorrow.setDate(now.getDate() + 1);
+            const tomorrowFormatted = tomorrow.toLocaleDateString("en-CA"); // Format as YYYY-MM-DD
+    
             cartItems.forEach(item => {
-                const itemDate = new Date(item.date).toLocaleDateString('en-US', { timeZone: 'UTC' });
-                const tomorrow = new Date();
-                tomorrow.setDate(currentTime.getDate() + 1);
+                // Convert item.date to "Africa/Johannesburg" timezone
+                const itemDateLocal = new Date(new Date(item.date).toLocaleString("en-US", { timeZone: "Africa/Johannesburg" }));
+                const itemDateFormatted = itemDateLocal.toLocaleDateString("en-CA"); // Format as YYYY-MM-DD
     
-                if (itemDate === tomorrow.toLocaleDateString('en-US', { timeZone: 'UTC' })) {
-                    removeItem(item.id);  // Remove tomorrow's item
+                console.log(`Checking item ID ${item.id}: Item date ${itemDateFormatted}, Tomorrow ${tomorrowFormatted}`);
+    
+                // Check if the item is scheduled for tomorrow
+                if (itemDateFormatted === tomorrowFormatted) {
+                    console.log(`Attempting to remove item scheduled for tomorrow: ${item.id}`);
+                    
+                    // Call removeItem to delete the item and refresh the cart display
+                    removeItem(item.id)
+                        .then(() => console.log(`Item ${item.id} successfully removed.`))
+                        .catch(error => console.error(`Error removing item ${item.id}:`, error));
                 }
             });
         }
     }
-    
+        
     function removeItem(id) {
         return fetch(`/api/remove-from-cart/${id}`, { method: 'DELETE' })
             .then(response => {
