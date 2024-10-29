@@ -393,7 +393,7 @@ app.post('/login', (req, res, next) => {
 });
 
 // Dynamic route for other HTML files
-/*app.get('/:page', ensureAuthenticated, (req, res) => {
+app.get('/:page', ensureAuthenticated, (req, res) => {
   const page = req.params.page;
   const filePath = path.join(__dirname, 'public', `${page}.html`);
   
@@ -403,7 +403,7 @@ app.post('/login', (req, res, next) => {
       res.status(404).send('Page not found');
     }
   });
-});*/
+});
 
 app.get("/userDashboard",ensureAuthenticated, (req, res) => {
   if (req.isAuthenticated()) {
