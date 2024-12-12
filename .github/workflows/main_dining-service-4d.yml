@@ -5,8 +5,8 @@ on:
     branches:
       - main
   workflow_dispatch:
-  schedule:
-    - cron: "0 */4 * * *" # Triggers every 4 hours
+  #schedule:
+   # - cron: "0 */4 * * *" # Triggers every 4 hours
 
 jobs:
   build:
